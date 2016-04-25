@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # $Id: AIMS.py
-# Author: Daniel R. Reese <daniel.reese@obspm.fr>
+# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #
@@ -48,7 +48,7 @@ import dill
 import os
 import sys
 import emcee
-import triangle
+import corner
 import math
 import matplotlib.pyplot  as plt
 import matplotlib.patches as mpatches
@@ -1463,6 +1463,13 @@ def load_binary_data(filename):
     input_data = open(filename,"r")
     grid = dill.load(input_data)
     input_data.close()
+
+    if (grid.user_params != config.user_params):
+        print "Mismatch between the user_params in the binary grid file and AIMS_configure.py"
+        print "  Binary grid file:  ",grid.user_params
+        print "  AIMS_configure.py: ",config.user_params
+        sys.exit(1)
+
     return grid
 
 def find_best_model():
@@ -1483,6 +1490,12 @@ def find_best_model():
         if (result > best_grid_result):
             best_grid_result = result
             best_grid_model  = model
+
+    if (best_grid_model is None):
+        print "ERROR:  Unable to find a model in the grid which matches your"
+        print "        constraints.  Try extending the frequency spectra of"
+        print "        your models before running AIMS.   Aborting."
+        sys.exit(1)
 
     best_grid_params  = map(best_grid_model.string_to_param,grid_params_MCMC)
 
@@ -1574,7 +1587,6 @@ def init_walkers():
             counter = 0
             while (prob.likelihood.is_outside(params)):
                 if (counter > config.max_iter):
-                    print "Walker number: ", j
                     sys.exit("ERROR: too many iterations to produce walker.  Aborting")
                 params = initial_distributions.realisation()
                 counter+=1
@@ -2180,6 +2192,9 @@ if __name__ == "__main__":
     AIMS = Asteroseismic Inference on a Massive Scale
     """
 
+    # initialise the user-defined parameter dictionaries
+    model.init_user_param_dict()
+
     # this if for writing binary data
     if (config.write_data):
         write_binary_data(config.list_grid,config.binary_grid)
@@ -2334,8 +2349,8 @@ if __name__ == "__main__":
         echelle_diagram(statistical_model,statistical_params,"statistical")
 
     # write one line summary for the LEGACY project
-    write_LEGACY_summary(os.path.join(output_folder,"LEGACY_summary.txt"), \
-                         sys.argv[1][3:], names_big[1:], samples_big[:,1:])
+    #write_LEGACY_summary(os.path.join(output_folder,"LEGACY_summary.txt"), \
+    #                     sys.argv[1][3:], names_big[1:], samples_big[:,1:])
 
     # make various plots:
     if (best_grid_model is None):
@@ -2347,11 +2362,11 @@ if __name__ == "__main__":
         plot_histograms(samples_big[:,1:],names_big[1:],labels_big[1:],truths=best_grid_params)
 
     if (config.with_triangles):
-        fig = triangle.corner(samples[:,1:], truths=best_grid_params, labels=labels[1:])
+        fig = corner.corner(samples[:,1:], truths=best_grid_params, labels=labels[1:])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder,"triangle."+ext))
             plt.close('all')
-        fig = triangle.corner(samples_big[:,1:], truths=best_grid_params, labels=labels_big[1:])
+        fig = corner.corner(samples_big[:,1:], truths=best_grid_params, labels=labels_big[1:])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder,"triangle_big."+ext))
             plt.close('all')

@@ -13,10 +13,10 @@ Format of a file with a list of models and properties:
         /home/dreese/models_inversions/Grid_mesa_MS/  .freq
 
     * Each of the following lines correspond to one model in
-      the grid.  They are composed of 9 columns with the
+      the grid.  They are composed of 8 or more columns with the
       following information:
 
-      1. the second part of the path for the   given model.
+      1. The second part of the path for the given model.
          When concatenated with the prefix on the first line,
          this should give the full path to the model.  If,
          furthermore, the suffix from the first line is
@@ -29,7 +29,9 @@ Format of a file with a list of models and properties:
       6. The hydrogen content
       7. The stellar age in :math:`\mathrm{Myrs}`
       8. The effective temperature in :math:`\mathrm{K}`
-      9. The central hydrogen content
+      9. (user-defined) This and the following columns correspond
+         to the parameters specified in the ``user_params``
+         variable given in ``AIMS_configure.py``.
 
     * Except for the first line, the order of the lines does
       not matter.  AIMS will construct evolutionary tracks based
@@ -54,6 +56,12 @@ Format of a file with a list of models and properties:
     and its frequencies in this file::
   
       /home/dreese/models_inversions/Grid_mesa_MS/M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n1.profile.FGONG.freq
+
+    The ninth column corresponds to the central hydrogen
+    content, as specified by the contents of the ``user_params``
+    variable from ``AIMS_configure.py``::
+
+      user_params = (("Xc", r'Central hydrogen, $%sX_c%s$'),)
 
 Format of a file with theoretical frequencies:
 ----------------------------------------------

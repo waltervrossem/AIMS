@@ -22,6 +22,7 @@ Contents
    model
    constants
    utilities
+   improved_tessellation
    plot_interpolation_test
 
 Indices and tables

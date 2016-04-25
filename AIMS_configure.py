@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # $Id: AIMS_configure.py
-# Author: Daniel R. Reese <daniel.reese@obspm.fr>
+# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #
@@ -24,14 +24,14 @@ import math
 # NOTE: this is currently implemented with multiprocessing, which duplicates
 #       the memory in each process.  To be more memory efficient, turn off
 #       parallelisation using the "parallel" parameter.
-nprocesses  = 4      # number of processes (if running in parallel)
+nprocesses  = 8      # number of processes (if running in parallel)
 parallel    = True   # specifies whether to run in parallel
 
 #########################   EMCEE control parameters   #####################
 ntemps      = 10     # number of temperatures
-nwalkers    = 250    # number of walkers (this number should be even)
-nsteps0     = 200    # number of burn-in steps
-nsteps      = 200    # number of steps
+nwalkers    = 26     # number of walkers (this number should be even)
+nsteps0     = 20     # number of burn-in steps
+nsteps      = 20     # number of steps
 thin        = 10     # thinning parameter (1 out of thin steps will be kept ...)
 thin_comb   = 100    # thinning parameter for output linear combinations of models
 PT          = True   # use parallel tempering?
@@ -58,11 +58,10 @@ tight_ball_range["Age"]      = ("Gaussian", [0.0, 100.0])
 tight_ball_range["A_surf"]   = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
 tight_ball_range["A3_surf"]  = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
 tight_ball_range["Am1_surf"] = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-
 #########################   Radial orders   ################################
 use_n       = True  # use radial orders when comparing observations with models?
-read_n      = True  # read radial orders from input file?
-assign_n    = False # use best model to reassign the radial order?
+read_n      = False # read radial orders from input file?
+assign_n    = True  # use best model to reassign the radial order?
                     # NOTE: this supersedes "read_n"
 #########################   Constraints   ##################################
 # Determines the type of surface correction to include.  Options include:
@@ -100,16 +99,39 @@ classic_weight = 1.0
 #########################   Input   ########################################
 write_data    = False            # set this to True if you want to write a
                                  # binary grid file
-npositive     = True             # only save modes with n >= 0 in binary file
+npositive     = True             # if True, only save modes with n >= 0 in
+                                 # binary grid file
+cutoff        = 1.5              # remove frequencies above this value times
+                                 # the acoustic cutoff-frequency
 list_grid     = "list_MESA_ms"   # file with list of models and characteristics.
                                  # only used when constructing binary file with
                                  # the model grid (i.e. write_data == True)
 grid_params = ("Mass","log_Z")   # primary grid parameters (excluding age)
                                  # only used when constructing binary file with
                                  # the model grid (i.e. write_data == True)
-binary_grid = "data_MESA_ms_log" # binary file with model grid
+                                 # These parameters are used to distinguish
+                                 # evolutionary tracks
+binary_grid = "data_MESA_ms"     # binary file with model grid
                                  # this file is written to if write_data == True
                                  # this file is read from if write_data = False
+#########################   User-defined parameters   ######################
+# This variable allows the user to introduce supplementary parameters in
+# addition to the parameters hard-coded in to AIMS.  These parameters
+# can then be used as output parameters (see output_params) and/or even
+# as grid parameters used to define evolutionary tracks (see grid_params).
+#
+# This variable must be a list (or tuple) of pairs of strings.  The first
+# string corresponds to the name of the variable which should be used, for
+# instance, in the grid_params and output_params variables.  The second
+# string is the fancy latex name for this variable.  Allowance needs to
+# be made for a prefix and and postfix (hence the two "%s").  These will
+# be replaced by appropriate strings if, for instance, one asks for the
+# log of this parameter.
+
+#user_params = (("Xc", r'Central hydrogen, $%sX_c%s$'),)
+user_params = (("Xc", r'Central hydrogen, $%sX_c%s$'), \
+               ("alpha_MLT", r'Mixing length parameter, $%s\alpha_{\mathrm{MLT}}%s$'), \
+               ("alpha_semi_conv", r'Semiconvection parameter, $%s\alpha_{\mathrm{semi. conv.}}%s$'))
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions
@@ -127,9 +149,9 @@ priors["Mass"]     = ("Uniform", [0.8, 1.5])
 priors["Z"]        = ("Uniform", [0.0028, 0.08])
 priors["log_Z"]    = ("Uniform", [math.log10(0.0028), math.log10(0.08)])
 priors["Age"]      = ("Uniform", [0.0, 1.5e4])
-priors["A_surf"]   = ("Uniform", [-1.0, 1.0])  # this too broad and should be set experimentally
-priors["A3_surf"]  = ("Uniform", [-1.0, 1.0])  # this too broad and should be set experimentally
-priors["Am1_surf"] = ("Uniform", [-1.0, 1.0])  # this too broad and should be set experimentally
+priors["A_surf"]   = ("Uniform", [-1.0, 1.0])  # this is too broad and will be sent by AIMS
+priors["A3_surf"]  = ("Uniform", [-1.0, 1.0])  # this is too broad and will be sent by AIMS
+priors["Am1_surf"] = ("Uniform", [-1.0, 1.0])  # this is too broad and will be sent by AIMS
 #########################   Interpolation    ###############################
 scale_age = True                 # use a scaled age when interpolating
 #########################   Interpolation tests    #########################
@@ -143,11 +165,11 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
                                  # tests.  This file can be analysed using
                                  # plot_test.py.
 #########################   Output   #######################################
-# choice of parameters: "Mass", "Radius", "Luminosity", "Z", "X", "Xc", 
-#                       "Fe_H", "M_H", "Age", "Teff", "Dnu", "Rho", "g"
+# choice of parameters: "Mass", "Radius", "Luminosity", "Z", "X", "Fe_H",
+#                       "M_H", "Age", "Teff", "Dnu", "Rho", "g"
 # possible prefixes: "log_", "ln_", "exp_"
 # example: "log_g" corresponds to log_{10}(g), where $g$ is the surface gravity
-output_params = ("Radius","Mass","log_g","Rho","Age","Teff","Fe_H","Luminosity","X","Y","Xc")
+output_params = ("Radius","Mass","log_g","Rho","Age","Teff","Xc","Luminosity")
 output_dir    = "results"      # name of the root folder with the results
 with_combinations = True       # decide whether to write file with model combinations
 with_walkers    = True         # decide whether to plot walkers
@@ -157,4 +179,3 @@ with_triangles  = True         # decide whether to make triangle plots
 plot_extensions = ['eps']      # extensions (and formats) for all simple plots
 tri_extensions  = ['png']      # extensions (and formats) for triangle plots
 # supported formats: eps, jpeg, jpg, pdf, pgf, png, ps, raw, rgba, svg, svgz, tif, tiff
-

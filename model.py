@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # $Id: model.py
-# Author: Daniel R. Reese <daniel.reese@obspm.fr>
+# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #
@@ -42,7 +42,6 @@ import math
 import numpy as np
 import random
 import sys
-from scipy.spatial import Delaunay
 from operator import methodcaller
 import matplotlib.pyplot as plt
 
@@ -50,9 +49,9 @@ import matplotlib.pyplot as plt
 import constants
 import utilities
 import AIMS_configure as config
+from ImprovedTessellation import ImprovedTessellation
 
 # Global parameters:
-
 tol     = 1e-6
 """ tolerance level for points slightly outside the grid """
 
@@ -74,11 +73,18 @@ gtype = np.float64
 modetype = [('n',ntype),('l',ltype),('freq',ftype),('inertia',ftype)] 
 """ structure for modes """
 
+# quantities related to user-defined parameters:
+user_params_index = {}
+""" dictionary which will supply the appropriate index for the user-defined parameters"""
+
+user_params_latex = {}
+""" dictionary which will supply the appropriate latex name for the user-defined parameters"""
+
 # integer indices for various global quantities which will be stored in a np array:
-nglb         = 9  
+nglb         = 8 + len(config.user_params)
 """ total number of global quantities in a model (see :py:data:`Model.glb`)."""
 
-nlin         = 6  
+nlin         = 5 + len(config.user_params)
 """
 total number of global quantities which are interpolated in a linear way (see
 :py:func:`combine_models`).  These quantities are numbered 0:nlin-1
@@ -105,23 +111,17 @@ index of the parameter corresponding to the initial hydrogen content
 in the :py:data:`Model.glb` array
 """
 
-ixc          = 5
-"""
-index of the parameter corresponding to the central hydrogen content
-in the :py:data:`Model.glb` array
-"""
-
-ifreq_ref    = 6
+ifreq_ref    = 5 + len(config.user_params)
 """
 index of the parameter corresponding to the reference frequency
 (used to non-dimensionalise the pulsation frequencies of the model)
 in the :py:data:`Model.glb` array
 """
 
-iradius      = 7
+iradius      = 6 + len(config.user_params)
 """ index of the parameter corresponding to radius in the :py:data:`Model.glb` array """
 
-iluminosity  = 8
+iluminosity  = 7 + len(config.user_params)
 """ index of the parameter corresponding to luminosity in the :py:data:`Model.glb` array """
 
 def string_to_latex(string,prefix="",postfix=""):
@@ -155,7 +155,6 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "Z"):          return r'Metallicity, $%sZ%s$'%(prefix,postfix)
     if (string == "Y"):          return r'Helium content, $%sY%s$'%(prefix,postfix)
     if (string == "X"):          return r'Hydrogen content, $%sX%s$'%(prefix,postfix)
-    if (string == "Xc"):         return r'Central hydrogen, $%sX_c%s$'%(prefix,postfix)
     if (string == "Fe_H"):       return r'Iron content, $%s\mathrm{[Fe/H]}%s$'%(prefix,postfix)
     if (string == "M_H"):        return r'Metal content, $%s\mathrm{[M/H]}%s$'%(prefix,postfix)
     if (string == "Age"):        return r'Age (in Myrs), $%st%s$'%(prefix,postfix)
@@ -167,7 +166,11 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "A_surf"):     return r'$%sA_{\mathrm{surf}}%s$'%(prefix,postfix)
     if (string == "A3_surf"):    return r'$%sA_3^{\mathrm{surf}}%s$'%(prefix,postfix)
     if (string == "Am1_surf"):   return r'$%sA_{-1}^{\mathrm{surf}}%s$'%(prefix,postfix)
-    sys.exit("ERROR: unrecognised model quantity: "+string)
+
+    try:
+        return user_params_latex[string]%(prefix,postfix)
+    except KeyError:
+        sys.exit("ERROR: unrecognised model quantity: "+string)
 
 def get_surface_parameter_names(surface_option):
     """
@@ -210,7 +213,6 @@ class Model:
         if (string == "Z"):          return self.glb[iz0]
         if (string == "Y"):          return 1.0-self.glb[iz0]-self.glb[ix0]
         if (string == "X"):          return self.glb[ix0]
-        if (string == "Xc"):         return self.glb[ixc]
         if (string == "Fe_H"):       return self.FeH()
         if (string == "M_H"):        return self.MH()
         if (string == "Age"):        return self.glb[iage]
@@ -219,7 +221,11 @@ class Model:
         if (string == "numax"):      return self.numax()
         if (string == "Rho"):        return 3.0*self.glb[imass]/(4.0*math.pi*self.glb[iradius]**3)
         if (string == "g"):          return constants.G*self.glb[imass]/self.glb[iradius]**2
-        sys.exit("ERROR: unrecognised model quantity: "+string)
+
+        try:
+            return self.glb[user_params_index[string]]
+        except KeyError:
+            sys.exit("ERROR: unrecognised model quantity: "+string)
 
     def __init__(self, _glb, _name=None, _modes=None):
         """
@@ -242,12 +248,6 @@ class Model:
         assert (_glb[ix0] >= 0.0),          "A star cannot have a negative hydrogen abundance!"
         assert (_glb[iage] >= 0.0),         "A star cannot have a negative age!"
         assert (_glb[itemperature] >= 0.0), "A star cannot have a negative temperature!"
-        #assert (_glb[ixc] >= 0.0),          "A star cannot have a negative central hydrogen content!"
-
-        # In extreme cases, the interpolation can produce stars with negative central
-        # hydrogen abundances.  This produces a warning but doesn't stop the program:
-        if (_glb[ixc] < 0.0):
-            print "WARNING: star with negative central hydrogen abundance: %f"%(_glb[ixc])
 
         self.name = _name
         """Name of the model, typically the second part of its path"""
@@ -281,7 +281,7 @@ class Model:
           - Frequencies above :math:`1.1\\nu_{\\mathrm{cut-off}}` are discarded.
         """
 
-        freqlim = 1.1*self.cutoff()
+        freqlim = config.cutoff*self.cutoff()
         exceed_freqlim = False
         freqfile = open(filename)
         freqfile.readline() # skip head
@@ -616,7 +616,8 @@ class Model:
         print "Age (in Myrs):                %.2f" % self.glb[iage]
         print "Z:                            %.4f" % self.glb[iz0]
         print "X:                            %.4f" % self.glb[ix0]
-        print "Xc:                           %.4f" % self.glb[ixc]
+        for (name, latex_name) in config.user_params:
+            print "{0:29} {1:.5e}".format(name,self.glb[user_params_index[name]])
         print "Modes:"
         size = len(self.n)
         for i in xrange(size):
@@ -885,14 +886,20 @@ class Model_grid:
         self.postfix = ".freq" 
         """Last part of the filenames which contain the model frequencies (default = ".freq")."""
 
+        self.user_params = config.user_params
+        """
+        The set of user parameters involved in the grid.  This is to avoid having a different
+        set of user parameters in `AIMS_configure.py`
+        """
+
     def read_model_list(self,filename):
         """
         Read list of models from a file and construct a grid.
 
         :param filename: name of the file with the list.  The first line
           of this file should contain a prefix which is typically the root
-          folder of the grid of models.  This followed by a file with 8
-          columns containing the following information for each model:
+          folder of the grid of models.  This followed by a file with multiple
+          columns.  The first 8 contain the following information for each model:
 
           1. the second part of the path.  When concatenated with the prefix
              on the first line, this should give the full path to the model.
@@ -903,7 +910,9 @@ class Model_grid:
           6. The hydrogen content
           7. The stellar age in :math:`\mathrm{Myrs}`
           8. The effective temperature in :math:`\mathrm{K}`
-          9. The central hydrogen content
+
+          The following columns contain the parameters specified in the
+          :py:data:`AIMS_configure.user_params` variable.
 
         :type filename: string
         """
@@ -934,9 +943,14 @@ class Model_grid:
             glb[iluminosity]  = utilities.to_float(columns[3])
             glb[iz0]          = utilities.to_float(columns[4])
             glb[ix0]          = utilities.to_float(columns[5])
-            glb[ixc]          = utilities.to_float(columns[8])
             glb[iage]         = utilities.to_float(columns[6])
             glb[itemperature] = utilities.to_float(columns[7])
+
+            i = 8
+            for (name, name_latex) in config.user_params:
+                glb[user_params_index[name]] = utilities.to_float(columns[i])
+                i += 1
+
             aModel = Model(glb, _name = columns[0])
             exceed_freqlim = aModel.read_file(self.prefix + columns[0] + self.postfix)
             aModel.multiply_modes(1.0/aModel.glb[ifreq_ref])  # make frequencies non-dimensional
@@ -973,7 +987,7 @@ class Model_grid:
     def tessellate(self):
         """Apply Delauny triangulation to obtain the grid tessellation."""
 
-        self.tessellation = Delaunay(self.grid)
+        self.tessellation = ImprovedTessellation(self.grid)
         
     def plot_tessellation(self):
         """
@@ -1023,7 +1037,7 @@ class Model_grid:
         """
 
         ndx1, ndx2 = self.find_partition()
-        tessellation = Delaunay(self.grid[ndx2,:])
+        tessellation = ImprovedTessellation(self.grid[ndx2,:])
 
         # initialisation
         results = []
@@ -1107,6 +1121,19 @@ class Model_grid:
                 epsilon = model.find_epsilon(ltarget)
                 if (epsilon != 0.0): epsilons.append(epsilon)
         return epsilons
+
+def init_user_param_dict():
+    """
+    Initialise the dictionaries which are related to user-defined parameters.  For
+    a given parameter, these dictionaries provide the appropriate index for for
+    the :py:data:`Model.glb` array as well as the appropriate latex name.
+    """
+
+    i = 5
+    for (name, latex_name) in config.user_params:
+        user_params_index[name] = i
+        user_params_latex[name] = latex_name
+        i += 1
 
 def combine_models(model1,coef1,model2,coef2):
     """
@@ -1298,8 +1325,7 @@ def find_interpolation_coefficients(grid,pt,tessellation,ndx):
     if (pt is None): return None, None
     if (tessellation is None): return None, None
     pt1 = np.asarray(pt[0:-1],dtype=gtype)
-    pt2 = pt1.reshape(1,grid.ndim)
-    val = tessellation.find_simplex(pt2)[0]
+    val = tessellation.find_simplex(pt1)[0]
     mat = tessellation.transform[val]
     b = mat[:grid.ndim].dot(pt1-mat[grid.ndim])
     coefs = np.r_[b, 1.0-b.sum()]
@@ -1427,7 +1453,7 @@ def interpolate_model(grid,pt,tessellation,ndx):
     if (n == 1):
         if (abs(coefs[0]-1.0) > eps):
             print "WARNING: erroneous interpolation coefficient: ",coefs[0]
-        return tracks[0].interpolate_model(age)
+        return tracks[0].interpolate_model(ages[0])
 
     # treat the case where there are at least 2 models:
     aModel1 = tracks[0].interpolate_model(ages[0])
