@@ -42,13 +42,14 @@ Contributors
 
   * Daniel R. Reese
 
-**Comments, corrections & suggestions**:
+**Comments, corrections, suggestions, and contributions**:
 
   * Diego Bossini
   * Tiago L. Campante
   * William J. Chaplin
   * Hugo R. Coelho
   * Guy R. Davies
+  * Benoît D. C. P. Herbert
   * James S. Kuszlewicz
   * Martin W. Long
   * Mikkel N. Lund

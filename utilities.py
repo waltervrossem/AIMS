@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# coding: utf-8
 # $Id: utilities.py
-# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
+# Author: Daniel R. Reese <daniel.reese@obspm.fr>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #

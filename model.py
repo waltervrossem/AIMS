@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# coding: utf-8
 # $Id: model.py
-# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
+# Author: Daniel R. Reese <daniel.reese@obspm.fr>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #
@@ -37,23 +38,28 @@ a number of operations, such as:
 
 __docformat__ = 'restructuredtext'
 
+# AIMS configuration:
+import AIMS_configure as config
+
 # various packages needed for AIMS
 import math
 import numpy as np
 import random
 import sys
 from operator import methodcaller
+import matplotlib
+if (config.backend is not None): matplotlib.use(config.backend)
 import matplotlib.pyplot as plt
+from scipy.spatial import Delaunay
 
 # packages from within AIMS:
 import constants
 import utilities
-import AIMS_configure as config
-from ImprovedTessellation import ImprovedTessellation
+import aims_fortran
 
 # Global parameters:
-tol     = 1e-6
-""" tolerance level for points slightly outside the grid """
+tol     = 1e-10
+""" tolerance level for slightly negative interpolation coefficients """
 
 eps     = 1e-6
 """ relative tolerance on parameters used for setting up evolutionary tracks """
@@ -152,9 +158,12 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "Mass"):       return r'Mass, $%sM/M_{\odot}%s$'%(prefix,postfix)
     if (string == "Radius"):     return r'Radius, $%sR/R_{\odot}%s$'%(prefix,postfix)
     if (string == "Luminosity"): return r'Luminosity, $%sL/L_{\odot}%s$'%(prefix,postfix)
-    if (string == "Z"):          return r'Metallicity, $%sZ%s$'%(prefix,postfix)
-    if (string == "Y"):          return r'Helium content, $%sY%s$'%(prefix,postfix)
-    if (string == "X"):          return r'Hydrogen content, $%sX%s$'%(prefix,postfix)
+    if (string == "Z"):          return r'Metallicity, $%sZ_0%s$'%(prefix,postfix)
+    if (string == "Y"):          return r'Helium content, $%sY_0%s$'%(prefix,postfix)
+    if (string == "X"):          return r'Hydrogen content, $%sX_0%s$'%(prefix,postfix)
+    if (string == "Ys"):         return r'Helium content, $%sY_s%s$'%(prefix,postfix)
+    if (string == "zsx_s"):      return r'Ratio, $%s(Z/X)_s%s$'%(prefix,postfix)
+    if (string == "zsx_0"):      return r'Ratio, $%s(Z/X)_0%s$'%(prefix,postfix)
     if (string == "Fe_H"):       return r'Iron content, $%s\mathrm{[Fe/H]}%s$'%(prefix,postfix)
     if (string == "M_H"):        return r'Metal content, $%s\mathrm{[M/H]}%s$'%(prefix,postfix)
     if (string == "Age"):        return r'Age (in Myrs), $%st%s$'%(prefix,postfix)
@@ -166,6 +175,9 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "A_surf"):     return r'$%sA_{\mathrm{surf}}%s$'%(prefix,postfix)
     if (string == "A3_surf"):    return r'$%sA_3^{\mathrm{surf}}%s$'%(prefix,postfix)
     if (string == "Am1_surf"):   return r'$%sA_{-1}^{\mathrm{surf}}%s$'%(prefix,postfix)
+    if (string == "alpha_surf"): return r'$%s\alpha_{\mathrm{surf}}%s$'%(prefix,postfix)
+    if (string == "b_Kjeldsen2008"): return r'$%sb_{\mathrm{Kjeldsen\,et\,al.\,(2008)}}%s$'%(prefix,postfix)
+    if (string == "beta_Sonoi2015"): return r'$%s\beta_{\mathrm{Sonoi\,et\,al.\,(2015)}}%s$'%(prefix,postfix)
 
     try:
         return user_params_latex[string]%(prefix,postfix)
@@ -183,10 +195,15 @@ def get_surface_parameter_names(surface_option):
     :rtype: tuple of strings
     """
         
-    if (surface_option is None):           return ()
-    if (surface_option == "Kjeldsen2008"): return ("A_surf",)
-    if (surface_option == "Ball2014"):     return ("A3_surf",)
-    if (surface_option == "Ball2014_2"):   return ("A3_surf","Am1_surf")
+    if (surface_option is None):                   return ()
+    if (surface_option == "Kjeldsen2008"):         return ("A_surf",)
+    if (surface_option == "Kjeldsen2008_scaling"): return ("A_surf",)
+    if (surface_option == "Kjeldsen2008_2"):       return ("A_surf","b_Kjeldsen2008")
+    if (surface_option == "Ball2014"):             return ("A3_surf",)
+    if (surface_option == "Ball2014_2"):           return ("A3_surf","Am1_surf")
+    if (surface_option == "Sonoi2015"):            return ("alpha_surf",)
+    if (surface_option == "Sonoi2015_scaling"):    return ("alpha_surf",)
+    if (surface_option == "Sonoi2015_2"):          return ("alpha_surf","beta_Sonoi2015")
     sys.exit("ERROR: Unknown surface correction: "+surface_option)
 
 class Model:
@@ -213,14 +230,19 @@ class Model:
         if (string == "Z"):          return self.glb[iz0]
         if (string == "Y"):          return 1.0-self.glb[iz0]-self.glb[ix0]
         if (string == "X"):          return self.glb[ix0]
-        if (string == "Fe_H"):       return self.FeH()
-        if (string == "M_H"):        return self.MH()
+        if (string == "Ys"):         return 1.0-self.glb[user_params_index["Zs"]]-self.glb[user_params_index["Xs"]]
+        if (string == "zsx_s"):      return self.zsx_s
+        if (string == "zsx_0"):      return self.zsx_0
+        if (string == "Fe_H"):       return self.FeH
+        if (string == "M_H"):        return self.MH
         if (string == "Age"):        return self.glb[iage]
         if (string == "Teff"):       return self.glb[itemperature]
         if (string == "Dnu"):        return self.find_large_separation()*self.glb[ifreq_ref]
-        if (string == "numax"):      return self.numax()
+        if (string == "numax"):      return self.numax
         if (string == "Rho"):        return 3.0*self.glb[imass]/(4.0*math.pi*self.glb[iradius]**3)
         if (string == "g"):          return constants.G*self.glb[imass]/self.glb[iradius]**2
+        if (string == "beta_Sonoi2015"): return self.beta_Sonoi2015
+        if (string == "b_Kjeldsen2008"): return self.b_Kjeldsen2008
 
         try:
             return self.glb[user_params_index[string]]
@@ -265,7 +287,34 @@ class Model:
 
     def read_file(self,filename):
         """
-        Read in a set of modes from a file.
+        Read in a set of modes from a file.  This method will either
+        call :py:meth:`read_file_simple` or :py:meth:`read_file_agsm`
+        according to the value of the ``mode_format`` variable in
+        ``AIMS_configure.py``.
+
+        :param filename: name of the file with the modes. The format of this file
+                         is decided by the ``mode_format`` variable in
+                         ``AIMS_configure.py``.
+
+        :type filename: string
+
+        :return: ``True`` if at least one frequency has been discarded (see note below).
+        :rtype: boolean
+
+        .. note::
+          At this stage the frequencies should be expressed in :math:`\mu\mathrm{Hz}`.
+          They will be non-dimensionalised in :py:func:`read_model_list`.
+        """
+
+        if (config.mode_format == "simple"): return self.read_file_simple(filename)
+        if (config.mode_format == "agsm"):   return self.read_file_agsm(filename)
+        sys.exit("ERROR: unrecognised format \""+config.mode_format+"\".\n" \
+                +"       Please choose another value for mode_format in AIMS_configure.py")
+
+    def read_file_simple(self,filename):
+        """
+        Read in a set of modes from a file.  This uses the "simple" format as
+        specified in the ``mode_format`` variable in ``AIMS_configure.py``.
 
         :param filename: name of the file with the modes.
           The file should contain a one-line header followed by five
@@ -281,7 +330,7 @@ class Model:
           - Frequencies above :math:`1.1\\nu_{\\mathrm{cut-off}}` are discarded.
         """
 
-        freqlim = config.cutoff*self.cutoff()
+        freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
         freqfile = open(filename)
         freqfile.readline() # skip head
@@ -291,7 +340,7 @@ class Model:
             columns = line.split()
             n = int(columns[1])
             freq = utilities.to_float(columns[2])
-            # remove frequencies above 1.1*nu_{cut-off}
+            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
             if (freq > freqlim): 
                 exceed_freqlim = True
                 continue
@@ -301,6 +350,54 @@ class Model:
         self.modes = np.array(mode_temp,dtype=modetype)
 
         return exceed_freqlim
+
+    def read_file_agsm(self,filename):
+        """
+        Read in a set of modes from a file.  This uses the "agsm" format as
+        specified in the ``mode_format`` variable in ``AIMS_configure.py``.
+
+        :param filename: name of the file with the modes. This file is a
+            binary fortran "agsm" file produced by the ADIPLS code.  See
+            instructions to the ADIPLS code for a description of this
+            format.
+
+        :type filename: string
+
+        :return: ``True`` if at least one frequency has been discarded (see note below).
+        :rtype: boolean
+        """
+
+        narr,larr,farr,iarr,nn,exceed_freqlim =  \
+            aims_fortran.read_file_agsm(filename,config.npositive,config.agsm_cutoff, \
+            config.cutoff*self.cutoff)
+        self.modes = np.array(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn]),dtype=modetype)
+
+        return exceed_freqlim
+
+    def write_file_simple(self,filename):
+        """
+        Write a set of modes into a file using the "simple" format as
+        described in :py:meth:`read_file_simple`.
+
+        :param filename: name of the file where the modes should
+                         be written.
+
+        :type filename: string
+
+        .. note::
+          - Frequencies are non-dimensional and should expressed in muHz
+        """
+
+        output = open(filename,"w")
+        # write header
+        output.write("# %1s %3s %22s %6s %22s\n"%("l","n","nu_theo (muHz)","unused","Inertia"))
+        for i in xrange(self.modes.shape[0]):
+            output.write("  %1d %3d %22.15e    0.0 %22.15e\n"%( \
+                self.modes["l"][i],                        \
+                self.modes["n"][i],                        \
+                self.modes["freq"][i]*self.glb[ifreq_ref], \
+                self.modes["inertia"][i]))
+        output.close()
 
     def append_modes(self,modes):
         """
@@ -360,8 +457,19 @@ class Model:
           
           - ``None``: no corrections are applied
           - ``"Kjeldsen2008"``: apply a correction based on Kjeldsen et al. (2008)
+          - ``"Kjeldsen2008_scaling"``: apply a correction based on Kjeldsen et al. (2008).
+                                        The exponent is based on a scaling relation from
+                                        Sonoi et al. (2015).
+          - ``"Kjeldsen2008_2"``: apply a correction based on Kjeldsen et al. (2008).
+                                        The exponent is a free parameter.
           - ``"Ball2014"``:     apply a one-term correction based on Ball and Gizon (2014)
           - ``"Ball2014_2"``:   apply a two-term correction based on Ball and Gizon (2014)
+          - ``"Sonoi2015"``: apply a correction based on Sonoi et al. (2015)
+          - ``"Sonoi2015_scaling"``: apply a correction based on Sonoi et al. (2015)
+                                        The exponent is based on a scaling relation from
+                                        Sonoi et al. (2015).
+          - ``"Sonoi2015_2"``: apply a correction based on Sonoi et al. (2015)
+                                        The exponent is a free parameter.
 
         :param a: amplitude parameters which intervene in the surface correction
 
@@ -389,15 +497,31 @@ class Model:
           
           - ``None``: no corrections are applied
           - ``"Kjeldsen2008"``: apply a correction based on Kjeldsen et al. (2008)
-          - ``"Ball2014"``: apply a one-term correction based on Ball and Gizon (2014)
-          - ``"Ball2014_2"``: apply a two-term correction based on Ball and Gizon (2014)
+          - ``"Kjeldsen2008_scaling"``: apply a correction based on Kjeldsen et al. (2008).
+                                        The exponent is based on a scaling relation from
+                                        Sonoi et al. (2015).
+          - ``"Kjeldsen2008_2"``: apply a correction based on Kjeldsen et al. (2008).
+                                        The exponent is a free parameter.
+          - ``"Ball2014"``:     apply a one-term correction based on Ball and Gizon (2014)
+          - ``"Ball2014_2"``:   apply a two-term correction based on Ball and Gizon (2014)
+          - ``"Sonoi2015"``: apply a correction based on Sonoi et al. (2015)
+          - ``"Sonoi2015_scaling"``: apply a correction based on Sonoi et al. (2015)
+                                        The exponent is based on a scaling relation from
+                                        Sonoi et al. (2015).
+          - ``"Sonoi2015_2"``: apply a correction based on Sonoi et al. (2015)
+                                        The exponent is a free parameter.
 
         :param a: parameters which intervene in the surface correction.  According to
           the correction they take on the following meanings:
 
-          - ``"Kjeldsen2008"``: a[0]*freq**b_Kjeldsen2008
-          - ``"Ball2014"``:     a[0]*freq**3/I 
-          - ``"Ball2014_2"``:   a[0]*freq**3/I + a[1]/(freq*I)
+          - ``"Kjeldsen2008"``:         a[0]*freq**b_Kjeldsen2008
+          - ``"Kjeldsen2008_scaling"``: a[0]*freq**b_scaling
+          - ``"Kjeldsen2008_2"``:       a[0]*freq**a[1]
+          - ``"Ball2014"``:             a[0]*freq**3/I 
+          - ``"Ball2014_2"``:           a[0]*freq**3/I + a[1]/(freq*I)
+          - ``"Sonoi2015"``:            a[0]*[1 - 1/(1 + (nu/numax)**beta_Sonoi2015)]
+          - ``"Sonoi2015_scaling"``:    a[0]*[1 - 1/(1 + (nu/numax)**beta_scaling)]
+          - ``"Sonoi2015_2"``:          a[0]*[1 - 1/(1 + (nu/numax)**a[1])]
 
         :type surface_option: string
         :type a: array-like
@@ -410,12 +534,42 @@ class Model:
           result, which avoids modifications of the original frequencies and inertias.
         """
         
-        if (surface_option is None):           return np.zeros(len(self.modes), dtype=ftype)
-        if (surface_option == "Kjeldsen2008"): return a[0]*self.modes['freq']**config.b_Kjeldsen2008
-        if (surface_option == "Ball2014"):     return a[0]*self.modes['freq']**3/self.modes['inertia']
-        if (surface_option == "Ball2014_2"):   return a[0]*self.modes['freq']**3/self.modes['inertia'] \
-                                                    + a[1]/(self.modes['freq']*self.modes['inertia'])
+        if (surface_option is None):                   return np.zeros(len(self.modes), dtype=ftype)
+        if (surface_option == "Kjeldsen2008"):         return a[0]*self.modes['freq']**config.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_scaling"): return a[0]*self.modes['freq']**self.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_2"):       return a[0]*self.modes['freq']**a[1]
+        if (surface_option == "Ball2014"):             return a[0]*self.modes['freq']**3/self.modes['inertia']
+        if (surface_option == "Ball2014_2"):           return a[0]*self.modes['freq']**3/self.modes['inertia'] \
+                                                            + a[1]/(self.modes['freq']*self.modes['inertia'])
+        if (surface_option == "Sonoi2015"):            return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
+                                                            / self.numax)**config.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_scaling"):    return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
+                                                            / self.numax)**self.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
+                                                            / self.numax)**a[1]))
         sys.exit("ERROR: Unknown surface correction: "+surface_option)
+
+    @property
+    def b_Kjeldsen2008(self):
+        """
+        Return the exponent for the Kjeldsen et al. (2008) surface correction
+        recipe, as calculated based on the Sonoi et al. (2015) scaling relation.
+
+        :return: the Kjeldsen et al. exponent
+        :rtype: float
+        """
+        return 10.0**(-3.16*self.string_to_param("log_Teff") + 0.184*self.string_to_param("log_g")+11.7)
+ 
+    @property
+    def beta_Sonoi2015(self):
+        """
+        Return the exponent for the Sonoi et al. (2015) surface correction
+        recipe, as calculated based on the Sonoi et al. (2015) scaling relation.
+
+        :return: the Kjeldsen et al. exponent
+        :rtype: float
+        """
+        return 10.0**(-3.86*self.string_to_param("log_Teff") + 0.235*self.string_to_param("log_g")+14.2)
 
     def multiply_modes(self,constant):
         """
@@ -505,11 +659,12 @@ class Model:
         else:
             return (nu/dnu-n)/one
 
+    @property
     def FeH(self):
         """
         Find [Fe/H] value for model.
 
-        The conversion from (x,z) to [Fe/H] is performed using the
+        The conversion from (Xs,Zs) to [Fe/H] is performed using the
         following formula:
 
             :math:`\\mathrm{[Fe/H] = \\frac{[M/H]}{A_{FeH}}  \
@@ -523,13 +678,14 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
 
-        return math.log10(self.glb[iz0]*constants.solar_x/(self.glb[ix0]*constants.solar_z))/constants.A_FeH
+        return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))/constants.A_FeH
 
+    @property
     def MH(self):
         """
         Find [M/H] value for model.
 
-        The conversion from (x,z) to [M/H] is performed using the
+        The conversion from (Xs,Zs) to [M/H] is performed using the
         following formula:
 
             :math:`\\mathrm{[M/H] = \\log_{10} \\left(\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)}`
@@ -541,8 +697,30 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
 
-        return math.log10(self.glb[iz0]*constants.solar_x/(self.glb[ix0]*constants.solar_z))
+        return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))
 
+    @property
+    def zsx_s(self):
+        """
+        Find the Zs/Xs value
+
+        :return: the Zs/Xs value
+        :rtype: float
+        """
+
+        return self.glb[user_params_index["Zs"]]/self.glb[user_params_index["Xs"]]
+
+    @property
+    def zsx_0(self):
+        """
+        Find the Z0/X0 value
+
+        :return: the Z0/X0 value
+        :rtype: float
+        """
+        return self.glb[iz0]/self.glb[ix0]
+
+    @property
     def numax(self):
         """
         Find :math:`\\nu_{\\mathrm{max}}` for model.
@@ -566,6 +744,7 @@ class Model:
                                     /((self.glb[iradius]/constants.solar_radius)**2 \
                                     *math.sqrt(self.glb[itemperature]/constants.solar_temperature))
 
+    @property
     def cutoff(self):
         """
         Find :math:`\\nu_{\\mathrm{cut-off}}` for model.
@@ -618,12 +797,13 @@ class Model:
         print "X:                            %.4f" % self.glb[ix0]
         for (name, latex_name) in config.user_params:
             print "{0:29} {1:.5e}".format(name,self.glb[user_params_index[name]])
-        print "Modes:"
-        size = len(self.n)
+        print "Modes (in muHz):"
+        size = self.modes.shape[0]
         for i in xrange(size):
             print "  (n,l,freq,IK) = (%d, %d, %.15f, %.5e)" % \
                    (self.modes['n'][i], self.modes['l'][i],   \
-                    self.modes['freq'][i], self.modes['inertia'][i])
+                    self.modes['freq'][i]*self.glb[ifreq_ref],\
+                    self.modes['inertia'][i])
 
 class Track:
     """
@@ -701,6 +881,20 @@ class Track:
 
         return all(self.models[i].glb[iage] <= self.models[i+1].glb[iage] for i in xrange(len(self.models)-1))
 
+    def duplicate_ages(self):
+        """
+        Check to see if you track contains models with duplicate ages.
+
+        :return: ``True`` if there are duplicate age(s)
+        :rtype: boolean
+
+        .. warning::
+            This method should only be applied after the track has been
+            sorted.
+        """
+
+        return any(self.models[i].glb[iage] == self.models[i+1].glb[iage] for i in xrange(len(self.models)-1))
+
     def interpolate_model(self, age):
         """
         Return a model at a given age which is obtained using linear interpolation.
@@ -730,6 +924,7 @@ class Track:
                 istart = itemp
         mu = (age - self.models[istart].glb[iage]) \
            / (self.models[istop].glb[iage] - self.models[istart].glb[iage])
+
         return combine_models(self.models[istart],1.0-mu,self.models[istop],mu)
 
     def find_combination(self, age, coef):
@@ -978,6 +1173,14 @@ class Model_grid:
         # sort tracks:
         for track in self.tracks: track.sort()
 
+        # sanity check:
+        for track in self.tracks:
+            if track.duplicate_ages():
+                print "ERROR: the track ",track.grid_params," = ",track.params
+                print "       has models with the same age.  Please remove"
+                print "       duplicate models."
+                sys.exit(1)
+
         # update list of indices:
         self.ndx = range(len(self.tracks))
         
@@ -987,7 +1190,7 @@ class Model_grid:
     def tessellate(self):
         """Apply Delauny triangulation to obtain the grid tessellation."""
 
-        self.tessellation = ImprovedTessellation(self.grid)
+        self.tessellation = Delaunay(self.grid)
         
     def plot_tessellation(self):
         """
@@ -1037,7 +1240,7 @@ class Model_grid:
         """
 
         ndx1, ndx2 = self.find_partition()
-        tessellation = ImprovedTessellation(self.grid[ndx2,:])
+        tessellation = Delaunay(self.grid[ndx2,:])
 
         # initialisation
         results = []
@@ -1177,23 +1380,18 @@ def combine_models(model1,coef1,model2,coef2):
     # glb[ifreq_ref] will be correctly defined when the Model() constructor is invoked
 
     # interpolate spectra:    
-    modes = []
-    size1 = len(model1.modes)
-    size2 = len(model2.modes)
-    i1 = i2 = 0
-    while((i1 < size1) and (i2 < size2)):
-        if (model1.modes['l'][i1] < model2.modes['l'][i2]): i1+=1; continue
-        if (model1.modes['l'][i1] > model2.modes['l'][i2]): i2+=1; continue
-        if (model1.modes['n'][i1] < model2.modes['n'][i2]): i1+=1; continue
-        if (model1.modes['n'][i1] > model2.modes['n'][i2]): i2+=1; continue
-        # now the two modes have the same n and l values:
-        modes.append((model1.modes['n'][i1],model1.modes['l'][i1], \
-                coef1*model1.modes['freq'][i1] + coef2*model2.modes['freq'][i2], \
-                coef1*model1.modes['inertia'][i1] + coef2*model2.modes['inertia'][i2]))
-        i1+=1
-        i2+=1
+    size3 = max(model1.modes.shape[0],model2.modes.shape[0])
+    nvalues = np.empty((size3,),dtype=ntype)
+    lvalues = np.empty((size3,),dtype=ltype)
+    fvalues = np.empty((size3,),dtype=ftype)
+    ivalues = np.empty((size3,),dtype=ftype)
 
-    return Model(glb, _modes=modes)
+    nvalues,lvalues,fvalues,ivalues,n3 = aims_fortran.combine_modes( \
+            coef1,model1.modes['n'],model1.modes['l'],model1.modes['freq'],model1.modes['inertia'], \
+            coef2,model2.modes['n'],model2.modes['l'],model2.modes['freq'],model2.modes['inertia'], \
+            nvalues,lvalues,fvalues,ivalues)
+
+    return Model(glb, _modes=zip(nvalues[0:n3],lvalues[0:n3],fvalues[0:n3],ivalues[0:n3]))
 
 def compare_models(model1,model2):
     """
@@ -1229,8 +1427,8 @@ def compare_models(model1,model2):
     n_non_radial_numax = 0
     result = np.zeros((6+nglb,),dtype=gtype)
     # define frequency interval around numax:
-    numax = 0.5*(model1.numax()/model1.glb[ifreq_ref] \
-          +      model2.numax()/model2.glb[ifreq_ref])
+    numax = 0.5*(model1.numax/model1.glb[ifreq_ref] \
+          +      model2.numax/model2.glb[ifreq_ref])
     a = 0.8*numax
     b = 1.2*numax
 
@@ -1325,8 +1523,15 @@ def find_interpolation_coefficients(grid,pt,tessellation,ndx):
     if (pt is None): return None, None
     if (tessellation is None): return None, None
     pt1 = np.asarray(pt[0:-1],dtype=gtype)
-    val = tessellation.find_simplex(pt1)[0]
+    val = tessellation.find_simplex(pt1.reshape((1,grid.ndim)))[0]
+
+    # see if point is outside tessellation
+    if (val == -1): return None, None
     mat = tessellation.transform[val]
+
+    # make sure the transformation matrix is defined:
+    if (math.isnan(np.sum(mat))): return None, None
+
     b = mat[:grid.ndim].dot(pt1-mat[grid.ndim])
     coefs = np.r_[b, 1.0-b.sum()]
     ind = tessellation.simplices[val]
@@ -1339,7 +1544,8 @@ def find_interpolation_coefficients(grid,pt,tessellation,ndx):
     coefs_out = []
     tracks = []
     for coef,i in zip(coefs,ind):
-        if (coef != 0.0):
+        # remove negative coefficients to avoid problems.
+        if (coef > 0.0):
             coefs_out.append(coef)
             tracks.append(grid.tracks[ndx[i]])
 
@@ -1401,7 +1607,7 @@ def find_ages(coefs, tracks, age):
     ages = []
     for coef,track in zip(coefs,tracks):
         ages.append((1.0-eta)*track.models[0].glb[iage] + eta*track.models[-1].glb[iage])
-    
+
     return ages
 
 def interpolate_model(grid,pt,tessellation,ndx):

@@ -66,6 +66,14 @@ Format of a file with a list of models and properties:
 Format of a file with theoretical frequencies:
 ----------------------------------------------
 
+  As of version 1.2, AIMS is able to read two different formats
+  when reading the theoretical frequencies from a file.  The first
+  is a text file described below.  The second is the grand summary
+  file from `ADIPLS <http://astro.phys.au.dk/~jcd/adipack.n/>`_. 
+  This is a FORTRAN binary format described on pages 32 and 33 of the ADIPLS 
+  `documentation <http://astro.phys.au.dk/~jcd/adipack.n/notes/adiab_prog.ps.gz>`_.
+  The following describes files in the text format:
+
   Description:
     * the first line is a header (and is skipped)
     * the following lines contain five columns which correspond

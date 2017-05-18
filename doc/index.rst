@@ -16,13 +16,13 @@ Contents
    acknowledgements
    requirements
    download
+   installation
    usage
    formats
    AIMS
    model
    constants
    utilities
-   improved_tessellation
    plot_interpolation_test
 
 Indices and tables

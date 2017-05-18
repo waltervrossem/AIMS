@@ -12,3 +12,4 @@ The following python packages are needed for AIMS:
   * `numpy <http://www.numpy.org/>`_
   * `matplotlib <http://matplotlib.org/>`_
   * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
+  * `f2py <https://github.com/pearu/f2py/wiki>`_

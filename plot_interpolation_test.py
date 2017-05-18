@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# coding: utf-8
 # $Id: plot_interpolation_test.py
-# Author: Daniel R. Reese <dreese@bison.ph.bham.ac.uk>
+# Author: Daniel R. Reese <daniel.reese@obspm.fr>
 # Copyright (C) Daniel R. Reese and contributors
 # Copyright license: GNU GPL v3.0
 #
@@ -55,6 +56,9 @@ This utility allows various types of plots:
     number of the model along the evolutionary track
   - ``ndim`` = the number of dimensions in the grid (including age)
   - ``nglb`` = the number of global parameters for stellar models in the grid
+
+.. warning::
+   This plot utility only works with 3 dimensional grids (incl. the age dimension).
 """
 
 __docformat__ = 'restructuredtext'
@@ -109,7 +113,7 @@ def plot3D(results,error_ndx,tpe="max",title=None,truncate=0):
       evolutionary track.  Options include:
 
       - "max": corresponds to taking the maximum value.
-      - "avg": takes the mean-square value.
+      - "avg": takes the root mean-square value.
 
     :param title: the title of the plot
     :param truncate: (default = 0): specifies how many models should be omitted
@@ -396,13 +400,20 @@ if __name__ == "__main__":
       The user may want to edit this.
     """
 
-    assert (len(sys.argv) > 1), "Usage: plot_interpolation_test.py data_file"
+    if (len(sys.argv) < 2):
+        print "Usage: plot_interpolation_test.py data_file"
+        sys.exit(1)
 
     filename = sys.argv[1]
 
     input_data = open(filename,"r")
     [ndim, nglb, titles, grid, ndx1, ndx2, tessellation, results_age1, \
         results_age2, results_track] = dill.load(input_data)
+
+    if (ndim != 3):
+        print "I'm sorry, but I can only plot handle 3D grids." 
+        sys.exit(1)
+
     results_age = [results_age1, results_age2]
     input_data.close()
 
