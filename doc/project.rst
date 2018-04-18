@@ -45,15 +45,18 @@ Contributors
 **Comments, corrections, suggestions, and contributions**:
 
   * Diego Bossini
+  * Gael Buldgen
   * Tiago L. Campante
   * William J. Chaplin
   * Hugo R. Coelho
   * Guy R. Davies
   * Benoît D. C. P. Herbert
   * James S. Kuszlewicz
+  * Yveline Lebreton
   * Martin W. Long
   * Mikkel N. Lund
   * Andrea Miglio
+  * Ben Rendle
 
 Supplementary material
 ----------------------

@@ -58,11 +58,14 @@ import utilities
 import aims_fortran
 
 # Global parameters:
-tol     = 1e-10
-""" tolerance level for slightly negative interpolation coefficients """
+tol     = 1e-6
+""" tolerance level for points slightly outside the grid """
 
 eps     = 1e-6
 """ relative tolerance on parameters used for setting up evolutionary tracks """
+
+log0    = -1e150
+""" value which is returned when log(0) is calculated (rather than causing an error) """
 
 ntype = np.int16
 """ type used for the n values """
@@ -166,6 +169,7 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "zsx_0"):      return r'Ratio, $%s(Z/X)_0%s$'%(prefix,postfix)
     if (string == "Fe_H"):       return r'Iron content, $%s\mathrm{[Fe/H]}%s$'%(prefix,postfix)
     if (string == "M_H"):        return r'Metal content, $%s\mathrm{[M/H]}%s$'%(prefix,postfix)
+    if (string == "M_H0"):       return r'Initial metal content, $%s\mathrm{[M/H]}_0%s$'%(prefix,postfix)
     if (string == "Age"):        return r'Age (in Myrs), $%st%s$'%(prefix,postfix)
     if (string == "Teff"):       return r'$%sT_{\mathrm{eff}}%s$ (in K)'%(prefix,postfix)
     if (string == "Dnu"):        return r'Large separation (in $\mu$Hz), $%s\Delta \nu%s$'%(prefix,postfix)
@@ -235,6 +239,7 @@ class Model:
         if (string == "zsx_0"):      return self.zsx_0
         if (string == "Fe_H"):       return self.FeH
         if (string == "M_H"):        return self.MH
+        if (string == "M_H0"):       return self.MH0
         if (string == "Age"):        return self.glb[iage]
         if (string == "Teff"):       return self.glb[itemperature]
         if (string == "Dnu"):        return self.find_large_separation()*self.glb[ifreq_ref]
@@ -287,10 +292,10 @@ class Model:
 
     def read_file(self,filename):
         """
-        Read in a set of modes from a file.  This method will either
-        call :py:meth:`read_file_simple` or :py:meth:`read_file_agsm`
-        according to the value of the ``mode_format`` variable in
-        ``AIMS_configure.py``.
+        Read in a set of modes from a file.  This method will either call
+        :py:meth:`read_file_CLES`, :py:meth:`read_file_MESA`, or
+        :py:meth:`read_file_agsm` according to the value of the ``mode_format``
+        variable in ``AIMS_configure.py``.
 
         :param filename: name of the file with the modes. The format of this file
                          is decided by the ``mode_format`` variable in
@@ -306,19 +311,21 @@ class Model:
           They will be non-dimensionalised in :py:func:`read_model_list`.
         """
 
-        if (config.mode_format == "simple"): return self.read_file_simple(filename)
+        if (config.mode_format == "simple"): return self.read_file_CLES(filename) # (yuk!) for retrocompatibility 
+        if (config.mode_format == "CLES"):   return self.read_file_CLES(filename)
+        if (config.mode_format == "MESA"):   return self.read_file_MESA(filename)
         if (config.mode_format == "agsm"):   return self.read_file_agsm(filename)
         sys.exit("ERROR: unrecognised format \""+config.mode_format+"\".\n" \
                 +"       Please choose another value for mode_format in AIMS_configure.py")
 
-    def read_file_simple(self,filename):
+    def read_file_CLES(self,filename):
         """
-        Read in a set of modes from a file.  This uses the "simple" format as
+        Read in a set of modes from a file.  This uses the "simple" or "CLES" format as
         specified in the ``mode_format`` variable in ``AIMS_configure.py``.
 
         :param filename: name of the file with the modes.
           The file should contain a one-line header followed by five
-          columns which correspond to l, n, frequency, dfreq_var, inertia.
+          columns which correspond to l, n, frequency, unused, inertia.
 
         :type filename: string
 
@@ -326,8 +333,8 @@ class Model:
         :rtype: boolean
 
         .. note::
-          - The dfreq_var column is discarded.
-          - Frequencies above :math:`1.1\\nu_{\\mathrm{cut-off}}` are discarded.
+          - The fourth column is discarded.
+          - Frequencies above `config.cutoff`*:math:`\\nu_{\\mathrm{cut-off}}` are discarded.
         """
 
         freqlim = config.cutoff*self.cutoff
@@ -351,6 +358,47 @@ class Model:
 
         return exceed_freqlim
 
+    def read_file_MESA(self,filename):
+        """
+        Read in a set of modes from a file.  This uses the GYRE (i.e. MESA) format as
+        specified in the ``mode_format`` variable in ``AIMS_configure.py``.
+
+        :param filename: name of the file with the modes.
+          The file should contain a seven-line header followed by various
+          columns which contain l, n, frequency, and inertia for each pulsation
+          mode.
+
+        :type filename: string
+
+        :return: ``True`` if at least one frequency has been discarded (see note below).
+        :rtype: boolean
+
+        .. note::
+          - Frequencies above `config.cutoff`*:math:`\\nu_{\\mathrm{cut-off}}` are discarded.
+        """
+
+        freqlim = config.cutoff*self.cutoff
+        exceed_freqlim = False
+        freqfile = open(filename)
+        for i in range(7):
+            freqfile.readline()
+        mode_temp = []
+        for line in freqfile:
+            line = line.strip()
+            columns = line.split()
+            n = int(columns[1])
+            freq = utilities.to_float(columns[4])
+            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+            if (freq > freqlim):
+                exceed_freqlim = True
+                continue
+            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+            mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[7])))
+        freqfile.close()
+        self.modes = np.array(mode_temp,dtype=modetype)
+
+        return exceed_freqlim
+
     def read_file_agsm(self,filename):
         """
         Read in a set of modes from a file.  This uses the "agsm" format as
@@ -365,6 +413,9 @@ class Model:
 
         :return: ``True`` if at least one frequency has been discarded (see note below).
         :rtype: boolean
+
+        .. note::
+          - Frequencies above `config.cutoff`*:math:`\\nu_{\\mathrm{cut-off}}` are discarded.
         """
 
         narr,larr,farr,iarr,nn,exceed_freqlim =  \
@@ -385,13 +436,13 @@ class Model:
         :type filename: string
 
         .. note::
-          - Frequencies are non-dimensional and should expressed in muHz
+          - The output frequencies are expressed in :math:`\mathrm{\mu Hz}`
         """
 
         output = open(filename,"w")
         # write header
         output.write("# %1s %3s %22s %6s %22s\n"%("l","n","nu_theo (muHz)","unused","Inertia"))
-        for i in xrange(self.modes.shape[0]):
+        for i in range(self.modes.shape[0]):
             output.write("  %1d %3d %22.15e    0.0 %22.15e\n"%( \
                 self.modes["l"][i],                        \
                 self.modes["n"][i],                        \
@@ -431,7 +482,7 @@ class Model:
         """
 
         ind = [] 
-        for i in xrange(len(self.modes)-1,1,-1):
+        for i in range(len(self.modes)-1,1,-1):
             if ((self.modes['n'][i] == self.modes['n'][i-1]) and \
                 (self.modes['l'][i] == self.modes['l'][i-1])):
                 ind.append(i)
@@ -597,7 +648,7 @@ class Model:
         """
 
         size = len(self.modes)
-        for i in xrange(size):
+        for i in range(size):
             if ((self.modes['n'][i] == ntarget) and (self.modes['l'][i] == ltarget)):
                 return self.modes['freq'][i]
         return np.nan
@@ -649,7 +700,7 @@ class Model:
 
         dnu = self.find_large_separation()
         one = n = nu = 0.0
-        for i in xrange(len(self.modes)):
+        for i in range(len(self.modes)):
             if (self.modes['l'][i] != ltarget): continue
             one   += 1.0
             n     += self.modes['n'][i]
@@ -678,7 +729,10 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
 
-        return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))/constants.A_FeH
+        try:
+            return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))/constants.A_FeH
+        except ValueError:
+            return log0 # a rather low value
 
     @property
     def MH(self):
@@ -697,7 +751,32 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
 
-        return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))
+        try:
+            return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))
+        except ValueError:
+            return log0 # a rather low value
+
+    @property
+    def MH0(self):
+        """
+        Find initial [M/H] value for model.
+
+        The conversion from (X,Z) to [M/H] is performed using the
+        following formula:
+
+            :math:`\\mathrm{[M/H] = \\log_{10} \\left(\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)}`
+
+        :return: the :math:`\\mathrm{[M/H]}` value
+        :rtype: float
+
+        .. note::
+          The relevant values are given in :py:mod:`constants`
+        """
+
+        try:
+            return math.log10(self.glb[iz0]*constants.solar_x/(self.glb[ix0]*constants.solar_z))
+        except ValueError:
+            return log0 # a rather low value
 
     @property
     def zsx_s(self):
@@ -776,7 +855,7 @@ class Model:
         :rtype: boolean
         """
 
-        for i in xrange(len(self.modes)-1):
+        for i in range(len(self.modes)-1):
             if (self.modes['l'][i] > 0): continue
             if (self.modes['l'][i] != self.modes['l'][i+1]): continue
             if (self.modes['freq'][i] > self.modes['freq'][i+1]):
@@ -786,24 +865,24 @@ class Model:
     def print_me(self):
         """ Print classical and seismic characteristics of the model to standard output."""
 
-        print "----- Model:",self.name," -----"
-        print "Mass (in M_sun):              %.5f" % (self.glb[imass]/constants.solar_mass)
-        print "Radius (in R_sun):            %.5f" % (self.glb[iradius]/constants.solar_radius)
-        print "Reference frequency (in uHz): %.3f" % self.glb[ifreq_ref]
-        print "Temperature (in K):           %.1f" % self.glb[itemperature]
-        print "Luminosity (in L_sun):        %.3g" % (self.glb[iluminosity]/constants.solar_luminosity)
-        print "Age (in Myrs):                %.2f" % self.glb[iage]
-        print "Z:                            %.4f" % self.glb[iz0]
-        print "X:                            %.4f" % self.glb[ix0]
+        print("----- Model: "+str(self.name)+" -----")
+        print("Mass (in M_sun):              %.5f" % (self.glb[imass]/constants.solar_mass))
+        print("Radius (in R_sun):            %.5f" % (self.glb[iradius]/constants.solar_radius))
+        print("Reference frequency (in uHz): %.3f" % self.glb[ifreq_ref])
+        print("Temperature (in K):           %.1f" % self.glb[itemperature])
+        print("Luminosity (in L_sun):        %.3g" % (self.glb[iluminosity]/constants.solar_luminosity))
+        print("Age (in Myrs):                %.2f" % self.glb[iage])
+        print("Z:                            %.4f" % self.glb[iz0])
+        print("X:                            %.4f" % self.glb[ix0])
         for (name, latex_name) in config.user_params:
-            print "{0:29} {1:.5e}".format(name,self.glb[user_params_index[name]])
-        print "Modes (in muHz):"
+            print("{0:29} {1:.5e}".format(name,self.glb[user_params_index[name]]))
+        print("Modes (in muHz):")
         size = self.modes.shape[0]
-        for i in xrange(size):
-            print "  (n,l,freq,IK) = (%d, %d, %.15f, %.5e)" % \
+        for i in range(size):
+            print("  (n,l,freq,IK) = (%d, %d, %.15f, %.5e)" % \
                    (self.modes['n'][i], self.modes['l'][i],   \
                     self.modes['freq'][i]*self.glb[ifreq_ref],\
-                    self.modes['inertia'][i])
+                    self.modes['inertia'][i]))
 
 class Track:
     """
@@ -827,7 +906,7 @@ class Track:
         self.grid_params = grid_params
         """Names of the parameters used to construct the grid"""
 
-        self.params = map(aModel.string_to_param,self.grid_params)
+        self.params = utilities.my_map(aModel.string_to_param,self.grid_params)
         """Parameters which characterise this evolutionary track"""
 
         self.nmodes = len(aModel.modes)
@@ -861,9 +940,12 @@ class Track:
         :rtype: boolean
         """
 
-        params_bis = map(aModel.string_to_param,self.grid_params)
+        params_bis = utilities.my_map(aModel.string_to_param,self.grid_params)
         for param1, param2 in zip(self.params, params_bis):
-            if (abs(param1/param2 - 1.0) > eps): return False
+            if (param2 == 0):
+                if (abs(param1-param2) > eps): return False
+            else:
+                if (abs(param1/param2 - 1.0) > eps): return False
         return True
 
     def sort(self):
@@ -879,7 +961,7 @@ class Track:
         :rtype: boolean
         """
 
-        return all(self.models[i].glb[iage] <= self.models[i+1].glb[iage] for i in xrange(len(self.models)-1))
+        return all(self.models[i].glb[iage] <= self.models[i+1].glb[iage] for i in range(len(self.models)-1))
 
     def duplicate_ages(self):
         """
@@ -893,7 +975,7 @@ class Track:
             sorted.
         """
 
-        return any(self.models[i].glb[iage] == self.models[i+1].glb[iage] for i in xrange(len(self.models)-1))
+        return any(self.models[i].glb[iage] == self.models[i+1].glb[iage] for i in range(len(self.models)-1))
 
     def interpolate_model(self, age):
         """
@@ -917,7 +999,7 @@ class Track:
         istart = 0
         istop  = len(self.models)-1
         while (istop > istart+1):
-            itemp = (istop+istart)/2
+            itemp = (istop+istart)//2
             if (age < self.models[itemp].glb[iage]):
                 istop = itemp
             else:
@@ -952,7 +1034,7 @@ class Track:
         istart = 0
         istop  = len(self.models)-1
         while (istop > istart+1):
-            itemp = (istop+istart)/2
+            itemp = (istop+istart)//2
             if (age < self.models[itemp].glb[iage]):
                 istop = itemp
             else:
@@ -1006,6 +1088,31 @@ class Track:
             if (lmax > lmax_total): lmax_total = lmax
         return nmin_total, nmax_total, lmin_total, lmax_total
 
+    @property
+    def age_range(self):
+        """
+        Provides the age range for an evolutionary track.
+        """
+
+        return abs(self.models[-1].glb[iage] - self.models[0].glb[iage])
+
+    @property
+    def age_lower(self):
+        """
+        Provides the lowest age an evolutionary track.
+        """
+
+        return min(self.models[-1].glb[iage], self.models[0].glb[iage])
+
+
+    @property
+    def age_upper(self):
+        """
+        Provides the highest age for an evolutionary track.
+        """
+
+        return max(self.models[-1].glb[iage], self.models[0].glb[iage])
+
     def test_interpolation(self, nincr):
         """
         Test accuracy of interpolation along evolutionary track.
@@ -1031,7 +1138,7 @@ class Track:
         result = np.zeros((nmodels-2*nincr,ndim+nglb+6),dtype=gtype)
 
         # loop through all models:
-        for i in xrange(nincr,nmodels-nincr):
+        for i in range(nincr,nmodels-nincr):
             # carry out interpolation
             mu = (self.models[i].glb[iage]   - self.models[i-nincr].glb[iage]) \
                / (self.models[i+nincr].glb[iage] - self.models[i-nincr].glb[iage])
@@ -1162,8 +1269,10 @@ class Model_grid:
             nmodes  += len(aModel.modes)
             if (not exceed_freqlim):
                 models_small_spectra.append(aModel.name)
-            print nmodels, nmodes
+            print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
+            print('\033[2A') # backup two line - might not work in all terminals
         listfile.close()
+        print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
 
         # right list of models with spectra which are too small in a file:
         output = open("models_small_spectra","w")
@@ -1176,9 +1285,11 @@ class Model_grid:
         # sanity check:
         for track in self.tracks:
             if track.duplicate_ages():
-                print "ERROR: the track ",track.grid_params," = ",track.params
-                print "       has models with the same age.  Please remove"
-                print "       duplicate models."
+                print("ERROR: the track %s = %s"%(str(track.grid_params),str(track.params)))
+                print("       has models with the same age.  Please remove")
+                print("       duplicate models.")
+                #for i in range(len(track.models)):
+                #    print("Model[%d]: %e"%(i,track.models[i].glb[iage]))
                 sys.exit(1)
 
         # update list of indices:
@@ -1187,11 +1298,42 @@ class Model_grid:
         # need to create grid from scratch since tracks have been sorted.
         self.grid = np.asarray([track.params for track in self.tracks])
 
+    def range(self,aParam):
+        """
+        Find range of values for the input parameter.
+
+        :param aParam: name of the parameter for which to find the range
+        :type aParam: str
+
+        .. warning::
+         The input parameter can only be one of the grid parameters or an
+         age/mHe parameter.
+        """
+
+        if (aParam=="Age"):
+            param_min = self.tracks[0].age_lower
+            param_max = self.tracks[0].age_upper
+
+            for track in self.tracks:
+                if (param_min > track.age_lower): param_min = track.age_lower
+                if (param_max < track.age_upper): param_max = track.age_upper 
+
+        else:
+            i = self.grid_params.index(aParam)
+            param_min = self.tracks[0].params[i]
+            param_max = self.tracks[0].params[i]
+
+            for track in self.tracks:
+                if (param_min > track.params[i]): param_min = track.params[i] 
+                if (param_max < track.params[i]): param_max = track.params[i] 
+
+        return [param_min, param_max]
+
     def tessellate(self):
         """Apply Delauny triangulation to obtain the grid tessellation."""
 
         self.tessellation = Delaunay(self.grid)
-        
+
     def plot_tessellation(self):
         """
         Plot the grid tessellation.
@@ -1201,7 +1343,7 @@ class Model_grid:
         """
 
         if (self.ndim != 2):
-            print "Only able to plot the tessellation in two dimensions."
+            print("Only able to plot the tessellation in two dimensions.")
             return
 
         # find bounds:
@@ -1224,6 +1366,36 @@ class Model_grid:
         plt.xlabel(string_to_latex(self.grid_params[0]))
         plt.ylabel(string_to_latex(self.grid_params[1]))
         plt.savefig("tessellation.eps")
+
+    def remove_tracks(self,nthreshold):
+        """
+        Removes stellar evolution tracks with fewer than nthreshold models.
+
+        :param nthreshold: lower limit on number of models in a stellar
+                           evolutionary track
+        :type nthreshold: int
+        """
+
+        # easy exit:
+        if (nthreshold <= 0): return
+
+        retessellate = False
+        for i in range(len(self.tracks)-1,-1,-1):
+            if (len(self.tracks[i].models) < nthreshold):
+                del self.tracks[i]
+                retessellate = True
+
+        # redo tessellation if need be
+        if (retessellate):
+            print("I removed evolutionary tracks from the grid!")
+
+            # update list of indices:
+            self.ndx = range(len(self.tracks))
+
+            # need to create grid from scratch since tracks have been sorted.
+            self.grid = np.asarray([track.params for track in self.tracks])
+
+            self.tessellate()
 
     def test_interpolation(self):
         """
@@ -1251,7 +1423,7 @@ class Model_grid:
             aResult = np.empty((nmodels,ndim+nglb+6),dtype=gtype)
             pt = self.tracks[j].params + [0.0,]
 
-            for i in xrange(nmodels):
+            for i in range(nmodels):
                 aModel1 = self.tracks[j].models[i]
                 pt[-1] = aModel1.glb[iage]
                 aModel2 = interpolate_model(self,pt,tessellation,ndx2)
@@ -1277,7 +1449,7 @@ class Model_grid:
 
         ndx = range(len(self.tracks))
         random.shuffle(ndx)
-        nn = len(self.tracks)/2
+        nn = len(self.tracks)//2
         return ndx[:nn],ndx[nn:]
 
     def test_freq(self):
@@ -1299,7 +1471,7 @@ class Model_grid:
         for track in self.tracks:
             for model in track.models:
                 if (not model.freq_sorted()):
-                    print model.name
+                    print(model.name)
                     Teffs_out.append(model.string_to_param("Teff"))
                     Lums_out.append(model.string_to_param("log_Luminosity"))
                 else:
@@ -1332,7 +1504,7 @@ def init_user_param_dict():
     the :py:data:`Model.glb` array as well as the appropriate latex name.
     """
 
-    i = 5
+    i = nlin - len(config.user_params)
     for (name, latex_name) in config.user_params:
         user_params_index[name] = i
         user_params_latex[name] = latex_name
@@ -1380,7 +1552,7 @@ def combine_models(model1,coef1,model2,coef2):
     # glb[ifreq_ref] will be correctly defined when the Model() constructor is invoked
 
     # interpolate spectra:    
-    size3 = max(model1.modes.shape[0],model2.modes.shape[0])
+    size3 = min(model1.modes.shape[0],model2.modes.shape[0])
     nvalues = np.empty((size3,),dtype=ntype)
     lvalues = np.empty((size3,),dtype=ltype)
     fvalues = np.empty((size3,),dtype=ftype)
@@ -1391,7 +1563,7 @@ def combine_models(model1,coef1,model2,coef2):
             coef2,model2.modes['n'],model2.modes['l'],model2.modes['freq'],model2.modes['inertia'], \
             nvalues,lvalues,fvalues,ivalues)
 
-    return Model(glb, _modes=zip(nvalues[0:n3],lvalues[0:n3],fvalues[0:n3],ivalues[0:n3]))
+    return Model(glb, _modes=list(zip(nvalues[0:n3],lvalues[0:n3],fvalues[0:n3],ivalues[0:n3])))
 
 def compare_models(model1,model2):
     """
@@ -1658,7 +1830,7 @@ def interpolate_model(grid,pt,tessellation,ndx):
     # treat the case where there is only 1 model:
     if (n == 1):
         if (abs(coefs[0]-1.0) > eps):
-            print "WARNING: erroneous interpolation coefficient: ",coefs[0]
+            print("WARNING: erroneous interpolation coefficient: "+str(coefs[0]))
         return tracks[0].interpolate_model(ages[0])
 
     # treat the case where there are at least 2 models:
@@ -1667,7 +1839,7 @@ def interpolate_model(grid,pt,tessellation,ndx):
     aModel2 = tracks[1].interpolate_model(ages[1])
     if (aModel2 is None): return None
     aModel1 = combine_models(aModel1,coefs[0],aModel2,coefs[1])
-    for i in xrange(2,n):
+    for i in range(2,n):
         aModel2 = tracks[i].interpolate_model(ages[i])
         if (aModel2 is None): return None
         aModel1 = combine_models(aModel1,1.0,aModel2,coefs[i]);

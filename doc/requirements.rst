@@ -13,3 +13,7 @@ The following python packages are needed for AIMS:
   * `matplotlib <http://matplotlib.org/>`_
   * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
   * `f2py <https://github.com/pearu/f2py/wiki>`_
+
+    - note: this is usually included with numpy
+
+  * `tqdm <https://pypi.org/project/tqdm/>`_

@@ -26,13 +26,13 @@ import math
 #       the memory in each process.  To be more memory efficient, turn off
 #       parallelisation using the "parallel" parameter.
 nprocesses  = 4      # number of processes (if running in parallel)
-parallel    = True   # specifies whether to run in parallel
+parallel    = False  # specifies whether to run in parallel
 
 #########################   EMCEE control parameters   #####################
-ntemps      = 1      # number of temperatures
-nwalkers    = 26     # number of walkers (this number should be even)
-nsteps0     = 20     # number of burn-in steps
-nsteps      = 20     # number of steps
+ntemps      = 10     # number of temperatures
+nwalkers    = 250    # number of walkers (this number should be even)
+nsteps0     = 200    # number of burn-in steps
+nsteps      = 200    # number of steps
 thin        = 10     # thinning parameter (1 out of thin steps will be kept ...)
 thin_comb   = 100    # thinning parameter for output linear combinations of models
 PT          = True   # use parallel tempering?
@@ -43,29 +43,22 @@ max_iter     = 1000  # maximum number of iterations to find walker
 
 # Ranges used around tight ball configuration for walkers.
 # NOTES:
-#   - these ranges will be re-centred around the parameters of the
-#     best model in the grid
+#   - if ranges are not provided, AIMS will comme up with its own default
+#     ranges (typically 1/30th of the total range for the relevant parameter,
+#     centred around the value from the best grid model)
+#   - if ranges are provided, they will be re-centred around the parameters
+#     of the best model in the grid
 #   - the ranges on parameters related to surface amplitudes will be reset by AIMS
 #   - exact names should be used as keys, since AIMS accesses
 #     the relevant distributions by using the name as a key.
 #   - it doesn't matter if there are supplementary parameters
 #     which don't intervene. AIMS will simply ignore them.
 
-tight_ball_range = {} 
-tight_ball_range["Mass"]     = ("Gaussian", [0.0, 0.10])
-tight_ball_range["Z"]        = ("Gaussian", [0.0, 0.002])
-tight_ball_range["log_Z"]    = ("Gaussian", [0.0, 0.05])
-tight_ball_range["Age"]      = ("Gaussian", [0.0, 100.0])
-tight_ball_range["alpha_MLT"]= ("Gaussian", [0.0, 0.2])
-tight_ball_range["A_surf"]   = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-tight_ball_range["A3_surf"]  = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-tight_ball_range["Am1_surf"] = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-tight_ball_range["alpha_surf"] = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-tight_ball_range["b_Kjeldsen2008"] = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
-tight_ball_range["beta_Sonoi2015"] = ("Gaussian", [0.0, 1.0])  # will be reset by AIMS
+tight_ball_range = {}  # do NOT erase this line
+#tight_ball_range["Mass"]     = ("Gaussian", [0.0, 0.10])
 #########################   Radial orders   ################################
-use_n       = False # use radial orders when comparing observations with models?
-read_n      = False # read radial orders from input file?
+use_n       = True  # use radial orders when comparing observations with models?
+read_n      = True  # read radial orders from input file?
 assign_n    = False # use best model to reassign the radial order?
                     # NOTE: this supersedes "read_n"
 #########################   Constraints   ##################################
@@ -109,16 +102,18 @@ seismic_constraints = ["nu"]
 #    - "Relative": weights applied after normalising the classic and seismic
 #                  constraints to have the same weight.
 # NOTE: even with the relative weighting, classic_weight is kept as absolute.
-weight_option = "Absolute"
+weight_option = "Relative"
 seismic_weight = 1.0
 classic_weight = 1.0
 
 #########################   Input   ########################################
-write_data    = True             # set this to True if you want to write a
+write_data    = False            # set this to True if you want to write a
                                  # binary grid file
 mode_format   = "simple"         # specifies the format of the files with
                                  # the mode frequencies.  Options include:
                                  #   - "simple": the original AIMS format
+                                 #   - "CLES": the CLES format (almost the same as "simple")
+                                 #   - "MESA": the GYRE format
                                  #   - "agsm": the agsm format from ADIPLS
 npositive     = True             # if True, only save modes with n >= 0 in
                                  # binary grid file
@@ -128,17 +123,19 @@ agsm_cutoff   = False            # if True, only keep frequencies with icase=100
                                  # (i.e. below the cutoff frequency as determined
                                  # by ADIPLS) in agsm files.  This test is in
                                  # addition to the above user-defined cutoff.
-list_grid     = "list_MESA_ms"    # file with list of models and characteristics.
+list_grid      = "list_MESA_ms"  # file with list of models and characteristics.
                                  # only used when constructing binary file with
                                  # the model grid (i.e. write_data == True)
-grid_params = ("Mass", "Z")   # primary grid parameters (excluding age)
+grid_params = ('Mass', 'log_Z')  # primary grid parameters (excluding age)
                                  # only used when constructing binary file with
                                  # the model grid (i.e. write_data == True)
                                  # These parameters are used to distinguish
                                  # evolutionary tracks
-binary_grid = "data_MESA_ms" # binary file with model grid
+binary_grid = "data_MESA_ms_log" # binary file with model grid
                                  # this file is written to if write_data == True
                                  # this file is read from if write_data = False
+track_threshold = 10             # minimal number of models for a stellar evolutionary
+                                 # track.  Tracks with fewer models are removed
 #########################   User-defined parameters   ######################
 # This variable allows the user to introduce supplementary parameters in
 # addition to the parameters hard-coded in to AIMS.  These parameters
@@ -153,13 +150,11 @@ binary_grid = "data_MESA_ms" # binary file with model grid
 # be replaced by appropriate strings if, for instance, one asks for the
 # log of this parameter.
 
-#user_params = (("Xc", r'Central hydrogen, $%sX_c%s$'),)
-user_params = (("alpha_MLT", r'Mixing length parameter, $%s\alpha_{\mathrm{MLT}}%s$'), \
-               ("Zs", r'Surface metallicity, $%sZ_s%s$'), \
-               ("Xs", r'Surface hydrogen, $%sX_s%s$'), \
-               ("Zc", r'Central metallicity, $%sZ_c%s$'), \
-               ("Xc", r'Central hydrogen, $%sX_c%s$'))
-#               ("Tc", r'Central temperature, $%sT_c%s$ (in K)'))
+user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
+               ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
+               ('Xs', 'Surface hydrogen, $%sX_s%s$'),    \
+               ('Zc', 'Central metallicity, $%sZ_c%s$'), \
+               ('Xc', 'Central hydrogen, $%sX_c%s$'))
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions
@@ -167,6 +162,12 @@ user_params = (("alpha_MLT", r'Mixing length parameter, $%s\alpha_{\mathrm{MLT}}
 # amplitudes).
 #
 # NOTES:
+#   - if a prior on a given parameter is not provided, AIMS will comme
+#     up with its own default prior, namely an uniformative prior if
+#     the tight_ball option is set to True, and a uniform prior on a
+#     relevant range in the opposite case (except for parameters 
+#     related to surface corrections, in which case AIMS explicitely asks
+#     the user to provide a prior).
 #   - exact names should be used as keys, since AIMS accesses
 #     the relevant distributions by using the name as a key
 #   - it doesn't matter if there are supplementary parameters
@@ -174,25 +175,6 @@ user_params = (("alpha_MLT", r'Mixing length parameter, $%s\alpha_{\mathrm{MLT}}
 
 priors = {}                      # The priors will be defined thanks to this 
 #priors["Mass"]     = ("Uniform", [0.8, 1.5])
-#priors["Z"]        = ("Uniform", [0.0028, 0.08])
-#priors["log_Z"]    = ("Uniform", [math.log10(0.0028), math.log10(0.08)])
-#priors["Age"]      = ("Uniform", [0.0, 1.5e4])
-priors["Mass"]     = ("Uniform", [0.7, 1.2])
-priors["Z"]        = ("Uniform", [0.0031, 0.0927])
-priors["log_Z"]    = ("Uniform", [math.log10(0.0031), math.log10(0.0927)])
-priors["alpha_MLT"]= ("Uniform", [1.3, 1.9])
-priors["Age"]      = ("Uniform", [0.0, 1.5e4])
-
-# WARNING: the following priors on the surface corrections cannot lead to realisations.
-#          Hence there are only two possibilities:
-#              1. Initialise the walkers with a tight ball:  tight_ball = True
-#              2. Do not include surface corrections
-priors["A_surf"]   = ("Uninformative", [])
-priors["A3_surf"]  = ("Uninformative", [])
-priors["Am1_surf"] = ("Uninformative", [])
-priors["alpha_surf"] = ("Uninformative", [])
-priors["b_Kjeldsen2008"] = ("Uninformative", [])
-priors["beta_Sonoi2015"] = ("Uninformative", [])
 #########################   Interpolation    ###############################
 scale_age = True                 # use a scaled age when interpolating
 #########################   Interpolation tests    #########################
@@ -201,7 +183,7 @@ test_interpolation = False       # decide whether to test the interpolation.
                                  # out for the above binary grid, and written
                                  # in binary format to a file which can
                                  # subsequently be analysed using plot_test.py.
-interpolation_file = "interpolation_test_cestam"  # Name of the file to which to
+interpolation_file = "interpolation_test"  # Name of the file to which to
                                  # write the results from the interpolation
                                  # tests.  This file can be analysed using
                                  # plot_test.py.
@@ -218,17 +200,21 @@ interpolation_file = "interpolation_test_cestam"  # Name of the file to which to
 #       based on the scaling relation in Sonoi et al. (2015).  This will differ
 #       from the values obtained when using the options surface_option="Kjeldsen2008_2"
 #       or "Sonoi2015_2"
-output_params = ("Radius","Mass","log_g","Rho","Age","Teff","Luminosity")
+output_params = ("Radius","Mass","log_g","Rho","Age","Teff","Xc","Luminosity")
 output_dir    = "results"      # name of the root folder with the results
 output_osm    = "osm"          # name of the root folder with the OSM files
-with_osm       = True          # decide whether to write output files for
-                               # OSM (=Optimal Stellar Model by R. Samadi)
+extended_model  = False        # if True, print all models frequencies
+                               # (not just those with observed counterparts)
+with_osm        = False        # decide whether to write output files for OSM 
+                               # (=Optimal Stellar Model by R. Samadi)
 with_combinations = True       # decide whether to write file with model combinations
 with_walkers    = True         # decide whether to plot walkers
+with_distrib_iter=True         # decide whether to plot distrib_iter
 with_echelle    = True         # decide whether to plot echelle diagrams
 with_histograms = True         # decide whether to plot histograms
 with_triangles  = True         # decide whether to make triangle plots
-plot_extensions = ['eps']      # extensions (and formats) for all simple plots
+with_rejected   = True         # decide whether to make triangle plots with accepted/rejected models
+plot_extensions = ['png']      # extensions (and formats) for all simple plots
 tri_extensions  = ['png']      # extensions (and formats) for triangle plots
                                # supported formats (may depend on backend): eps, jpeg,
                                #   jpg, pdf, png, ps, raw, rgba, svg, svgz, tif, tiff

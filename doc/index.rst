@@ -19,6 +19,7 @@ Contents
    installation
    usage
    formats
+   changes
    AIMS
    model
    constants

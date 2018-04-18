@@ -24,7 +24,7 @@ Generating a binary grid
 ------------------------
 
   Requirements:
-    * a grid of models, including the pulsation frequencies; the format for
+    * a grid of models, including the pulsation frequencies; the formats for
       the files with the pulsation frequencies is described in
       :py:meth:`model.Model.read_file`.
     * a list with the paths and a set of global parameters for each model in
@@ -33,6 +33,8 @@ Generating a binary grid
 
   Relevant parameters in ``AIMS_configure.py``:
     * ``write_data``: set this to ``True`` so that AIMS will write binary grid.
+    * ``mode_format``: this specifies the format of the files with the pulsation
+      frequencies.
     * ``list_grid``: set this to the filename of the file with the list of
       paths and global parameters.
     * ``binary_grid``: set this to the filename of the file which will contain
@@ -42,6 +44,10 @@ Generating a binary grid
       in the source to :py:func:`model.Model.string_to_param`.
     * ``npositive``: set this to ``True`` to only save modes with :math:`n \ge 0`
       in the binary file.
+    * ``agsm_cutoff``: set this to ``True`` to exclude modes above the cutoff
+      frequency, as identified by the ``icase`` variable in agsm files from
+      the `ADIPLS <http://users-phys.au.dk/jcd/adipack.n/>`_ pulsation code.
+      
     
   To run AIMS in this configuration, just type the following in a terminal
   window::
