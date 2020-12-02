@@ -32,7 +32,7 @@ Generating a binary grid
       :py:meth:`model.Model_grid.read_model_list`.
 
   Relevant parameters in ``AIMS_configure.py``:
-    * ``write_data``: set this to ``True`` so that AIMS will write binary grid.
+    * ``mode``: set this to ``"write_grid"`` so that AIMS will write binary grid.
     * ``mode_format``: this specifies the format of the files with the pulsation
       frequencies.
     * ``list_grid``: set this to the filename of the file with the list of
@@ -61,9 +61,7 @@ Testing the accuracy of the interpolation
     * a binary grid of models as produced by AIMS
 
   Relevant parameters in ``AIMS_configure.py``:
-    * ``write_data``: set this to ``False`` otherwise a binary grid will
-      be produced, the interpolations tests will not be carried out.
-    * ``test_interpolation``: set this to ``True`` so that AIMS
+    * ``mode``: set this to ``"test_interpolation"`` so that AIMS
       will carry out the interpolation tests.
     * ``interpolation_file``: specify the name of the file in which to
       write the results from the interpolation test in binary format.
@@ -86,8 +84,7 @@ Characterising an observed star
       :py:meth:`AIMS.Likelihood.read_constraints`
 
   Relevant parameters in ``AIMS_configure.py``:
-    * ``write_data``: set this to ``False``
-    * ``test_interpolation``: set this to ``False``
+    * ``mode``: set this to ``"fit_data"``
     * most of the parameters in this file - see comments for details
 
   To run AIMS in this configuration, just type the following in a terminal

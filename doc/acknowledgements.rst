@@ -17,3 +17,9 @@ acknowledge the use of this software using a phrase such as the following:
   "This article made use of AIMS, a software for fitting stellar pulsation
   data, developed in the context of the SPACEINN network, funded by the
   European Commission's Seventh Framework Programme."
+
+We also ask you to cite the article:
+
+  `Rendle et al., 2019, "AIMS - a new tool for stellar parameter determinations
+  using asteroseismic constraints", MNRAS 484, 771.
+  <https://ui.adsabs.harvard.edu/abs/2019MNRAS.484..771R/abstract>`_

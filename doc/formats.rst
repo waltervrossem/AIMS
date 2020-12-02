@@ -13,7 +13,7 @@ Format of a file with a list of models and properties:
         /home/dreese/models_inversions/Grid_mesa_MS/  .freq
 
     * Each of the following lines correspond to one model in
-      the grid.  They are composed of 8 or more columns with the
+      the grid.  They are composed of 9 or more columns with the
       following information:
 
       1. The second part of the path for the given model.
@@ -29,9 +29,10 @@ Format of a file with a list of models and properties:
       6. The hydrogen content
       7. The stellar age in :math:`\mathrm{Myrs}`
       8. The effective temperature in :math:`\mathrm{K}`
-      9. (user-defined) This and the following columns correspond
-         to the parameters specified in the ``user_params``
-         variable given in ``AIMS_configure.py``.
+      9. A dimensionless age parameter
+      10. (user-defined) This and the following columns correspond
+          to the parameters specified in the ``user_params``
+          variable given in ``AIMS_configure.py``.
 
     * Except for the first line, the order of the lines does
       not matter.  AIMS will construct evolutionary tracks based
@@ -44,9 +45,9 @@ Format of a file with a list of models and properties:
     :py:meth:`model.Model_grid.read_model_list` method)::
 
       /home/dreese/models_inversions/Grid_mesa_MS/  .freq
-      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n1.profile.FGONG    1.59136E+33   5.02248266E+10   2.3309799E+33  0.0028  0.7436   1.0000000E-04   6000.94326   7.432106E-01
-      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n10.profile.FGONG   1.59136E+33   5.02990358E+10   2.1724140E+33  0.0028  0.7436   2.0974688E+03   5891.82623   6.146083E-01
-      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n11.profile.FGONG   1.59136E+33   5.04940406E+10   2.2011824E+33  0.0028  0.7436   2.3237113E+03   5899.81040   6.001537E-01
+      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n1.profile.FGONG  1.59136E+33  5.02248266E+10  2.33097993E+33  0.0028  0.7436  1.00000000E-04  6000.94326  0.00000  7.432106E-01
+      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n2.profile.FGONG  1.59136E+33  4.86716596E+10  1.94640636E+33  0.0028  0.7436  2.09332874E+02  5827.26021  0.01383  7.319698E-01
+      M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n3.profile.FGONG  1.59136E+33  4.89176532E+10  1.97545563E+33  0.0028  0.7436  4.34073185E+02  5834.15715  0.02868  7.188704E-01
 
     It contains three models.  The structure of the first model can
     be found in the following file::
@@ -57,7 +58,7 @@ Format of a file with a list of models and properties:
   
       /home/dreese/models_inversions/Grid_mesa_MS/M0.80/LOGS_M0.80/M0.80Z0.0028Y0.2536/m0.80Y0.2536Z0.0028a1.8ovh0.2ovhe0_n1.profile.FGONG.freq
 
-    The ninth column corresponds to the central hydrogen
+    The tenth column corresponds to the central hydrogen
     content, as specified by the contents of the ``user_params``
     variable from ``AIMS_configure.py``::
 
@@ -66,13 +67,13 @@ Format of a file with a list of models and properties:
 Format of a file with theoretical frequencies:
 ----------------------------------------------
 
-  As of version 1.2, AIMS is able to read two different formats
-  when reading the theoretical frequencies from a file.  The first
-  is a text file described below.  The second is the grand summary
-  file from `ADIPLS <http://astro.phys.au.dk/~jcd/adipack.n/>`_. 
+  AIMS is able to read files with the theoretical frequencies in various
+  different text formats (see example below) as well as in the grand summary
+  format from `ADIPLS <http://astro.phys.au.dk/~jcd/adipack.n/>`_. 
   This is a FORTRAN binary format described on pages 32 and 33 of the ADIPLS 
   `documentation <http://astro.phys.au.dk/~jcd/adipack.n/notes/adiab_prog.ps.gz>`_.
-  The following describes files in the text format:
+  What follows is a description of one the text formats used by AIMS for files
+  with frequencies:
 
   Description:
     * the first line is a header (and is skipped)

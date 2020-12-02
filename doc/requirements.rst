@@ -17,3 +17,11 @@ The following python packages are needed for AIMS:
     - note: this is usually included with numpy
 
   * `tqdm <https://pypi.org/project/tqdm/>`_
+
+.. warning::
+  As of version 3, emcee no longer supports parallel tempering.
+  Accordingly, AIMS is only compatible with older versions.  One can specify
+  a version of emcee during installation with the following command (we recommend
+  using version 2.2.1)::
+
+    sudo pip install emcee==2.2.1

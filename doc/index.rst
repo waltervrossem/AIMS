@@ -23,6 +23,7 @@ Contents
    AIMS
    model
    constants
+   functions
    utilities
    plot_interpolation_test
 
