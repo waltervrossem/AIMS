@@ -300,7 +300,6 @@
 ! INPUT:
 ! freq           = theoretical frequencies
 ! mode_map       = mapping between observed and theoretical frequencies
-! values         = values of observed frequency combinations
 ! ncoeff         = number of terms in the frequency combinations
 ! coeff          = coefficients in the frequency combinations
 ! indices        = mode indices in the frequency combinations
@@ -310,38 +309,29 @@
 ! nmax           = maximum number of terms in a frequency combination
 !
 ! OUTPUT:
-! dvalues        = differences between observed and theoretical frequency
+! values         = differences between observed and theoretical frequency
 !                  combinations
 !------------------------------------------------------------------------------
-      subroutine compare_frequency_combinations(freq,mode_map,values,&
-                    ncoeff,coeff,indices,nmodes,nobs,ncomb,nmax,dvalues)
+      subroutine compare_frequency_combinations(freq,mode_map,&
+                    ncoeff,coeff,indices,nmodes,nobs,ncomb,nmax,values)
 
       implicit none
 
       integer, intent(in) :: nmodes, nobs, ncomb, nmax
-      real(kind=8), intent(in) :: freq(0:nmodes-1),values(0:ncomb-1),&
-                                  coeff(0:nmax-1,0:1,0:ncomb-1)
-      integer, intent(in) :: mode_map(0:nobs-1), ncoeff(0:1,0:ncomb-1),&
-                             indices(0:nmax-1,0:1,0:ncomb-1)
-      real(kind=8), intent(inout) :: dvalues(0:ncomb-1)
-      !f2py intent(in,out) dvalues
+      real(kind=8), intent(in) :: freq(0:nmodes-1),&
+                                  coeff(0:nmax-1,0:ncomb-1)
+      integer, intent(in) :: mode_map(0:nobs-1), ncoeff(0:ncomb-1),&
+                             indices(0:nmax-1,0:ncomb-1)
+      real(kind=8), intent(inout) :: values(0:ncomb-1)
+      !f2py intent(in,out) values
 
-      real(kind=8) :: den
       integer i, j
 
-      ! NOTE: dvalues has already been initialised to 0 in AIMS.py
+      ! NOTE: values has already been initialised to 0 in AIMS.py
       do i=0, ncomb-1
-        do j=0,ncoeff(0,i)-1
-          dvalues(i) = dvalues(i) + coeff(j,0,i)*freq(mode_map(indices(j,0,i)))
+        do j=0,ncoeff(i)-1
+          values(i) = values(i) + coeff(j,i)*freq(mode_map(indices(j,i)))
         enddo
-        if (ncoeff(1,i).gt.0) then
-          den = 0d0
-          do j=0,ncoeff(1,i)-1
-            den = den + coeff(j,1,i)*freq(mode_map(indices(j,1,i)))
-          enddo
-          dvalues(i) = dvalues(i)/den
-        endif
-        dvalues(i) = dvalues(i) - values(i)
       enddo
 
       end subroutine compare_frequency_combinations
@@ -422,3 +412,213 @@
 
       end subroutine read_file_agsm
 
+!------------------------------------------------------------------------------
+! This method finds the age parameter for an input physical age, using a
+! a weighted combination of evolutionary tracks (which contain a piecewise
+! affine relation between the age parameter and the physical age).
+!------------------------------------------------------------------------------
+! IMPORTANT: this method assumes that each track has its own set of age
+!            parameters, i.e. they need not be the same.
+!------------------------------------------------------------------------------
+! INPUT:
+! tau_array = array with age parameters for each track
+! age_array = array with physical ages for each track
+! coef      = array with interpolation coefficients (or weights) for the tracks
+! sze       = array with sizes of each evolutionary track
+! n         = maximum track size
+! ntracks   = number of tracks
+! trget     = target value on age
+!
+! OUTPUT:
+! tau       = output age parameter
+! indices   = indices right below relevant age and additional work space
+! weights   = weights assigned to lower indices along tracks
+!------------------------------------------------------------------------------
+       subroutine find_tau(tau_array, age_array, coef, sze, n, ntracks, trget, &
+                           tau, indices, weights)
+
+       implicit none
+
+       ! input arguments
+       integer, intent(in) :: n, ntracks
+       integer, intent(in) :: sze(ntracks)
+       real(kind=8), intent(in) :: tau_array(n,ntracks), age_array(n,ntracks)
+       real(kind=8), intent(in) :: coef(ntracks), trget
+
+       ! output arguments
+       real(kind=8), intent(inout) :: tau
+       !f2py intent(in,out) tau
+       integer, intent(inout) :: indices(ntracks,3)
+       !f2py intent(in,out) indices
+       real(kind=8), intent(inout) :: weights(ntracks)
+       !f2py intent(in,out) weights
+
+       real(kind=8) :: age_min, age_max, age_mid, weight
+       real(kind=8) :: tau_min, tau_max, tau_mid, tau_new, eta
+       real(kind=8), external :: find_age_single
+       logical, external :: test_indices
+       integer :: j, ndx
+
+       ! initialisation
+       indices = -1
+       weights = 0d0
+
+       ! test lower bound
+       tau_min = tau_array(1,1)
+       do j=2,ntracks
+         if (tau_array(1,j).gt.tau_min) tau_min = tau_array(1,j)
+       enddo
+       age_min = 0d0
+       do j=1,ntracks
+         age_min = age_min + coef(j)*find_age_single(tau_array(:,j), &
+                   age_array(:,j),n,1,sze(j),tau_min,ndx,weight)
+         indices(j,1) = ndx
+       enddo
+       if (trget.lt.age_min) return
+
+       ! test upper bound
+       tau_max = tau_array(sze(1),1)
+       do j=2,ntracks
+         if (tau_array(sze(j),j).lt.tau_max) tau_max = tau_array(sze(j),j)
+       enddo
+       age_max = 0d0
+       do j=1,ntracks
+         age_max = age_max + coef(j)*find_age_single(tau_array(:,j), &
+                   age_array(:,j),n,1,sze(j),tau_max,ndx,weight)
+         indices(j,2) = ndx+1
+       enddo
+       if (trget.gt.age_max) return
+
+       do while(.not.test_indices(indices,ntracks))
+         tau_new = (tau_min+tau_max)/2.0
+
+         ! test degenerate case where solution lies on one of the
+         ! values of tau for at least one of the tracks:
+         if (tau_new.eq.tau_mid) then
+           !print*,"Dicho degenerate"
+           ! interpolating between tau_min and tau_max may be risky, hence
+           ! we simply use the mid point as it probably is more robust:
+           tau = tau_new
+           age_mid  = 0d0
+           do j=1,ntracks
+             age_mid = age_mid + coef(j)*find_age_single(tau_array(:,j), &
+               age_array(:,j),n,indices(j,1),indices(j,2),tau,ndx,weight)
+             indices(j,1) = ndx
+             indices(j,2) = ndx+1
+             weights(j) = weight 
+           enddo
+           return
+         endif
+
+         tau_mid = tau_new
+         age_mid = 0d0
+         do j=1,ntracks
+           age_mid = age_mid + coef(j)*find_age_single(tau_array(:,j), &
+             age_array(:,j),n,indices(j,1),indices(j,2),tau_mid,ndx,weight)
+           indices(j,3) = ndx
+         enddo
+         if (trget.gt.age_mid) then
+           age_min = age_mid
+           tau_min = tau_mid
+           indices(:,1) = indices(:,3)
+         else
+           age_max = age_mid
+           tau_max = tau_mid
+           indices(:,2) = indices(:,3)+1
+         endif
+       enddo
+
+       ! save results
+       eta = (age_max-trget)/(age_max-age_min)
+       tau = eta*tau_min + (1d0-eta)*tau_max
+       age_mid  = 0d0
+       do j=1,ntracks
+         age_mid = age_mid + coef(j)*find_age_single(tau_array(:,j), &
+           age_array(:,j),n,indices(j,1),indices(j,2),tau,ndx,weight)
+         indices(j,1) = ndx
+         indices(j,2) = ndx+1
+         weights(j) = weight 
+       enddo
+
+       end subroutine find_tau
+
+!------------------------------------------------------------------------------
+! Function which tests if series of lower and upper indices differ by one.
+! This provides the stop condition on the dichotomy loop in find_tau.
+!------------------------------------------------------------------------------
+! INPUT:
+! indices = array with lower and upper indices
+! ntracks = number of tracks
+!
+! NOTE: the second index on indices ranges from 1 to 3:
+!       1 corresponds to the lower indices
+!       2 corresponds to the upper indices
+!       3 is additional work space needed by find_tau (and not used here)
+!------------------------------------------------------------------------------
+       logical function test_indices(indices,ntracks)
+
+       implicit none
+       integer, intent(in) :: ntracks
+       integer, intent(in) :: indices(ntracks,3)
+       integer :: i
+
+       test_indices = .false.
+       do i=1,ntracks
+         if (indices(i,2)-indices(i,1).gt.1) return
+       enddo
+       test_indices = .true.
+       return
+       end function test_indices
+
+!------------------------------------------------------------------------------
+! Find physical age for a given input age parameter, for a single track.
+!------------------------------------------------------------------------------
+! INPUT:
+! tau    = array with age parameter
+! age    = array with physical age
+! n      = size of tau and age arrays
+! nstart = starting index at which to look for relevant age
+! nstop  = stoping index at which to look for relevant age
+! trget  = target value on tau
+!
+! OUTPUT (in addition to physical age):
+! ndx    = index right below relevant age
+! weight = weight assigned to tau(ndx)
+!------------------------------------------------------------------------------
+! IMPORTANT: the subroutine assumes tau and age are sorted
+!------------------------------------------------------------------------------
+       real(kind=8) function find_age_single(tau, age, n, nstart, &
+                                       nstop, trget, ndx, weight)
+
+       implicit none
+       integer, intent(in) :: n, nstart, nstop
+       real(kind=8), intent(in) :: tau(n), age(n), trget
+       integer, intent(out) :: ndx
+       real(kind=8), intent(out) :: weight
+       integer :: istart, istop, imid
+
+       ! initialisation
+       ndx = -1
+       weight = 0d0
+       find_age_single = 0d0 
+
+       ! easy exit
+       if (trget.lt.tau(nstart)) return
+       if (trget.gt.tau(nstop))  return
+
+       istart = nstart
+       istop = nstop
+       do while((istop-istart).gt.1)
+         imid = (istart+istop)/2
+         if (trget.lt.tau(imid)) then
+           istop = imid
+         else
+           istart = imid
+         endif
+       enddo
+
+       ndx = istart
+       weight = (tau(istop)-trget)/(tau(istop)-tau(istart))
+       find_age_single = weight*age(istart) + (1d0-weight)*(age(istop))
+       return
+       end function find_age_single

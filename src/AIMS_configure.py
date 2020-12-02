@@ -21,12 +21,24 @@
 
 import math
 
+#########################   Running SPInS   ################################
+# OPTIONS for mode:
+#    - "write_grid": write binary grid file from list file
+#    - "fit_data": fit observed data to characterise star(s)
+#    - "test_interpolation": test the accuracy of interpolation within the
+#                       grid of models.  The test results are written in
+#                       binary format  in the file specified by the
+#                       interpolation_file variable and can be subsequently
+#                       analysed using plot_test.py.
+mode        = "fit_data"
+batch       = False  # running in batch mode? if yes, deactivate tqdm
+
 #########################   Parallelisation   ##############################
 # NOTE: this is currently implemented with multiprocessing, which duplicates
 #       the memory in each process.  To be more memory efficient, turn off
 #       parallelisation using the "parallel" parameter.
-nprocesses  = 4      # number of processes (if running in parallel)
-parallel    = False  # specifies whether to run in parallel
+nprocesses  = 2      # number of processes (if running in parallel)
+parallel    = True   # specifies whether to run in parallel
 
 #########################   EMCEE control parameters   #####################
 ntemps      = 10     # number of temperatures
@@ -38,6 +50,15 @@ thin_comb   = 100    # thinning parameter for output linear combinations of mode
 PT          = True   # use parallel tempering?
 
 #########################   Initialisation   ###############################
+samples_file = None
+# OPTIONS:
+#    - None: do not use samples from file
+#    - "path/to/file/with/samples": use samples from a file to initialise the
+#      walkers.  This overides the settings below for generating the walkers.
+# This can be useful for continuing a previous run.
+# WARNING: If using a multi-tempered approach, only the lowest
+#          temperature is reproduced correctly.
+
 tight_ball   = True  # initialise with a tight ball around best solution
 max_iter     = 1000  # maximum number of iterations to find walker
 
@@ -78,7 +99,7 @@ assign_n    = False # use best model to reassign the radial order?
 #                     from Sonoi et al. (2015)
 #   - "Sonoi2015_2": use the surface corrections based on Sonoi et al. (2015);
 #                     The beta exponent is a free parameter
-surface_option = "Kjeldsen2008"
+surface_option = "Ball2014_2"
 b_Kjeldsen2008 = 4.9  # exponent used in the Kjeldsen et al. surface corrections
 beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 
@@ -91,7 +112,8 @@ beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 # NOTE: combining "nu" with the other constraints leads to a (nearly)
 #       singular covariance matrix and is not expected to give good
 #       results.
-#seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0"]
+#seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0","nu_min1","nu_min2"]
+#seismic_constraints = ["dnu0","r01","r02"]
 seismic_constraints = ["nu"] 
 
 #########################   Weighting   ########################################
@@ -102,20 +124,40 @@ seismic_constraints = ["nu"]
 #    - "Relative": weights applied after normalising the classic and seismic
 #                  constraints to have the same weight.
 # NOTE: even with the relative weighting, classic_weight is kept as absolute.
-weight_option = "Relative"
+weight_option = "Absolute"
 seismic_weight = 1.0
 classic_weight = 1.0
 
 #########################   Input   ########################################
-write_data    = False            # set this to True if you want to write a
-                                 # binary grid file
+replace_age_adim = None          # replaces the dimensionless age parameter in
+                                 # your grid.  Options include:
+                                 #    - None: do not replace age parameter (i.e.
+                                 #            keep what is provided in original file)
+                                 #    - "age":  the physical age
+                                 #    - "scale_age": scales the ages so that they
+                                 #            range from 0 to 1
+                                 #    - "scale_Xc": scales the central X values so
+                                 #            range from 0 to 1 
+retessellate  = False            # retessellate grid (this can be useful
+                                 # if the binary grid has been produced by
+                                 # an outdated version of numpy ...)
+distort_grid  = False            # This distorts the grid by multiplying it by
+                                 # a distortion matrix in order to break its
+                                 # cartesian character and accelerate
+                                 # finding simplices.  This will cause the
+                                 # grid to be retessellated.
+                                 # NOTE: this option is still experimental
+                                 #       and may need some further fine-tuning.
 mode_format   = "simple"         # specifies the format of the files with
                                  # the mode frequencies.  Options include:
                                  #   - "simple": the original AIMS format
                                  #   - "CLES": the CLES format (almost the same as "simple")
                                  #   - "MESA": the GYRE format
                                  #   - "agsm": the agsm format from ADIPLS
-npositive     = True             # if True, only save modes with n >= 0 in
+                                 #   - "Aldo": an entirely different format where
+                                 #             tracks are stored in separate files
+                                 #             along with their pulsation frequencies
+npositive     = False            # if True, only save modes with n >= 0 in
                                  # binary grid file
 cutoff        = 5.0              # remove frequencies above this value times
                                  # the acoustic cutoff-frequency
@@ -125,15 +167,15 @@ agsm_cutoff   = False            # if True, only keep frequencies with icase=100
                                  # addition to the above user-defined cutoff.
 list_grid      = "list_MESA_ms"  # file with list of models and characteristics.
                                  # only used when constructing binary file with
-                                 # the model grid (i.e. write_data == True)
+                                 # the model grid (i.e. mode == "write_grid")
 grid_params = ('Mass', 'log_Z')  # primary grid parameters (excluding age)
                                  # only used when constructing binary file with
-                                 # the model grid (i.e. write_data == True)
+                                 # the model grid (i.e. mode == "write_grid")
                                  # These parameters are used to distinguish
                                  # evolutionary tracks
 binary_grid = "data_MESA_ms_log" # binary file with model grid
-                                 # this file is written to if write_data == True
-                                 # this file is read from if write_data = False
+                                 # this file is written to if mode == "write_grid"
+                                 # this file is read from otherwise
 track_threshold = 10             # minimal number of models for a stellar evolutionary
                                  # track.  Tracks with fewer models are removed
 #########################   User-defined parameters   ######################
@@ -152,7 +194,7 @@ track_threshold = 10             # minimal number of models for a stellar evolut
 
 user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
                ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
-               ('Xs', 'Surface hydrogen, $%sX_s%s$'),    \
+               ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
                ('Xc', 'Central hydrogen, $%sX_c%s$'))
 #########################   Priors    ######################################
@@ -174,23 +216,23 @@ user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}
 #     which don't intervene. AIMS will simply ignore them.
 
 priors = {}                      # The priors will be defined thanks to this 
-#priors["Mass"]     = ("Uniform", [0.8, 1.5])
+priors["Age"]     = ("Uniform", [0.0, 1.38e4])
 #########################   Interpolation    ###############################
-scale_age = True                 # use a scaled age when interpolating
+age_interpolation = "age_adim"   # this decides what type of age interpolation
+                                 # should be carried out.  Options include:
+                                 #   - "age": use physical age
+                                 #   - "scale_age": use scaled physical age
+                                 #   - "age_adim": use non-dimensional age
 #########################   Interpolation tests    #########################
-test_interpolation = False       # decide whether to test the interpolation.
-                                 # If True, interpolation tests are carried
-                                 # out for the above binary grid, and written
-                                 # in binary format to a file which can
-                                 # subsequently be analysed using plot_test.py.
 interpolation_file = "interpolation_test"  # Name of the file to which to
                                  # write the results from the interpolation
                                  # tests.  This file can be analysed using
-                                 # plot_test.py.
+                                 # plot_test.py.  Only intervenes when
+                                 # mode == "test_interpolation".
 #########################   Output   #######################################
 # choice of parameters: "Mass", "Radius", "Luminosity", "X", "Y", "Z", "zsx_0",
 #                       "Fe_H", "M_H", "Age", "Teff", "Dnu", "numax", "Rho", "g",
-#                       "b_Kjeldsen2008", "beta_Sonoi2015"
+#                       "b_Kjeldsen2008", "beta_Sonoi2015", "dY_dZ"
 # Also all quantities provided in the user_params variable are available.
 # If the quantities "Zs" and "Xs" are defined via user_params, then "Ys" and
 #                       "zsx_s" are also available.
@@ -200,7 +242,7 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
 #       based on the scaling relation in Sonoi et al. (2015).  This will differ
 #       from the values obtained when using the options surface_option="Kjeldsen2008_2"
 #       or "Sonoi2015_2"
-output_params = ("Radius","Mass","log_g","Rho","Age","Teff","Xc","Luminosity")
+output_params = ('Radius','log_g','Rho','Age','Teff','Luminosity','Zs','Xs')
 output_dir    = "results"      # name of the root folder with the results
 output_osm    = "osm"          # name of the root folder with the OSM files
 extended_model  = False        # if True, print all models frequencies

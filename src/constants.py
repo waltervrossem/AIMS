@@ -45,6 +45,8 @@ A module which contains the following physical constants:
 +------------------------------+--------------------------------------+-------------------------------------+
 | :py:const:`solar_z`          | the solar metallicity content        | dimensionless                       |
 +------------------------------+--------------------------------------+-------------------------------------+
+| :py:const:`Yp`               | primordial helium                    | dimensionless                       |
++------------------------------+--------------------------------------+-------------------------------------+
 | :py:const:`A_FeH`            | multiplicative constant in           | dimensionless                       |
 |                              | :math:`\mathrm{[M/H]=A_{FeH}[Fe/H]}` |                                     |
 +------------------------------+--------------------------------------+-------------------------------------+
@@ -56,13 +58,13 @@ A module which contains the following physical constants:
 
 __docformat__ = 'restructuredtext'
 
-solar_radius     = 6.9599e10    # Allen (1973)
+solar_radius     = 6.9598e10
 """ the solar radius in :math:`\mathrm{cm}` """
 
-solar_mass       = 1.98919e33   # Same as in Model S
+solar_mass       = 1.9892e33
 """ the solar mass in :math:`\mathrm{g}` """
 
-solar_luminosity = 3.844e33
+solar_luminosity = 3.8418e33
 """ the solar luminosity in :math:`\mathrm{g.cm^2.s^{-3}}` """
 
 solar_temperature= 5777.0
@@ -78,7 +80,6 @@ solar_cutoff     = 5300.0       # Jimenez et al. (2011) (see Balmforth & Gough 1
 """ the solar cut-off frequency separation in :math:`\mathrm{\mu Hz}` """
 
 G                = 6.67428e-8   # CODATA 2006
-#G                = 6.6716823e-8 # the gravitational constant in cm^3.g^-1.s^-2 (CoRoT/ESTA value)
 """ the gravitational constant in :math:`\mathrm{cm^3.g^{-1}.s^{-2}}` """
 
 A_FeH            = 1.0
@@ -87,14 +88,19 @@ multiplicative constant which intervenes in the
 conversion from metal content to iron content
 """
 
-solar_x          = 0.7336  # Grevesse & Noels (1993)
-#solar_x          = 0.7345  # Grevesse & Sauval (1998)
+#solar_x          = 0.7336  # Grevesse & Noels (1993)
+solar_x          = 0.7345  # Grevesse & Sauval (1998)
 #solar_x          = 0.7392  # Asplund et al. (2005)
 #solar_x          = 0.7381  # Asplund et al. (2009)
+#solar_x          = 0.7355 # Asplund et al. (2009), Lebreton
 """ the solar hydrogen content """
 
-solar_z          = 0.0179  # Grevesse & Noels (1993)
-#solar_z          = 0.0169  # Grevesse & Sauval (1998)
+#solar_z          = 0.0179  # Grevesse & Noels (1993)
+solar_z          = 0.0169  # Grevesse & Sauval (1998)
 #solar_z          = 0.0122  # Asplund et al. (2005)
 #solar_z          = 0.0134  # Asplund et al. (2009)
+#solar_z          = 0.0131  # Asplund et al. (2009), Lebreton
 """ the solar metallicity content """
+
+Yp               = 0.16 # 0.248
+""" Primordial helium """

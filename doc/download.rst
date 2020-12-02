@@ -1,10 +1,10 @@
 Download ``AIMS``
 =================
 
-  * Click :download:`here <https://gitlab.com/sasp/aims/-/archive/master/aims-master.tar.gz>` to download AIMS.
+  * Click :download:`here <./files/AIMS.tgz>` to download AIMS.
   * The contents of this file may then be extracted via the command::
 
-     tar -zxvf aims-master.tar.gz
+     tar -zxvf AIMS.tgz
 
   * This will lead to the creation of a folder called ``AIMS`` and
     a subfolder called ``AIMS/doc``.

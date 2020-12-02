@@ -70,5 +70,5 @@ Copyright information
 
   * the AIMS project is distributed under the terms of the
     `GNU General Public License, version 3 <http://www.gnu.org/licenses/gpl-3.0.en.html>`_
-  * a copy of of this license may be downloaded :download:`here <../LICENSE>`
+  * a copy of of this license may be downloaded :download:`here <../COPYING>`
     and should also be included in ``AIMS.tgz``
