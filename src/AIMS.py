@@ -922,11 +922,11 @@ class Likelihood:
             else:
                 if (len(columns) < 3): continue
                 if (utilities.is_number(columns[1])):
-                    like.add_constraint((columns[0],           \
+                    self.add_constraint((columns[0],           \
                         Distribution("Gaussian",               \
                         utilities.my_map(utilities.to_float,columns[1:]))))
                 else:
-                    like.add_constraint((columns[0],           \
+                    self.add_constraint((columns[0],           \
                         Distribution(columns[1],               \
                         utilities.my_map(utilities.to_float,columns[2:]))))
 

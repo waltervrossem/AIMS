@@ -79,7 +79,7 @@ tight_ball_range = {}  # do NOT erase this line
 #tight_ball_range["Mass"]     = ("Gaussian", [0.0, 0.10])
 #########################   Radial orders   ################################
 use_n       = True  # use radial orders when comparing observations with models?
-read_n      = True  # read radial orders from input file?
+read_n      = False # read radial orders from input file?
 assign_n    = False # use best model to reassign the radial order?
                     # NOTE: this supersedes "read_n"
 #########################   Constraints   ##################################
@@ -99,7 +99,7 @@ assign_n    = False # use best model to reassign the radial order?
 #                     from Sonoi et al. (2015)
 #   - "Sonoi2015_2": use the surface corrections based on Sonoi et al. (2015);
 #                     The beta exponent is a free parameter
-surface_option = "Ball2014_2"
+surface_option = None # "Ball2014_2"
 b_Kjeldsen2008 = 4.9  # exponent used in the Kjeldsen et al. surface corrections
 beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 
