@@ -76,4 +76,11 @@ def test_write_grid():
     AIMS.write_binary_data('tests/data/test.aimslist',
                            'tests/data/test.aimsgrid')
 
+def test_interpolation_test():
+    """
+    Tests the interpolation test.
+    """
+
+    test = AIMS.interpolation_tests('tests/data/interpolation_test')
+
 ################################################################################
