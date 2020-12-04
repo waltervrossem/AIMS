@@ -148,7 +148,7 @@ distort_grid  = False            # This distorts the grid by multiplying it by
                                  # grid to be retessellated.
                                  # NOTE: this option is still experimental
                                  #       and may need some further fine-tuning.
-mode_format   = "simple"         # specifies the format of the files with
+mode_format   = "MESA"           # specifies the format of the files with
                                  # the mode frequencies.  Options include:
                                  #   - "simple": the original AIMS format
                                  #   - "CLES": the CLES format (almost the same as "simple")
@@ -168,15 +168,15 @@ agsm_cutoff   = False            # if True, only keep frequencies with icase=100
 list_grid      = "list_MESA_ms"  # file with list of models and characteristics.
                                  # only used when constructing binary file with
                                  # the model grid (i.e. mode == "write_grid")
-grid_params = ('Mass', 'log_Z')  # primary grid parameters (excluding age)
+grid_params = ('Mass', 'Z')      # primary grid parameters (excluding age)
                                  # only used when constructing binary file with
                                  # the model grid (i.e. mode == "write_grid")
                                  # These parameters are used to distinguish
                                  # evolutionary tracks
-binary_grid = "data_MESA_ms_log" # binary file with model grid
+binary_grid = "tests/data/test.aimsgrid" # binary file with model grid
                                  # this file is written to if mode == "write_grid"
                                  # this file is read from otherwise
-track_threshold = 10             # minimal number of models for a stellar evolutionary
+track_threshold = 2              # minimal number of models for a stellar evolutionary
                                  # track.  Tracks with fewer models are removed
 #########################   User-defined parameters   ######################
 # This variable allows the user to introduce supplementary parameters in
@@ -192,11 +192,13 @@ track_threshold = 10             # minimal number of models for a stellar evolut
 # be replaced by appropriate strings if, for instance, one asks for the
 # log of this parameter.
 
-user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
-               ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
-               ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
-               ('Zc', 'Central metallicity, $%sZ_c%s$'), \
-               ('Xc', 'Central hydrogen, $%sX_c%s$'))
+# user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
+#                ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
+#                ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
+#                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
+#                ('Xc', 'Central hydrogen, $%sX_c%s$'))
+user_params = ()
+
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions
@@ -242,7 +244,8 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
 #       based on the scaling relation in Sonoi et al. (2015).  This will differ
 #       from the values obtained when using the options surface_option="Kjeldsen2008_2"
 #       or "Sonoi2015_2"
-output_params = ('Radius','log_g','Rho','Age','Teff','Luminosity','Zs','Xs')
+# output_params = ('Radius','log_g','Rho','Age','Teff','Luminosity','Zs','Xs')
+output_params = ('Radius','Age','Teff','Luminosity')
 output_dir    = "results"      # name of the root folder with the results
 output_osm    = "osm"          # name of the root folder with the OSM files
 extended_model  = False        # if True, print all models frequencies

@@ -68,4 +68,12 @@ def test_Probability():
 
    test = AIMS.Probability(1, 1)
 
+def test_write_grid():
+    """
+    Tests the creation of a binary grid from plain text data.
+    """
+
+    AIMS.write_binary_data('tests/data/test.aimslist',
+                           'tests/data/test.aimsgrid')
+
 ################################################################################
