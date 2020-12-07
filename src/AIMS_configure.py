@@ -47,7 +47,7 @@ nsteps0     = 200    # number of burn-in steps
 nsteps      = 200    # number of steps
 thin        = 10     # thinning parameter (1 out of thin steps will be kept ...)
 thin_comb   = 100    # thinning parameter for output linear combinations of models
-PT          = True   # use parallel tempering?
+PT          = False  # use parallel tempering?
 
 #########################   Initialisation   ###############################
 samples_file = None
