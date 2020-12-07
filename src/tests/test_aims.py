@@ -65,6 +65,9 @@ def test_Distribution():
    assert AIMS.np.isnan(test.error_bar)
    assert test(0.0) == test(-1.0)
 
+   test.print_me()
+   test.to_string()
+
 def test_Prior_list():
    """
    Test creating an instance of the Prior_list class.
@@ -84,6 +87,8 @@ def test_Mode():
    mode2 = AIMS.Mode(1, 1, 1, 1)
    assert mode1.match(mode2)
 
+   mode1.print_me()
+
 def test_Combination():
    """
    Test creating an instance of the Combination class.
@@ -92,6 +97,8 @@ def test_Combination():
    test.add_coeff(0, 0.5)
    test.add_coeff(1, 0.5)
    assert test.find_values([0.0, 1.0]) == 0.5
+
+   test.print_me()
 
 def test_Combination_function():
    """
@@ -113,6 +120,8 @@ def test_Combination_function():
    test.add_combination(c_num)
    test.add_combination(c_den)
    assert test.find_values([1.0, 2.0]) == 0.5
+
+   test.print_me()
 
 def test_Likelihood():
    """
