@@ -145,7 +145,7 @@ def test_interpolation_test():
 
 def test_grid_functions():
     grid = AIMS.load_binary_data('tests/data/test.aimsgrid')
-    assert grid.range('Z') == [0.018, 0.022]
+    assert grid.range('Z') == pytest.approx([0.018, 0.022])
     assert grid.tracks[0].is_sorted()
     assert grid.tracks[0].is_sorted_adim()
     assert grid.tracks[0].freq_sorted(0)
