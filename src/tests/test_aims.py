@@ -31,7 +31,39 @@ def test_Distribution():
    Test creating an instance of the Distribution class.
    """
 
-   test = AIMS.Distribution("Gaussian", 1)
+   # distributions are currently only defined up to an additive constant
+   # so we only test differences in case the constant changes
+
+   test = AIMS.Distribution("Gaussian", [0.0, 1.0])
+   assert test.mean == 0.0
+   assert test.error_bar == 1.0
+   assert test(0.0) == test(1.0) + 0.5
+
+   # third parameter is how many sigma to truncate
+   test = AIMS.Distribution("Truncated_gaussian", [0.0, 1.0, 5.0])
+   assert test.mean == 0.0
+   assert test.error_bar == 1.0
+   assert test(0.0) == test(1.0) + 0.5
+
+   test = AIMS.Distribution("Uniform", [0.0, 1.0]) # unit uniform
+   assert test.mean == 0.5
+   assert test.error_bar == 0.5
+   assert test(0.0) == test(1.0)
+
+   test = AIMS.Distribution("Uninformative", [])
+   assert AIMS.np.isnan(test.mean)
+   assert AIMS.np.isnan(test.error_bar)
+   assert test(0.0) == test(1.0)
+
+   test = AIMS.Distribution("Above", [0.0])
+   assert AIMS.np.isnan(test.mean)
+   assert AIMS.np.isnan(test.error_bar)
+   assert test(0.0) == test(1.0)
+
+   test = AIMS.Distribution("Below", [0.0])
+   assert AIMS.np.isnan(test.mean)
+   assert AIMS.np.isnan(test.error_bar)
+   assert test(0.0) == test(-1.0)
 
 def test_Prior_list():
    """
@@ -39,20 +71,48 @@ def test_Prior_list():
    """
 
    test = AIMS.Prior_list()
+   assert test([]) == 0.0
+   test.add_prior(AIMS.Distribution("Gaussian", [0.0, 1.0]))
+   assert test([0.0]) == test([1.0]) + 0.5
 
 def test_Mode():
    """
    Test creating an instance of the Mode class.
    """
 
-   test = AIMS.Mode(1, 1, 1, 1)
+   mode1 = AIMS.Mode(1, 1, 1, 1)
+   mode2 = AIMS.Mode(1, 1, 1, 1)
+   assert mode1.match(mode2)
 
 def test_Combination():
    """
    Test creating an instance of the Combination class.
    """
-
    test = AIMS.Combination()
+   test.add_coeff(0, 0.5)
+   test.add_coeff(1, 0.5)
+   assert test.find_values([0.0, 1.0]) == 0.5
+
+def test_Combination_function():
+   """
+   Test creating an instance of the Combination_function class.
+   """
+   # numerator
+   c_num = AIMS.Combination()
+   c_num.add_coeff(0, 1.0)
+   c_num.add_coeff(1, 0.0)
+
+   # denominator
+   c_den = AIMS.Combination()
+   c_den.add_coeff(0, 0.0)
+   c_den.add_coeff(1, 1.0)
+
+   test = AIMS.Combination_function('test',
+                                    lambda x: x[0]/x[1],
+                                    lambda x: (1.0/x[1], -x[0]/x[1]**2))
+   test.add_combination(c_num)
+   test.add_combination(c_den)
+   assert test.find_values([1.0, 2.0]) == 0.5
 
 def test_Likelihood():
    """
