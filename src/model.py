@@ -1519,8 +1519,8 @@ class Track:
         if (len(self.modes) < 1):
             return -1,-1,-1,-1
         else:
-            np.min(self.modes['n']), np.max(self.modes['n']), \
-            np.min(self.modes['l']), np.max(self.modes['l'])
+            return np.min(self.modes['n']), np.max(self.modes['n']), \
+                   np.min(self.modes['l']), np.max(self.modes['l'])
 
     @property
     def age_range(self):

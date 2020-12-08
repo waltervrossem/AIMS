@@ -28,12 +28,18 @@ def test_make_distort_matrix():
             else:
                 assert mat[i,j] == 0.0
 
+def test_make_scale_matrix():
+    grid = model.np.eye(5)
+    mat = model.make_scale_matrix(grid)
+    assert mat == pytest.approx(grid)
+
 def test_find_ages():
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
 
     t = 1000.
     age_interpolation = model.config.age_interpolation
+
     for option in ['age', 'scale_age', 'age_adim']:
         ages = model.find_ages([1.0], test.tracks[:1], t)
         assert ages[0] == pytest.approx(t)
@@ -48,17 +54,21 @@ def test_Model():
     # m.read_file_agsm('tests/data/modelS.agsm') # never passed
     
     m.write_file_simple('tests/data/tmp.simple')
-    m.read_file_CLES('tests/data/tmp.simple') # doubles up all modes
+    m.read_file_CLES('tests/data/tmp.simple')
     m.sort_modes()
-    assert m.remove_duplicate_modes() # docs say opposite of what happens
 
-    m.append_modes(m.modes[-1])
-    assert not m.remove_duplicate_modes()
-    assert m.remove_duplicate_modes()
+    m.append_modes(m.modes[-1])            # duplicate a mode
+    assert not m.remove_duplicate_modes()  # removing it should return False
+    assert m.remove_duplicate_modes()      # nothing to remove should return True
 
     assert m.get_age() == pytest.approx(1000.0)
 
-    assert m.get_freq()[0] == m.modes['freq'][0]
+    for option in [None, 'Kjeldsen2008', 'Kjeldsen2008_scaling',
+                   'Kjeldsen2008_2', 'Ball2014', 'Ball2014_2',
+                   'Sonoi2015', 'Sonoi2015_scaling', 'Sonoi2015_2']:
+        assert all(m.get_freq(a=[0.0, 0.0, 0.0], surface_option=option)
+                   == m.modes['freq'])
+
     assert m.find_mode(m.modes['n'][0], m.modes['l'][0]) == m.modes['freq'][0]
     nmin, nmax, lmin, lmax = m.find_mode_range()
     assert nmin <= nmax
@@ -68,8 +78,25 @@ def test_Model():
     assert 0.5 < m.numax/m.cutoff < 0.7 # vaguely reasonable values
 
     assert m.freq_sorted()
+    assert 0 < m.find_epsilon(0) < 2
+
+    c = model.combine_models(m, 1.0, m, 0.0)
+    comparison = model.compare_models(m, m)
+    assert comparison[0] == pytest.approx(0.0)
+    assert comparison[1] == pytest.approx(0.0)
+    assert comparison[3] == pytest.approx(0.0)
+    assert comparison[4] == pytest.approx(0.0)
+    assert comparison[6:10] == pytest.approx([0.0, 0.0, 0.0, 0.0])
+
+    assert m.string_to_param('log_Mass') == model.math.log10(m.string_to_param('Mass'))
+    assert m.string_to_param('Radius') == model.math.exp(m.string_to_param('ln_Radius'))
+    assert m.string_to_param('Luminosity') == model.math.log(m.string_to_param('exp_Luminosity'))
+    assert m.string_to_param('Luminosity') == pytest.approx(
+        m.string_to_param('Radius')**2*(m.string_to_param('Teff')/5777.)**4, rel=1e-3) # uncertainty because of Teff_sun
+    assert sum([m.string_to_param(k) for k in 'XYZ']) == pytest.approx(1.0)
 
     m.print_me()
+    del(m)
 
 def test_Track():
     test = model.Model_grid()
@@ -82,6 +109,22 @@ def test_Track():
     assert not track.duplicate_ages()
     assert not track.remove_duplicate_ages()
     m = track.interpolate_model(1000.0)
+
+    c = track.find_combination(1000.0, 1.0)
+    assert c[0][0] + c[1][0] == pytest.approx(1.0)
+
+    ages, freqs = track.find_modes(10, 0)
+    assert ages[0] <= ages[-1]
+
+    ages_dim, freqs_dim = track.find_modes_dim(10, 0)
+    assert ages[0]/ages[1] == pytest.approx(ages_dim[0]/ages_dim[1])
+
+    nmin, nmax, lmin, lmax = track.find_mode_range()
+    assert nmin <= nmax
+    assert lmin == 0
+    assert lmax == 2
+
+    assert track.age_upper-track.age_lower == pytest.approx(track.age_range)
 
 def test_Model_grid():
     test = model.Model_grid()
