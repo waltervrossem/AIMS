@@ -41,6 +41,7 @@ def test_find_ages():
     age_interpolation = model.config.age_interpolation
 
     for option in ['age', 'scale_age', 'age_adim']:
+        model.config.age_interpolation = option
         ages = model.find_ages([1.0], test.tracks[:1], t)
         assert ages[0] == pytest.approx(t)
 
@@ -50,11 +51,12 @@ def test_Model():
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
-    
+
     # m.read_file_agsm('tests/data/modelS.agsm') # never passed
-    
+
     m.write_file_simple('tests/data/tmp.simple')
     m.read_file_CLES('tests/data/tmp.simple')
+    m.read_file_PLATO('tests/data/test.plato')
     m.sort_modes()
 
     m.append_modes(m.modes[-1])            # duplicate a mode
@@ -79,6 +81,7 @@ def test_Model():
 
     assert m.freq_sorted()
     assert 0 < m.find_epsilon(0) < 2
+    assert 0 == m.find_epsilon(99)
 
     c = model.combine_models(m, 1.0, m, 0.0)
     comparison = model.compare_models(m, m)
@@ -94,6 +97,10 @@ def test_Model():
     assert m.string_to_param('Luminosity') == pytest.approx(
         m.string_to_param('Radius')**2*(m.string_to_param('Teff')/5777.)**4, rel=1e-3) # uncertainty because of Teff_sun
     assert sum([m.string_to_param(k) for k in 'XYZ']) == pytest.approx(1.0)
+
+    assert m.FeH == pytest.approx(m.FeH0)
+    assert m.MH == pytest.approx(m.MH0)
+    assert m.zsx_s == pytest.approx(m.zsx_0)
 
     m.print_me()
     del(m)
@@ -126,6 +133,9 @@ def test_Track():
 
     assert track.age_upper-track.age_lower == pytest.approx(track.age_range)
 
+    track.append_track(track)
+    assert track.remove_duplicate_ages()
+
 def test_Model_grid():
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
@@ -137,12 +147,12 @@ def test_Model_grid():
         test.replace_age_adim()
 
     model.config.replace_age_adim = replace_age_adim
-    
+
     test.check_age_adim()
     t = test.range('Age')
     assert 0 <= t[0]
     assert 0 <= t[1] <= 1e12
-    
+
     assert pytest.approx(test.range('Z'), [0.018, 0.022])
 
     test.test_interpolation()
@@ -156,4 +166,4 @@ def test_Model_grid():
     assert 0 < epsilons[0] < 2
 
     assert test.remove_tracks(20) # should be all of them
-    
+
