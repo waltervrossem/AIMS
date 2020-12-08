@@ -142,6 +142,7 @@ def test_write_grid():
     Tests the creation of a binary grid from plain text data.
     """
 
+    AIMS.model.init_user_param_dict()
     AIMS.write_binary_data('tests/data/test.aimslist',
                            'tests/data/test.aimsgrid')
 

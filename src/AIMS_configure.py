@@ -114,7 +114,7 @@ beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 #       results.
 #seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0","nu_min1","nu_min2"]
 #seismic_constraints = ["dnu0","r01","r02"]
-seismic_constraints = ["nu", "avg_dnu0"]
+seismic_constraints = ["r02", "r01", "nu_min0", "nu", "avg_dnu0"]
 
 #########################   Weighting   ########################################
 # Determines what type of weighting to apply to seismic and classic contraints.
@@ -124,7 +124,7 @@ seismic_constraints = ["nu", "avg_dnu0"]
 #    - "Relative": weights applied after normalising the classic and seismic
 #                  constraints to have the same weight.
 # NOTE: even with the relative weighting, classic_weight is kept as absolute.
-weight_option = "Absolute"
+weight_option = "Relative"
 seismic_weight = 1.0
 classic_weight = 1.0
 
@@ -141,7 +141,7 @@ replace_age_adim = None          # replaces the dimensionless age parameter in
 retessellate  = False            # retessellate grid (this can be useful
                                  # if the binary grid has been produced by
                                  # an outdated version of numpy ...)
-distort_grid  = False            # This distorts the grid by multiplying it by
+distort_grid  = True             # This distorts the grid by multiplying it by
                                  # a distortion matrix in order to break its
                                  # cartesian character and accelerate
                                  # finding simplices.  This will cause the
@@ -157,7 +157,7 @@ mode_format   = "MESA"           # specifies the format of the files with
                                  #   - "Aldo": an entirely different format where
                                  #             tracks are stored in separate files
                                  #             along with their pulsation frequencies
-npositive     = False            # if True, only save modes with n >= 0 in
+npositive     = True             # if True, only save modes with n >= 0 in
                                  # binary grid file
 cutoff        = 5.0              # remove frequencies above this value times
                                  # the acoustic cutoff-frequency
@@ -197,7 +197,8 @@ track_threshold = 2              # minimal number of models for a stellar evolut
 #                ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
 #                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
 #                ('Xc', 'Central hydrogen, $%sX_c%s$'))
-user_params = ()
+user_params = (('Zs', 'Surface metallicity, $%sZ_s%s$'), \
+               ('Xs', 'Surface hydrogen, $%sX_s%s$'))
 
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.

@@ -63,7 +63,7 @@ def test_Model():
     nmin, nmax, lmin, lmax = m.find_mode_range()
     assert nmin <= nmax
     assert lmin == 0
-    assert lmax == 0
+    assert lmax == 2
 
     assert 0.5 < m.numax/m.cutoff < 0.7 # vaguely reasonable values
 
