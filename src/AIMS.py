@@ -2573,7 +2573,7 @@ def write_readme(filename, elapsed_time):
     for (param,distrib) in prob.likelihood.constraints:
         output_file.write(str_string.format(param,distrib.to_string()))
     output_file.write(str_string.format("Seismic constraints",str(config.seismic_constraints)))
-    output_file.write(str_string.format("Surface option",config.surface_option))
+    output_file.write(str_string.format("Surface option",str(config.surface_option)))
     if (config.surface_option == "Kjeldsen2008"):
         output_file.write(str_float.format("Surface exponent, b",config.b_Kjeldsen2008))
     if (config.surface_option == "Sonoi2015"):
