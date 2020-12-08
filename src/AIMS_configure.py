@@ -125,7 +125,7 @@ seismic_constraints = ["r02", "r01", "nu_min0", "nu", "avg_dnu0"]
 #                  constraints to have the same weight.
 # NOTE: even with the relative weighting, classic_weight is kept as absolute.
 weight_option = "Relative"
-seismic_weight = 1.0
+seismic_weight = 0.0
 classic_weight = 1.0
 
 #########################   Input   ########################################

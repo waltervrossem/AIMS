@@ -192,11 +192,8 @@ def test_fit_data():
 
     prob = AIMS.Probability(priors,like)
 
-    pool = None
-    my_map = AIMS.utilities.my_map
-
-    p0 = AIMS.np.random.uniform(low =[0.999, 0.0199, 4500.0],
-                                high=[1.001, 0.0201, 5000.0],
+    p0 = AIMS.np.random.uniform(low =[0.99, 0.019, 3000.0],
+                                high=[1.01, 0.021, 7000.0],
                                 size=(nwalkers, ndims))
 
     sampler = AIMS.emcee.EnsembleSampler(nwalkers, ndims, prob)
@@ -204,5 +201,15 @@ def test_fit_data():
     pos, prob, state = sampler.run_mcmc(p0, 200)
     sampler.reset()
     pos, prob, state = sampler.run_mcmc(pos, 200)
+
+    # quantitative contraints are 10x observations in data/test.aimsobs
+    assert sampler.flatchain[:,0].mean() == pytest.approx(1.0, abs=0.01)
+    assert sampler.flatchain[:,1].mean() == pytest.approx(0.02, abs=0.001)
+
+    # all this really tests is that the output has narrowed the
+    # distribution compared to the initial uniform distribution p0,
+    # which was deliberately broad
+    assert sampler.flatchain[:,0].std() < p0[:,0].std()
+    assert sampler.flatchain[:,1].std() < p0[:,1].std()
 
 ################################################################################
