@@ -21,6 +21,9 @@ exclude_lines =
     if 0:
     if __name__ == .__main__.:
 
+    # Ignore plot functions
+    def plot
+
 ignore_errors = False
 show_missing = True
 skip_covered = False
