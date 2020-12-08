@@ -28,7 +28,7 @@ def test_configuration():
 
 def test_Distribution():
    """
-   Test creating an instance of the Distribution class.
+   Test various functions in the Distribution class.
    """
 
    # distributions are currently only defined up to an additive constant
@@ -106,18 +106,22 @@ def test_Prior_list():
 
 def test_Mode():
    """
-   Test creating an instance of the Mode class.
+   Test the Mode class.
    """
 
    mode1 = AIMS.Mode(1, 1, 1, 1)
    mode2 = AIMS.Mode(1, 1, 1, 1)
    assert mode1.match(mode2)
 
+   mode2 = AIMS.Mode(1, 2, 3, 4)
+   assert not mode1.match(mode2)
+
    mode1.print_me()
 
 def test_Combination():
    """
-   Test creating an instance of the Combination class.
+   Tests the Combination class by creating a Combination
+   that represents (x[0]+x[1])/2.
    """
    test = AIMS.Combination()
    test.add_coeff(0, 0.5)
@@ -128,18 +132,19 @@ def test_Combination():
 
 def test_Combination_function():
    """
-   Test creating an instance of the Combination_function class.
+   Test the Combination_function class.
    """
-   # numerator
+   # numerator: given [x[0], x[1]], returns x[0]
    c_num = AIMS.Combination()
    c_num.add_coeff(0, 1.0)
    c_num.add_coeff(1, 0.0)
 
-   # denominator
+   # denominator: given [x[0], x[1]], returns x[1]
    c_den = AIMS.Combination()
    c_den.add_coeff(0, 0.0)
    c_den.add_coeff(1, 1.0)
 
+   # combination is x[0]/x[1]
    test = AIMS.Combination_function('test',
                                     lambda x: x[0]/x[1],
                                     lambda x: (1.0/x[1], -x[0]/x[1]**2))
@@ -193,6 +198,7 @@ def test_grid_functions():
 def test_fit_data():
     """
     Tests fitting the models to data.  Based on AIMS script.
+    Tests a variety of other things along the way.
     """
     config = AIMS.config
     AIMS.check_configuration()

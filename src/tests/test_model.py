@@ -19,6 +19,9 @@ def test_init_user_param_dict():
     assert model.init_user_param_dict() == None
 
 def test_make_distort_matrix():
+    """
+    Test the creation of a trivial distortion matrix.
+    """
     d = 5
     mat = model.make_distort_matrix(d, theta=0.0)
     for i in range(d):
@@ -29,11 +32,17 @@ def test_make_distort_matrix():
                 assert mat[i,j] == 0.0
 
 def test_make_scale_matrix():
+    """
+    Test the creation of a trivial scale matrix.
+    """
     grid = model.np.eye(5)
     mat = model.make_scale_matrix(grid)
     assert mat == pytest.approx(grid)
 
 def test_find_ages():
+    """
+    Test the find_ages function.
+    """
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
 
@@ -48,6 +57,9 @@ def test_find_ages():
     model.config.age_interpolation = age_interpolation
 
 def test_Model():
+    """
+    Test functions in the Model class.
+    """
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
@@ -63,7 +75,7 @@ def test_Model():
     assert not m.remove_duplicate_modes()  # removing it should return False
     assert m.remove_duplicate_modes()      # nothing to remove should return True
 
-    assert m.get_age() == pytest.approx(1000.0)
+    assert m.get_age() == pytest.approx(1000.0) # age should be what we interpolated to
 
     for option in [None, 'Kjeldsen2008', 'Kjeldsen2008_scaling',
                    'Kjeldsen2008_2', 'Ball2014', 'Ball2014_2',
@@ -91,13 +103,17 @@ def test_Model():
     assert comparison[4] == pytest.approx(0.0)
     assert comparison[6:10] == pytest.approx([0.0, 0.0, 0.0, 0.0])
 
+    # test log, ln and exp transformations using a few different
+    # variables and check that L ~ R²Teff⁴
     assert m.string_to_param('log_Mass') == model.math.log10(m.string_to_param('Mass'))
     assert m.string_to_param('Radius') == model.math.exp(m.string_to_param('ln_Radius'))
     assert m.string_to_param('Luminosity') == model.math.log(m.string_to_param('exp_Luminosity'))
     assert m.string_to_param('Luminosity') == pytest.approx(
         m.string_to_param('Radius')**2*(m.string_to_param('Teff')/5777.)**4, rel=1e-3) # uncertainty because of Teff_sun
-    assert sum([m.string_to_param(k) for k in 'XYZ']) == pytest.approx(1.0)
 
+    assert sum([m.string_to_param(k) for k in 'XYZ']) == pytest.approx(1.0) # abundances must sum to 1
+
+    # surface abundances don't change in test grid
     assert m.FeH == pytest.approx(m.FeH0)
     assert m.MH == pytest.approx(m.MH0)
     assert m.zsx_s == pytest.approx(m.zsx_0)
@@ -106,6 +122,9 @@ def test_Model():
     del(m)
 
 def test_Track():
+    """
+    Test functions in the Track class.
+    """
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
 
@@ -133,10 +152,14 @@ def test_Track():
 
     assert track.age_upper-track.age_lower == pytest.approx(track.age_range)
 
+    # if we append the track to itself, there should be duplicates
     track.append_track(track)
     assert track.remove_duplicate_ages()
 
 def test_Model_grid():
+    """
+    Test functions in the Model_grid class.
+    """
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
 
@@ -151,7 +174,7 @@ def test_Model_grid():
     test.check_age_adim()
     t = test.range('Age')
     assert 0 <= t[0]
-    assert 0 <= t[1] <= 1e12
+    assert 0 <= t[1] <= 20e9
 
     assert pytest.approx(test.range('Z'), [0.018, 0.022])
 
