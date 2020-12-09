@@ -283,13 +283,10 @@ def test_fit_data():
                      extended=True)
 
     AIMS.config.output_osm = 'tests/data'
-    AIMS.write_osm_frequencies('tmp.osm', AIMS.best_grid_model)
-    AIMS.write_osm_don('tmp.osm', AIMS.best_grid_model)
-    # this fails because we need to decode the string
-    # produced by etree.tostring
-    # I would fix this but it might break Python 2 support
-    # AIMS.write_osm_xml('tmp.osm', AIMS.best_grid_params,
-    #                    AIMS.best_grid_model)
+    AIMS.write_osm_frequencies('tmp.osm_freq', AIMS.best_grid_model)
+    AIMS.write_osm_don('tmp.osm_don', AIMS.best_grid_model)
+    AIMS.write_osm_xml('tmp.osm_xml', AIMS.best_grid_params,
+                       AIMS.best_grid_model)
 
     sampler = AIMS.emcee.EnsembleSampler(nwalkers, ndims, AIMS.prob)
     AIMS.grid = grid

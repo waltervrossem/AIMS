@@ -3102,7 +3102,7 @@ def write_osm_xml(filename,my_params, my_model):
     config_osm.append(setting_osm)
 
     output_file = open(os.path.join(config.output_osm,filename+"_seismic.xml"),"w")
-    output_file.write(etree.tostring(config_osm, pretty_print=True))
+    output_file.write(etree.tostring(config_osm, pretty_print=True, encoding='unicode'))
     output_file.close()
 
 def append_osm_parameter(config_osm, name, value, step, rate, bounds):
