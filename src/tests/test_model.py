@@ -64,7 +64,13 @@ def test_Model():
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
 
-    # m.read_file_agsm('tests/data/modelS.agsm') # never passed
+    m.read_file_agsm('tests/data/test.agsm') # never passed
+    assert all(m.modes['n'] == [19,20,21])
+    assert all(m.modes['l'] == 1)
+    assert m.modes['freq'] == pytest.approx(
+        [2830.96281472,2967.04152439,3102.93893379])
+    assert m.modes['inertia'] == pytest.approx(
+        [3.91089245e-10,3.18748640e-10,2.64390334e-10])
 
     m.write_file_simple('tests/data/tmp.simple')
     m.read_file_CLES('tests/data/tmp.simple')

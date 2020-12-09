@@ -496,7 +496,7 @@ class Model:
         narr,larr,farr,iarr,nn,exceed_freqlim =  \
             aims_fortran.read_file_agsm(filename,config.npositive,config.agsm_cutoff, \
             config.cutoff*self.cutoff)
-        self.modes = np.array(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn]),dtype=modetype)
+        self.modes = np.array(list(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn])),dtype=modetype)
 
         return exceed_freqlim
 
