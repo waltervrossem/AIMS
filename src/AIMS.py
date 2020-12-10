@@ -1944,7 +1944,7 @@ def write_list_file(filename):
     output.write(grid.prefix+" "+grid.postfix+"\n")
     for track in grid.tracks:
         #if (int(round(track.params[0]*100.0))%4 != 0): continue # impose step of 0.04 Msun
-        if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
+        #if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
         for i in range(0,len(track.names)):
             # no need to copy the modes since they are not used
             amodel = model.Model(track.glb[i], _name=track.names[i])
