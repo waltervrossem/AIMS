@@ -230,17 +230,17 @@ def test_fit_data():
     Tests fitting the models to data.  Based on AIMS script.
     Tests a variety of other things along the way.
     """
+    # we change some settings in this test, so need to save them
     config = AIMS.config
     AIMS.check_configuration()
+    AIMS.my_map = AIMS.utilities.my_map
+
     AIMS.like = AIMS.Likelihood()
     AIMS.like.clear_seismic_constraints()
     AIMS.like.read_constraints('tests/data/test.aimsobs', factor=1.0)
-    AIMS.utilities.my_map(AIMS.like.add_seismic_constraint,
-                          ["r02","r01","r10",
-                           "avg_dnu","avg_dnu0",
-                           "dnu", "dnu0", "d2nu",
-                           "nu_min0","nu_min1","nu_min2",
-                           "skip"])
+    AIMS.my_map(AIMS.like.add_seismic_constraint,
+                ["r02","r01","r10", "avg_dnu","avg_dnu0", "skip",
+                 "dnu", "dnu0", "d2nu", "nu_min0","nu_min1","nu_min2"])
     AIMS.like.clear_seismic_constraints()
 
     AIMS.like.add_dnu_constraint_matrix("dnu", l_targets=[])
@@ -249,7 +249,7 @@ def test_fit_data():
     AIMS.like.clear_seismic_constraints()
 
     AIMS.like.guess_dnu(with_n=True)
-    AIMS.utilities.my_map(AIMS.like.add_seismic_constraint,config.seismic_constraints)
+    AIMS.my_map(AIMS.like.add_seismic_constraint, config.seismic_constraints)
     AIMS.like.find_covariance()
     AIMS.like.create_combination_arrays()
 
@@ -276,6 +276,7 @@ def test_fit_data():
     AIMS.grid_params_MCMC_with_surf = grid_params_MCMC_with_surf
     AIMS.ndims = ndims
     AIMS.nsurf = nsurf
+    AIMS.config.nwalkers = nwalkers
 
     AIMS.priors = AIMS.Prior_list()
 
@@ -284,16 +285,23 @@ def test_fit_data():
 
     AIMS.prob = AIMS.Probability(AIMS.priors, AIMS.like)
 
-    p0 = AIMS.np.random.uniform(low =[0.99, 0.019, 3000.0],
-                                high=[1.01, 0.021, 7000.0],
-                                size=(nwalkers, ndims))
+    # config.tight_ball_range is a dict of initial distributions
+    # key is parameter name; value[1] is width
+    # we steadily build up to 5x observed constraints on "Mass" and "Z"
+    # so that MCMC will narrow distribution
+    # testing code branches on the way to final initial distribution
+    AIMS.config.tight_ball_range = {}
+    p0 = AIMS.init_walkers()
+    AIMS.config.tight_ball_range["Mass"] = ("Gaussian", [0.0, 0.005])
+    p0 = AIMS.init_walkers()
+    AIMS.config.tight_ball_range["Z"] = ("Gaussian", [0.0, 0.0005])
+    p0 = AIMS.init_walkers()
 
     assert AIMS.prob.is_outside(-p0[0])
     assert not AIMS.prob.is_outside(p0[0])
 
     # the best model should be the same one from which we took the
-    # obsevational data (0.020_1.00_7)
-    AIMS.my_map = AIMS.utilities.my_map
+    # obsevational data (tests/data/0.020_1.00_7)
     AIMS.find_best_model()
     assert AIMS.best_grid_result > -0.1 # should be very good
     # assert AIMS.best_grid_params[0] == pytest.approx(1.0) # fails because of difference in Msun
@@ -359,5 +367,8 @@ def test_fit_data():
                    'Fe_H', 'Luminosity', 'X', 'Y', 'Xc']
     AIMS.write_LEGACY_summary('tests/data/tmp.legacy', '0', LEGACY_keys,
                               sampler.flatchain[:,[0]*len(LEGACY_keys)])
+
+    # restore settings
+    AIMS.config = config
 
 ################################################################################

@@ -64,7 +64,11 @@ def test_Model():
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
 
-    m.read_file_agsm('tests/data/test.agsm') # never passed
+    # choose options through model.config to cover more code
+    # so save original option to restore after tests
+    mode_format = model.config.mode_format
+    model.config.mode_format = 'agsm'
+    m.read_file('tests/data/test.agsm')
     assert all(m.modes['n'] == [19,20,21])
     assert all(m.modes['l'] == 1)
     assert m.modes['freq'] == pytest.approx(
@@ -73,9 +77,19 @@ def test_Model():
         [3.91089245e-10,3.18748640e-10,2.64390334e-10])
 
     m.write_file_simple('tests/data/tmp.simple')
-    m.read_file_CLES('tests/data/tmp.simple')
+    model.config.mode_format = 'simple'
+    m.read_file('tests/data/tmp.simple')
+    model.config.mode_format = 'CLES'
+    m.read_file('tests/data/tmp.simple')
+    model.config.mode_format = 'CLES_Mod'
+    m.read_file_CLES_Mod('tests/data/test.cles_mod')
+    model.config.mode_format = 'PLATO'
     m.read_file_PLATO('tests/data/test.plato')
+    assert not m.freq_sorted() # by design of the plato test data
     m.sort_modes()
+    assert m.freq_sorted()
+
+    model.config.mode_format = mode_format
 
     m.append_modes(m.modes[-1])            # duplicate a mode
     assert not m.remove_duplicate_modes()  # removing it should return False
@@ -98,7 +112,6 @@ def test_Model():
 
     assert 0.5 < m.numax/m.cutoff < 0.7 # vaguely reasonable values
 
-    assert m.freq_sorted()
     assert 0 < m.find_epsilon(0) < 2
     assert 0 == m.find_epsilon(99)
 
