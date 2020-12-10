@@ -38,8 +38,14 @@ def test_Distribution():
    assert test.mean == 0.0
    assert test.error_bar == 1.0
    assert test(0.0) == test(1.0) + 0.5
-   test.realisation()
+   test.realisation() # could be anywhere
    assert test.nparams == 2
+
+   test.re_centre(1.0)
+   assert test.mean == 1.0
+
+   test.re_normalise(2.0)
+   assert test.error_bar == 2.0
 
    # third parameter is how many sigma to truncate
    test = AIMS.Distribution("Truncated_gaussian", [0.0, 1.0, 5.0])
@@ -50,6 +56,12 @@ def test_Distribution():
    assert -5.0 <= test.realisation() <= 5.0
    assert test.nparams == 3
 
+   test.re_centre(1.0)
+   assert test.mean == 1.0
+
+   test.re_normalise(2.0)
+   assert test.error_bar == 2.0
+
    test = AIMS.Distribution("Uniform", [0.0, 1.0]) # unit uniform
    assert test.mean == 0.5
    assert test.error_bar == 0.5
@@ -57,6 +69,12 @@ def test_Distribution():
    assert test(-1.0) == test(2.0) # same value outside support
    assert 0.0 <= test.realisation() <= 1.0
    assert test.nparams == 2
+
+   test.re_centre(1.0)
+   assert test.mean == 1.0
+
+   test.re_normalise(2.0)
+   assert test.error_bar == 2.0
 
    test = AIMS.Distribution("Uninformative", [])
    assert AIMS.np.isnan(test.mean)
@@ -78,20 +96,28 @@ def test_Distribution():
    assert test(1.0) == test(2.0) # same value outside support
    assert test.nparams == 1
 
+   # IMF1 is a power law between param[0] and param[1] with index param[2]
+   # IMF2 is a two-part power law with index param [3] between param[0] and param[1] and index param[4] between param[1] and param[2]
    IMF1 = AIMS.Distribution("IMF1", [0.5, 1.5, -1.0])
    IMF2 = AIMS.Distribution("IMF2", [0.5, 1.0, 1.5, -1.0, -1.0])
+
+   assert IMF1(0.0) == IMF1(2.0)
+   assert 0.5 <= IMF1.realisation() <= 1.5
+   assert IMF1.nparams == 3
+
+   assert IMF2(0.0) == IMF2(2.0)
+   assert 0.5 <= IMF2.realisation() <= 1.5
+   assert IMF2.nparams == 5
+
    assert IMF1(0.8)-IMF1(1.2) == pytest.approx(IMF2(0.8)-IMF2(1.2))
    assert IMF1.mean == pytest.approx(IMF2.mean)
    assert IMF1.error_bar == pytest.approx(IMF2.error_bar)
 
-   assert 0.5 <= IMF1.realisation() <= 1.5
-   assert IMF1.nparams == 3
-
-   assert 0.5 <= IMF2.realisation() <= 1.5
-   assert IMF2.nparams == 5
-
    test.print_me()
    test.to_string()
+
+   test = AIMS.Distribution("Undefined", [1, 2, 3])
+   assert test.nparams == 0
 
 def test_Prior_list():
    """
@@ -103,6 +129,10 @@ def test_Prior_list():
    test.add_prior(AIMS.Distribution("Uniform", [0.0, 1.0]))
    assert test([0.0]) == test([1.0])
    assert 0.0 <= test.realisation() <= 1.0
+   assert (0.0 <= test.realisation(size=2)).all()
+   assert (1.0 >= test.realisation(size=2)).all()
+   assert (0.0 <= test.realisation(size=(2,2))).all()
+   assert (1.0 >= test.realisation(size=(2,2))).all()
 
 def test_Mode():
    """
@@ -206,9 +236,18 @@ def test_fit_data():
     AIMS.like.clear_seismic_constraints()
     AIMS.like.read_constraints('tests/data/test.aimsobs', factor=1.0)
     AIMS.utilities.my_map(AIMS.like.add_seismic_constraint,
-                          ["r02","r01","r10","avg_dnu0",
-                           "nu_min0","nu_min1","nu_min2"])
+                          ["r02","r01","r10",
+                           "avg_dnu","avg_dnu0",
+                           "dnu", "dnu0", "d2nu",
+                           "nu_min0","nu_min1","nu_min2",
+                           "skip"])
     AIMS.like.clear_seismic_constraints()
+
+    AIMS.like.add_dnu_constraint_matrix("dnu", l_targets=[])
+    AIMS.like.add_dnu_constraint_matrix("dnu")
+    AIMS.like.add_dnu_constraint("dnu", l_targets=[])
+    AIMS.like.clear_seismic_constraints()
+
     AIMS.like.guess_dnu(with_n=True)
     AIMS.utilities.my_map(AIMS.like.add_seismic_constraint,config.seismic_constraints)
     AIMS.like.find_covariance()
@@ -282,11 +321,15 @@ def test_fit_data():
                      AIMS.best_grid_result, "tmp",
                      extended=True)
 
+    # we hit a few more code branches by using a surface correction
+    surface_option = AIMS.config.surface_option
+    AIMS.config.surface_option = "Sonoi2015"
     AIMS.config.output_osm = 'tests/data'
     AIMS.write_osm_frequencies('tmp.osm_freq', AIMS.best_grid_model)
     AIMS.write_osm_don('tmp.osm_don', AIMS.best_grid_model)
     AIMS.write_osm_xml('tmp.osm_xml', AIMS.best_grid_params,
                        AIMS.best_grid_model)
+    AIMS.config.surface_option = surface_option
 
     sampler = AIMS.emcee.EnsembleSampler(nwalkers, ndims, AIMS.prob)
     AIMS.grid = grid

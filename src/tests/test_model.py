@@ -90,6 +90,7 @@ def test_Model():
                    == m.modes['freq'])
 
     assert m.find_mode(m.modes['n'][0], m.modes['l'][0]) == m.modes['freq'][0]
+    assert model.np.isnan(m.find_mode(99, 99))
     nmin, nmax, lmin, lmax = m.find_mode_range()
     assert nmin <= nmax
     assert lmin == 0
@@ -124,6 +125,9 @@ def test_Model():
     assert m.MH == pytest.approx(m.MH0)
     assert m.zsx_s == pytest.approx(m.zsx_0)
 
+    m.modes = model.np.empty(0, dtype=model.modetype)
+    assert m.find_mode_range() == (-1, -1, -1, -1)
+
     m.print_me()
     del(m)
 
@@ -138,6 +142,10 @@ def test_Track():
 
     assert track.is_sorted()
     assert track.freq_sorted(0)
+    # reverse the modes in one model so they definitely aren't sorted
+    track.modes[track.mode_indices[0]:track.mode_indices[1]] = \
+        track.modes[track.mode_indices[0]:track.mode_indices[1]][::-1]
+    assert not track.freq_sorted(0)
     assert not track.duplicate_ages()
     assert not track.remove_duplicate_ages()
     m = track.interpolate_model(1000.0)
@@ -193,6 +201,6 @@ def test_Model_grid():
 
     epsilons = test.find_epsilons(0)
     assert 0 < epsilons[0] < 2
+    assert test.find_epsilons(99) == []
 
     assert test.remove_tracks(20) # should be all of them
-
