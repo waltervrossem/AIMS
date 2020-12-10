@@ -198,7 +198,8 @@ track_threshold = 2              # minimal number of models for a stellar evolut
 #                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
 #                ('Xc', 'Central hydrogen, $%sX_c%s$'))
 user_params = (('Zs', 'Surface metallicity, $%sZ_s%s$'), \
-               ('Xs', 'Surface hydrogen, $%sX_s%s$'))
+               ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
+               ('Xc', 'Central hydrogen, $%sX_c%s$'))
 
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.

@@ -183,6 +183,40 @@ def test_Track():
     track.append_track(track)
     assert track.remove_duplicate_ages()
 
+def test_Aldo_grid():
+    """
+    Test the functions to read Aldo-style data.  Uses fake data
+    created from the basic grid by reading the source code.
+    """
+    # fake the settings necessary for an Aldo-style grid to work
+    mode_format = model.config.mode_format
+    model.config.mode_format = "Aldo"
+
+    user_params = model.config.user_params
+    model.config.user_params = tuple([(k, '') for k in
+                                      ['Xc', 'Zc', 'Xs', 'Zs', 'Mass_true']])
+    model.nlin = 6 + len(model.config.user_params) # computed when model is imported, so have to change it manually after changing length of user_params
+    model.init_user_param_dict()
+
+    test = model.Model_grid()
+    test.read_model_list('tests/data/test.aldolist')
+
+    t = test.tracks[0]
+    assert t.glb[0][model.ix0] == pytest.approx(0.706)
+    assert t.glb[0][model.iz0] == pytest.approx(0.018)
+
+    assert t.modes[0]['n'] == 10
+    assert t.modes[0]['l'] == 0
+    # could test the frequency but it's made dimensionless in mode table
+    # assert t.modes[0]['freq'] == pytest.approx(602.5390526471284)
+    assert t.modes[0]['inertia'] == pytest.approx(1.132162863810218e-6)
+
+    # restore original settings
+    model.config.mode_format = mode_format
+    model.config.user_params = user_params
+    model.init_user_param_dict()
+    model.nlin = 6 + len(model.config.user_params)
+
 def test_Model_grid():
     """
     Test functions in the Model_grid class.
@@ -191,8 +225,7 @@ def test_Model_grid():
     test.read_model_list('tests/data/test.aimslist')
 
     replace_age_adim = model.config.replace_age_adim
-    # 'scale_Xc' is also an option but Xc isn't in the grid
-    for option in [None, 'age', 'scale_age']:
+    for option in [None, 'scale_Xc', 'age', 'scale_age']:
         model.config.replace_age_adim = option
         test.replace_age_adim()
 
