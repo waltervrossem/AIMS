@@ -496,7 +496,7 @@ class Model:
         narr,larr,farr,iarr,nn,exceed_freqlim =  \
             aims_fortran.read_file_agsm(filename,config.npositive,config.agsm_cutoff, \
             config.cutoff*self.cutoff)
-        self.modes = np.array(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn]),dtype=modetype)
+        self.modes = np.array(list(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn])),dtype=modetype)
 
         return exceed_freqlim
 
@@ -1229,7 +1229,7 @@ class Track:
         :rtype: boolean
         """
 
-        for i in range(self.mode_indices[imodel],self.mode_indices[i+1]):
+        for i in range(self.mode_indices[imodel], self.mode_indices[imodel+1]-1):
             #if (self.modes['l'][i] > 0): continue
             if (self.modes['l'][i] != self.modes['l'][i+1]): continue
             if (self.modes['freq'][i] > self.modes['freq'][i+1]):
@@ -1254,7 +1254,7 @@ class Track:
         :rtype: float
         """
 
-        dnu = self.find_large_separation(i)
+        dnu = self.find_large_separation(imodel)
         one = n = nu = 0.0
         for i in range(self.mode_indices[imodel],self.mode_indices[imodel+1]):
             if (self.modes['l'][i] != ltarget): continue
@@ -1470,7 +1470,7 @@ class Track:
 
         ages  = list(self.glb[:,iage])
         freqs = []
-        for i in range(self.names):
+        for i in range(len(self.names)):
            for j in range(self.mode_indices[i],self.mode_indices[i+1]):
                if ((self.modes['n'][j] == ntarget) and (self.modes['l'][j] == ltarget)):
                    freqs.append(self.modes['freq'][j])
@@ -1499,7 +1499,7 @@ class Track:
 
         ages  = list(self.glb[:,iage])
         freqs = []
-        for i in range(self.names):
+        for i in range(len(self.names)):
            for j in range(self.mode_indices[i],self.mode_indices[i+1]):
                if ((self.modes['n'][j] == ntarget) and (self.modes['l'][j] == ltarget)):
                    freqs.append(self.modes['freq'][j]*self.glb[i,ifreq_ref])
@@ -1519,8 +1519,8 @@ class Track:
         if (len(self.modes) < 1):
             return -1,-1,-1,-1
         else:
-            np.min(self.modes['n']), np.max(self.modes['n']), \
-            np.min(self.modes['l']), np.max(self.modes['l'])
+            return np.min(self.modes['n']), np.max(self.modes['n']), \
+                   np.min(self.modes['l']), np.max(self.modes['l'])
 
     @property
     def age_range(self):
@@ -2167,7 +2167,7 @@ class Model_grid:
         for track in self.tracks:
             for i in range(len(track.names)):
                 if (not track.freq_sorted(i)):
-                    print(model.names[i])
+                    print(track.names[i])
                     Teffs_out.append(track.glb[i,itemperature])
                     Lums_out.append(math.log10(track.glb[i,iluminosity]/constants.solar_luminosity))
                 else:

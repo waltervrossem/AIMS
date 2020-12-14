@@ -922,11 +922,11 @@ class Likelihood:
             else:
                 if (len(columns) < 3): continue
                 if (utilities.is_number(columns[1])):
-                    like.add_constraint((columns[0],           \
+                    self.add_constraint((columns[0],           \
                         Distribution("Gaussian",               \
                         utilities.my_map(utilities.to_float,columns[1:]))))
                 else:
-                    like.add_constraint((columns[0],           \
+                    self.add_constraint((columns[0],           \
                         Distribution(columns[1],               \
                         utilities.my_map(utilities.to_float,columns[2:]))))
 
@@ -1944,7 +1944,7 @@ def write_list_file(filename):
     output.write(grid.prefix+" "+grid.postfix+"\n")
     for track in grid.tracks:
         #if (int(round(track.params[0]*100.0))%4 != 0): continue # impose step of 0.04 Msun
-        if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
+        #if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
         for i in range(0,len(track.names)):
             # no need to copy the modes since they are not used
             amodel = model.Model(track.glb[i], _name=track.names[i])
@@ -2573,7 +2573,7 @@ def write_readme(filename, elapsed_time):
     for (param,distrib) in prob.likelihood.constraints:
         output_file.write(str_string.format(param,distrib.to_string()))
     output_file.write(str_string.format("Seismic constraints",str(config.seismic_constraints)))
-    output_file.write(str_string.format("Surface option",config.surface_option))
+    output_file.write(str_string.format("Surface option",str(config.surface_option)))
     if (config.surface_option == "Kjeldsen2008"):
         output_file.write(str_float.format("Surface exponent, b",config.b_Kjeldsen2008))
     if (config.surface_option == "Sonoi2015"):
@@ -3000,7 +3000,7 @@ def write_osm_xml(filename,my_params, my_model):
         append_osm_parameter(config_osm, "se_b", my_params[ndims-nsurf+1], \
             0.1, 5.0, (1.0, 6.0))
 
-    if "Sonoi2015" in config.surface_option:
+    if config.surface_option == "Sonoi2015":
         append_osm_parameter(config_osm, "se_a", my_params[ndims-nsurf] \
             *(my_model.glb[model.ifreq_ref]/my_model.numax), \
             0.0001, 5.0, (-1.0, 0.0))
@@ -3102,7 +3102,7 @@ def write_osm_xml(filename,my_params, my_model):
     config_osm.append(setting_osm)
 
     output_file = open(os.path.join(config.output_osm,filename+"_seismic.xml"),"w")
-    output_file.write(etree.tostring(config_osm, pretty_print=True))
+    output_file.write(etree.tostring(config_osm, pretty_print=True, encoding='unicode'))
     output_file.close()
 
 def append_osm_parameter(config_osm, name, value, step, rate, bounds):
@@ -3169,7 +3169,7 @@ def append_osm_surface_effects(modes_osm, name, numax, values):
     numax_osm = etree.SubElement(surf_effects_osm, "numax")
     numax_osm.text = "%15.8e"%(numax)
 
-def echelle_diagram(my_model,my_params,model_name):
+def plot_echelle_diagram(my_model,my_params,model_name):
     """
     Produce an echelle diagram for input model.
     
@@ -3726,7 +3726,7 @@ if __name__ == "__main__":
                    "best_grid",extended=config.extended_model)
         write_combinations(os.path.join(output_folder,"combinations_best_grid.txt"),[best_grid_params])
         if (config.with_echelle):
-            echelle_diagram(best_grid_model,best_grid_params,"Best grid")
+            plot_echelle_diagram(best_grid_model,best_grid_params,"Best grid")
         plot_frequency_diff(best_grid_model,best_grid_params,"Best grid",scaled=False)
         plot_frequency_diff(best_grid_model,best_grid_params,"Best grid",scaled=True)
 
@@ -3741,7 +3741,7 @@ if __name__ == "__main__":
                "best_MCMC",extended=config.extended_model)
     write_combinations(os.path.join(output_folder,"combinations_best_MCMC.txt"),[best_MCMC_params])
     if (config.with_echelle):
-        echelle_diagram(best_MCMC_model,best_MCMC_params,"Best MCMC")
+        plot_echelle_diagram(best_MCMC_model,best_MCMC_params,"Best MCMC")
     plot_frequency_diff(best_MCMC_model,best_MCMC_params,"Best MCMC",scaled=False)
     plot_frequency_diff(best_MCMC_model,best_MCMC_params,"Best MCMC",scaled=True)
 
@@ -3756,7 +3756,7 @@ if __name__ == "__main__":
                    "statistical",extended=config.extended_model)
         write_combinations(os.path.join(output_folder,"combinations_statistical.txt"),[statistical_params])
         if (config.with_echelle):
-            echelle_diagram(statistical_model,statistical_params,"statistical")
+            plot_echelle_diagram(statistical_model,statistical_params,"statistical")
         plot_frequency_diff(statistical_model,statistical_params,"statistical",scaled=False)
         plot_frequency_diff(statistical_model,statistical_params,"statistical",scaled=True)
 

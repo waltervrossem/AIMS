@@ -47,7 +47,7 @@ nsteps0     = 200    # number of burn-in steps
 nsteps      = 200    # number of steps
 thin        = 10     # thinning parameter (1 out of thin steps will be kept ...)
 thin_comb   = 100    # thinning parameter for output linear combinations of models
-PT          = True   # use parallel tempering?
+PT          = False  # use parallel tempering?
 
 #########################   Initialisation   ###############################
 samples_file = None
@@ -79,7 +79,7 @@ tight_ball_range = {}  # do NOT erase this line
 #tight_ball_range["Mass"]     = ("Gaussian", [0.0, 0.10])
 #########################   Radial orders   ################################
 use_n       = True  # use radial orders when comparing observations with models?
-read_n      = True  # read radial orders from input file?
+read_n      = False # read radial orders from input file?
 assign_n    = False # use best model to reassign the radial order?
                     # NOTE: this supersedes "read_n"
 #########################   Constraints   ##################################
@@ -99,7 +99,7 @@ assign_n    = False # use best model to reassign the radial order?
 #                     from Sonoi et al. (2015)
 #   - "Sonoi2015_2": use the surface corrections based on Sonoi et al. (2015);
 #                     The beta exponent is a free parameter
-surface_option = "Ball2014_2"
+surface_option = None # "Ball2014_2"
 b_Kjeldsen2008 = 4.9  # exponent used in the Kjeldsen et al. surface corrections
 beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 
@@ -114,7 +114,7 @@ beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 #       results.
 #seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0","nu_min1","nu_min2"]
 #seismic_constraints = ["dnu0","r01","r02"]
-seismic_constraints = ["nu"] 
+seismic_constraints = ["r02", "r01", "nu_min0", "nu", "avg_dnu0"]
 
 #########################   Weighting   ########################################
 # Determines what type of weighting to apply to seismic and classic contraints.
@@ -124,8 +124,8 @@ seismic_constraints = ["nu"]
 #    - "Relative": weights applied after normalising the classic and seismic
 #                  constraints to have the same weight.
 # NOTE: even with the relative weighting, classic_weight is kept as absolute.
-weight_option = "Absolute"
-seismic_weight = 1.0
+weight_option = "Relative"
+seismic_weight = 0.0
 classic_weight = 1.0
 
 #########################   Input   ########################################
@@ -141,14 +141,14 @@ replace_age_adim = None          # replaces the dimensionless age parameter in
 retessellate  = False            # retessellate grid (this can be useful
                                  # if the binary grid has been produced by
                                  # an outdated version of numpy ...)
-distort_grid  = False            # This distorts the grid by multiplying it by
+distort_grid  = True             # This distorts the grid by multiplying it by
                                  # a distortion matrix in order to break its
                                  # cartesian character and accelerate
                                  # finding simplices.  This will cause the
                                  # grid to be retessellated.
                                  # NOTE: this option is still experimental
                                  #       and may need some further fine-tuning.
-mode_format   = "simple"         # specifies the format of the files with
+mode_format   = "MESA"           # specifies the format of the files with
                                  # the mode frequencies.  Options include:
                                  #   - "simple": the original AIMS format
                                  #   - "CLES": the CLES format (almost the same as "simple")
@@ -157,7 +157,7 @@ mode_format   = "simple"         # specifies the format of the files with
                                  #   - "Aldo": an entirely different format where
                                  #             tracks are stored in separate files
                                  #             along with their pulsation frequencies
-npositive     = False            # if True, only save modes with n >= 0 in
+npositive     = True             # if True, only save modes with n >= 0 in
                                  # binary grid file
 cutoff        = 5.0              # remove frequencies above this value times
                                  # the acoustic cutoff-frequency
@@ -168,15 +168,15 @@ agsm_cutoff   = False            # if True, only keep frequencies with icase=100
 list_grid      = "list_MESA_ms"  # file with list of models and characteristics.
                                  # only used when constructing binary file with
                                  # the model grid (i.e. mode == "write_grid")
-grid_params = ('Mass', 'log_Z')  # primary grid parameters (excluding age)
+grid_params = ('Mass', 'Z')      # primary grid parameters (excluding age)
                                  # only used when constructing binary file with
                                  # the model grid (i.e. mode == "write_grid")
                                  # These parameters are used to distinguish
                                  # evolutionary tracks
-binary_grid = "data_MESA_ms_log" # binary file with model grid
+binary_grid = "tests/data/test.aimsgrid" # binary file with model grid
                                  # this file is written to if mode == "write_grid"
                                  # this file is read from otherwise
-track_threshold = 10             # minimal number of models for a stellar evolutionary
+track_threshold = 2              # minimal number of models for a stellar evolutionary
                                  # track.  Tracks with fewer models are removed
 #########################   User-defined parameters   ######################
 # This variable allows the user to introduce supplementary parameters in
@@ -192,11 +192,18 @@ track_threshold = 10             # minimal number of models for a stellar evolut
 # be replaced by appropriate strings if, for instance, one asks for the
 # log of this parameter.
 
-user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
-               ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
+# user_params = (('alpha_MLT', 'Mixing length parameter, $%s\\alpha_{\\mathrm{MLT}}%s$'), \
+#                ('Zs', 'Surface metallicity, $%sZ_s%s$'), \
+#                ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
+#                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
+#                ('Xc', 'Central hydrogen, $%sX_c%s$'))
+user_params = (('Zs', 'Surface metallicity, $%sZ_s%s$'), \
                ('Xs', 'Surface hydrogen, $%sX_s%s$'), \
                ('Zc', 'Central metallicity, $%sZ_c%s$'), \
-               ('Xc', 'Central hydrogen, $%sX_c%s$'))
+               ('Xc', 'Central hydrogen, $%sX_c%s$'), \
+               ('alpha_MLT', 'Mixing-length parameter, $%s\\alpha%s$'), \
+               ('Tc', 'Central temperature, $%sT_c%s$'))
+
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions
@@ -242,7 +249,8 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
 #       based on the scaling relation in Sonoi et al. (2015).  This will differ
 #       from the values obtained when using the options surface_option="Kjeldsen2008_2"
 #       or "Sonoi2015_2"
-output_params = ('Radius','log_g','Rho','Age','Teff','Luminosity','Zs','Xs')
+# output_params = ('Radius','log_g','Rho','Age','Teff','Luminosity','Zs','Xs')
+output_params = ('Radius','Age','Teff','Luminosity')
 output_dir    = "results"      # name of the root folder with the results
 output_osm    = "osm"          # name of the root folder with the OSM files
 extended_model  = False        # if True, print all models frequencies
