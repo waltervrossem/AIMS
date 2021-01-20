@@ -15,6 +15,14 @@ import model
 ################################################################################
 ################################################################################
 
+def test_string_to_latex():
+    with pytest.raises(KeyError):
+        model.string_to_latex('alskdfjhal')
+
+def test_get_surface_parameter_names():
+    with pytest.raises(ValueError):
+        model.get_surface_parameter_names('alskdfjhal')
+
 def test_init_user_param_dict():
     assert model.init_user_param_dict() == None
 
@@ -64,9 +72,17 @@ def test_Model():
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
 
+    with pytest.raises(KeyError):
+        m.string_to_param('aslkfhaldsfhl')
+
     # choose options through model.config to cover more code
     # so save original option to restore after tests
     mode_format = model.config.mode_format
+
+    model.config.mode_format = 'ajsdhfkas'
+    with pytest.raises(ValueError):
+        m.read_file('tests/data/tmp.simple')
+
     model.config.mode_format = 'agsm'
     m.read_file('tests/data/test.agsm')
     assert all(m.modes['n'] == [19,20,21])
@@ -76,8 +92,21 @@ def test_Model():
     assert m.modes['inertia'] == pytest.approx(
         [3.91089245e-10,3.18748640e-10,2.64390334e-10])
 
+    for option in [None, 'Ball2014', 'Ball2014_2',
+                   'Kjeldsen2008', 'Kjeldsen2008_scaling', 'Kjeldsen2008_2',
+                   'Sonoi2015', 'Sonoi2015_scaling', 'Sonoi2015_2']:
+        assert m.get_surface_correction(option, [0., 0.]) == \
+            pytest.approx(0.*m.modes['freq'])
+
+    with pytest.raises(ValueError):
+        m.get_surface_correction('dfallaf', [9283456.0, -123413.])
+
     m.write_file_simple('tests/data/tmp.simple')
     model.config.mode_format = 'simple'
+
+    with pytest.raises(FileNotFoundError):
+        m.read_file('__7as_d8kakds2f1f34.1341.jfasd')
+
     m.read_file('tests/data/tmp.simple')
     model.config.mode_format = 'CLES'
     m.read_file('tests/data/tmp.simple')

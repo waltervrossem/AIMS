@@ -82,6 +82,12 @@ def test_Distribution():
    assert test(0.0) == test(1.0)
    assert test.nparams == 0
 
+   with pytest.raises(ValueError):
+       test.realisation()
+
+   with pytest.raises(ValueError):
+       test.re_normalise(1.0)
+
    test = AIMS.Distribution("Above", [0.0])
    assert AIMS.np.isnan(test.mean)
    assert AIMS.np.isnan(test.error_bar)
@@ -89,12 +95,24 @@ def test_Distribution():
    assert test(-1.0) == test(-2.0) # same value outside support
    assert test.nparams == 1
 
+   with pytest.raises(ValueError):
+       test.realisation()
+
+   with pytest.raises(ValueError):
+       test.re_normalise(1.0)
+
    test = AIMS.Distribution("Below", [0.0])
    assert AIMS.np.isnan(test.mean)
    assert AIMS.np.isnan(test.error_bar)
    assert test(0.0) == test(-1.0)
    assert test(1.0) == test(2.0) # same value outside support
    assert test.nparams == 1
+
+   with pytest.raises(ValueError):
+       test.realisation()
+
+   with pytest.raises(ValueError):
+       test.re_normalise(1.0)
 
    # IMF1 is a power law between param[0] and param[1] with index param[2]
    # IMF2 is a two-part power law with index param [3] between param[0] and param[1] and index param[4] between param[1] and param[2]
@@ -104,10 +122,20 @@ def test_Distribution():
    assert IMF1(0.0) == IMF1(2.0)
    assert 0.5 <= IMF1.realisation() <= 1.5
    assert IMF1.nparams == 3
+   with pytest.raises(ValueError):
+       IMF1.re_centre(0.0)
+
+   with pytest.raises(ValueError):
+       IMF1.re_normalise(1.0)
 
    assert IMF2(0.0) == IMF2(2.0)
    assert 0.5 <= IMF2.realisation() <= 1.5
    assert IMF2.nparams == 5
+   with pytest.raises(ValueError):
+       IMF2.re_centre(0.0)
+
+   with pytest.raises(ValueError):
+       IMF2.re_normalise(1.0)
 
    assert IMF1(0.8)-IMF1(1.2) == pytest.approx(IMF2(0.8)-IMF2(1.2))
    assert IMF1.mean == pytest.approx(IMF2.mean)
@@ -118,6 +146,24 @@ def test_Distribution():
 
    test = AIMS.Distribution("Undefined", [1, 2, 3])
    assert test.nparams == 0
+
+   with pytest.raises(ValueError):
+       test(0.0)
+
+   with pytest.raises(ValueError):
+       test.mean
+
+   with pytest.raises(ValueError):
+       test.error_bar
+
+   with pytest.raises(ValueError):
+       test.realisation()
+
+   with pytest.raises(ValueError):
+       test.re_centre(0.0)
+
+   with pytest.raises(ValueError):
+       test.re_normalise(1.0)
 
 def test_Prior_list():
    """
@@ -258,6 +304,10 @@ def test_fit_data():
     for option in [None, "Absolute", "Relative", "Reduced",
                    "Reduced_bis"]:
         config.weight_option = option
+        AIMS.like.find_weights()
+
+    config.weight_option = "aoj178nsdfja12"
+    with pytest.raises(ValueError):
         AIMS.like.find_weights()
 
     config.weight_option = weight_option

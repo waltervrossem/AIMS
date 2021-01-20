@@ -259,7 +259,7 @@ class Distribution:
             else:
                 return log0
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     def realisation(self, size=None):
         """
@@ -300,13 +300,13 @@ class Distribution:
             vFinv = np.vectorize(Finv)    
             return vFinv(np.random.uniform(0.0,1.0,size=size))
         elif self.type == "Uninformative":
-            sys.exit("Unable to produce a realisation for an uninformative distribution")
+            raise ValueError("Unable to produce a realisation for an uninformative distribution")
         elif self.type == "Above":
-            sys.exit("Unable to produce a realisation for an \"Above\" distribution")
+            raise ValueError("Unable to produce a realisation for an \"Above\" distribution")
         elif self.type == "Below":
-            sys.exit("Unable to produce a realisation for a \"Below\" distribution")
+            raise ValueError("Unable to produce a realisation for a \"Below\" distribution")
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     def re_centre(self,value):
         """
@@ -325,9 +325,9 @@ class Distribution:
             self.values[0] = value - dist
             self.values[1] = value + dist
         elif self.type == "IMF1":
-            sys.exit("re_centre method not implemented for IMF1")
+            raise ValueError("re_centre method not implemented for IMF1")
         elif self.type == "IMF2":
-            sys.exit("re_centre method not implemented for IMF2")
+            raise ValueError("re_centre method not implemented for IMF2")
         elif self.type == "Uninformative":
             # do nothing
             pass
@@ -336,7 +336,7 @@ class Distribution:
         elif self.type == "Below":
             self.values[0] = value
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     def re_normalise(self,value):
         """
@@ -356,17 +356,17 @@ class Distribution:
             self.values[0] = centre - value
             self.values[1] = centre + value
         elif self.type == "IMF1":
-            sys.exit("re_normalise method not implemented for IMF1")
+            raise ValueError("re_normalise method not implemented for IMF1")
         elif self.type == "IMF2":
-            sys.exit("re_normalise method not implemented for IMF2")
+            raise ValueError("re_normalise method not implemented for IMF2")
         elif self.type == "Uninformative":
-            sys.exit("Unable to renormalise an uninformative distribution")
+            raise ValueError("Unable to renormalise an uninformative distribution")
         elif self.type == "Above":
-            sys.exit("Unable to renormalise an \"Above\" distribution")
+            raise ValueError("Unable to renormalise an \"Above\" distribution")
         elif self.type == "Below":
-            sys.exit("Unable to renormalise a \"Below\" distribution")
+            raise ValueError("Unable to renormalise a \"Below\" distribution")
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     @property
     def mean(self):
@@ -404,7 +404,7 @@ class Distribution:
         elif self.type == "Below":
             return np.nan
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     @property
     def error_bar(self):
@@ -454,7 +454,7 @@ class Distribution:
         elif self.type == "Below":
             return np.nan
         else:
-            sys.exit("Unrecognised distribution: "+self.type)
+            raise ValueError("Unrecognised distribution: " + self.type)
 
     @property
     def nparams(self):
@@ -853,7 +853,7 @@ class Likelihood:
             self.classic_weight = 1.0/float(nclassic - 1)
             return
 
-        sys.exit("Unknown weight_option: "+config.weight_option)
+        raise ValueError("Unknown weight_option: " + config.weight_option)
 
 
     def sort_modes(self):
@@ -1359,9 +1359,7 @@ class Likelihood:
             ipos += 1
 
         if (ndx == -1):
-            print("ERROR: mode number %d for l=%d does not exist"%(pos+1,target_ell))
-            print("       Please modify AIMS_configure.py accordingly")
-            sys.exit(1)
+            raise ValueError("ERROR: mode number %d for l=%d does not exist" % (pos+1, target_ell))
 
         a_combination = Combination()
         a_combination.add_coeff(ndx,1.0)
@@ -2074,10 +2072,8 @@ def find_best_model():
     print("  Rejections based on priors:          %d"%(nreject_prior))
 
     if (best_grid_model is None):
-        print("ERROR:  Unable to find a model in the grid which matches your")
-        print("        constraints.  Try extending the frequency spectra of")
-        print("        your models before running AIMS.   Aborting.")
-        sys.exit(1)
+        raise ValueError("Unable to find a model in the grid that matches your constraints." +
+                         "Try extending your models' frequency spectra.")
 
     best_grid_params  = utilities.my_map(best_grid_model.string_to_param,grid_params_MCMC)
 
@@ -2179,7 +2175,7 @@ def init_walkers():
            # set the initial distributions to the priors
            tight_ball_distributions = prob.priors
 
-        print("Generating walkers")
+        print("Generating walkers...")
         if (config.PT):
             p0 = np.zeros([config.ntemps, config.nwalkers, ndims])
 
@@ -2194,7 +2190,7 @@ def init_walkers():
                     counter = 0
                     while (prob.is_outside(params)):
                         if (counter > config.max_iter):
-                            sys.exit("ERROR: too many iterations to produce walker.  Aborting")
+                            raise ValueError("Too many iterations to produce walkers.")
                         params = tight_ball_distributions.realisation()
                         counter+=1
                     p0[k,j,:] = params
@@ -2218,7 +2214,7 @@ def init_walkers():
                 counter = 0
                 while (prob.is_outside(params)):
                     if (counter > config.max_iter):
-                        sys.exit("ERROR: too many iterations to produce walker.  Aborting")
+                        raise ValueError("Too many iterations to produce walkers.")
                     params = tight_ball_distributions.realisation()
                     counter+=1
                 p0[j,:] = params
@@ -2516,7 +2512,7 @@ def write_readme(filename, elapsed_time):
     :param filename: name of file in which to write the statistical properties
     :type filename: string
     """
-    
+
     # various format related strings:
     boolean2str = ("False","True")
     str_decimal = "{0:40}{1:d}\n"
@@ -3498,8 +3494,6 @@ def plot_frequencies(grid):
     plt.ylabel(r"Frequency, $\nu$ (in $\mu$Hz)",fontsize=15)
     plt.title(title,fontsize=20)
     plt.savefig("freq_dim.pdf")
-
-    sys.exit(0)
 
 
 if __name__ == "__main__":

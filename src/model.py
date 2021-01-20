@@ -201,10 +201,8 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "b_Kjeldsen2008"): return r'$%sb_{\mathrm{Kjeldsen\,et\,al.\,(2008)}}%s$'%(prefix,postfix)
     if (string == "beta_Sonoi2015"): return r'$%s\beta_{\mathrm{Sonoi\,et\,al.\,(2015)}}%s$'%(prefix,postfix)
 
-    try:
-        return user_params_latex[string]%(prefix,postfix)
-    except KeyError:
-        sys.exit("ERROR: unrecognised model quantity: "+string)
+    # raises a KeyError if `string` isn't a valid key
+    return user_params_latex[string] % (prefix, postfix)
 
 def get_surface_parameter_names(surface_option):
     """
@@ -226,7 +224,7 @@ def get_surface_parameter_names(surface_option):
     if (surface_option == "Sonoi2015"):            return ("alpha_surf",)
     if (surface_option == "Sonoi2015_scaling"):    return ("alpha_surf",)
     if (surface_option == "Sonoi2015_2"):          return ("alpha_surf","beta_Sonoi2015")
-    sys.exit("ERROR: Unknown surface correction: "+surface_option)
+    raise ValueError("Unknown surface correction: " + surface_option)
 
 class Model:
 
@@ -273,10 +271,8 @@ class Model:
         if (string == "beta_Sonoi2015"): return self.beta_Sonoi2015
         if (string == "b_Kjeldsen2008"): return self.b_Kjeldsen2008
 
-        try:
-            return self.glb[user_params_index[string]]
-        except KeyError:
-            sys.exit("ERROR: unrecognised model quantity: "+string)
+        # raises a KeyError if `string` isn't a valid key
+        return self.glb[user_params_index[string]]
 
     def __init__(self, _glb, _name=None, _modes=None):
         """
@@ -350,8 +346,8 @@ class Model:
         if (config.mode_format == "MESA"):     return self.read_file_MESA(filename)
         if (config.mode_format == "agsm"):     return self.read_file_agsm(filename)
         if (config.mode_format == "PLATO"):    return self.read_file_PLATO(filename)
-        sys.exit("ERROR: unrecognised format \""+config.mode_format+"\".\n" \
-                +"       Please choose another value for mode_format in AIMS_configure.py")
+        raise ValueError("Unrecognised format \""+config.mode_format+"\".\n" +
+                         "Please choose another value for mode_format in AIMS_configure.py")
 
     def read_file_CLES(self,filename):
         """
@@ -746,7 +742,7 @@ class Model:
                                                             / self.numax)**self.beta_Sonoi2015))
         if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
                                                             / self.numax)**a[1]))
-        sys.exit("ERROR: Unknown surface correction: "+surface_option)
+        raise ValueError("Unknown surface correction: " + surface_option)
 
     @property
     def b_Kjeldsen2008(self):
@@ -1371,12 +1367,9 @@ class Track:
             sorted (according to age).
         """
 
-        if ("Xc" in user_params_index):
-            ixc = user_params_index["Xc"]
-        else:
-            print('ERROR: "Xc" is not a grid parameter.  It cannot be')
-            print('       used to calculate the dimensionless age.')
-            sys.exit(1)
+        # Raises a key error if Xc isn't in the grid,
+        # which should be informative enough
+        ixc = user_params_index["Xc"]
 
         Xc_start = self.glb[0,ixc]
         Xc_stop  = self.glb[-1,ixc]
@@ -1683,7 +1676,10 @@ class Model_grid:
         with open(filename, "r") as listfile:
             line = listfile.readline().strip()
             columns = line.split()
-            if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
+
+            if len(columns) < 1:
+                raise IOError("Erroneous first line in %s." % filename)
+
             self.prefix = columns[0]
             if (len(columns) > 1): self.postfix = columns[1]
             if (self.postfix == "None"): self.postfix = ""
@@ -1711,15 +1707,13 @@ class Model_grid:
         # sanity check:
         for i in range(len(self.grid_params)):
             span = params_span[i]
-            if (np.isnan(span)):
-                sys.exit("ERROR: the values of some models parameters are NaN.")
-            if (np.isinf(span)):
-                sys.exit("ERROR: the values of some models parameters are infinite.")
-            if (span == 0.0): 
-                print("ERROR: parameter %s is constant in your grid."%(self.grid_params[i]))
-                print("       Therefore, it cannot be used as a grid parameter.")
-                print("       Please edit the value of grid_params in AIMS_configure.py")
-                sys.exit(1)
+            if np.isnan(span):
+                raise ValueError("The values of some models parameters are NaN.")
+            if np.isinf(span):
+                raise ValueError("The values of some models parameters are infinite.")
+            if span == 0.0:
+                raise ValueError("ERROR: parameter %s is constant in your grid" % self.grid_params[i] +
+                                 "and cannot be used as a grid parameter.")
 
         # create tracks: 
         print("Creating evolutionary tracks")
@@ -1803,17 +1797,11 @@ class Model_grid:
 
         # sanity check:
         if (len(config.user_params) != 5):
-            sys.exit('ERROR: contents of user_params variable incompatible with Aldo format.')
-        if ("Xc" not in user_params_index): 
-            sys.exit('ERROR: "Xc" missing from user_params variable but needed for Aldo format.')
-        if ("Zc" not in user_params_index): 
-            sys.exit('ERROR: "Zc" missing from user_params variable but needed for Aldo format.')
-        if ("Xs" not in user_params_index): 
-            sys.exit('ERROR: "Xs" missing from user_params variable but needed for Aldo format.')
-        if ("Zs" not in user_params_index): 
-            sys.exit('ERROR: "Zs" missing from user_params variable but needed for Aldo format.')
-        if ("Mass_true" not in user_params_index): 
-            sys.exit('ERROR: "Mass_true" missing from user_params variable but needed for Aldo format.')
+            raise ValueError('user_params should have length 5 for Aldo format but got %i.' % len(config.user_params))
+
+        for key in ['Xc', 'Zc', 'Xs', 'Zs', 'Mass_true']:
+            if not key in user_params_index:
+                raise KeyError("%s missing from user_params variable but needed for Aldo format." % key)
 
         self.grid_params = config.grid_params
 
@@ -1824,7 +1812,10 @@ class Model_grid:
         with open(filename,"r") as listfile:
             line = listfile.readline().strip()
             columns = line.split()
-            if (len(columns) < 1): sys.exit("Erroneous first line in %s." % filename)
+
+            if (len(columns) < 1):
+                raise IOError("Erroneous first line in %s." % filename)
+
             self.prefix = columns[0]
             self.postfix = ""
 
@@ -1957,7 +1948,7 @@ class Model_grid:
         elif (config.replace_age_adim == "scale_Xc"):
             for track in self.tracks: track.age_adim_to_scale_Xc()
         else:
-            sys.exit("ERROR: unknown option for replace_scale_age in AIMS_configure.py")
+            raise ValueError("Unknown option %s for replace_scale_age in AIMS_configure.py." % config.replace_age_adim)
 
     def check_age_adim(self):
         """
@@ -1966,7 +1957,7 @@ class Model_grid:
         """
 
         for track in self.tracks:
-            if (not track.is_sorted_adim()):
+            if not track.is_sorted_adim():
                 sys.exit("ERROR: track(s) not strictly sorted according to dimensionless age")
 
     def range(self,aParam):
@@ -2575,7 +2566,7 @@ def find_ages(coefs, tracks, age):
 
     else:
 
-        sys.exit("ERROR: unrecognised age_interpolation option")
+        raise ValueError("Unrecognised age_interpolation option %s." % config.age_interpolation)
 
 def interpolate_model(grid,pt,tessellation,ndx):
     """
