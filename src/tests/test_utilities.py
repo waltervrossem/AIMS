@@ -25,3 +25,11 @@ def test_is_number():
 def test_trim():
     assert utilities.trim('data # comment # comment') == 'data '
     
+def test_sparse_print():
+    tmpfile = 'tmp.sparse_print'
+    utilities.sparse_print(tmpfile, utilities.np.eye(4))
+    with open(tmpfile, 'r') as f:
+        for i, line in enumerate(f.readlines()):
+            pytest.approx(utilities.to_float(line.split()[0]), 1.0)
+            assert(line.split()[1] == '(%i,' % i)
+            assert(line.split()[2] == '%i)' % i)

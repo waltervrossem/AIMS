@@ -91,12 +91,11 @@ def sparse_print(filename,mat):
     :type mat: numpy array
     """
 
-    output_file = open(filename,"w")
-    it = np.nditer(mat, flags=['multi_index'])
-    while not it.finished:
-       if (it[0] != 0.0): output_file.write("%22.15e %s\n"%(it[0], it.multi_index))
-       it.iternext()
-    output_file.close()
+    with open(filename, "w") as output_file:
+        it = np.nditer(mat, flags=['multi_index'])
+        while not it.finished:
+            if (it[0] != 0.0): output_file.write("%22.15e %s\n"%(it[0], it.multi_index))
+            it.iternext()
 
 def my_map(fct,lst):
     """

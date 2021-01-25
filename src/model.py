@@ -41,6 +41,11 @@ __docformat__ = 'restructuredtext'
 # AIMS configuration:
 import AIMS_configure as config
 
+# packages from within AIMS:
+import constants
+import utilities
+import aims_fortran
+
 # various packages needed for AIMS
 import math
 import numpy as np
@@ -52,11 +57,6 @@ if (config.backend is not None): matplotlib.use(config.backend)
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from bisect import bisect_right
-
-# packages from within AIMS:
-import constants
-import utilities
-import aims_fortran
 
 # Strings for age parameters
 age_str     = "Age"
@@ -374,21 +374,21 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        freqfile.readline() # skip head
-        mode_temp = [] 
-        for line in freqfile:
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[2])
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim): 
-                exceed_freqlim = True
-                continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[4])))
-        freqfile.close()
+        with open(filename) as freqfile:
+            freqfile.readline() # skip head
+            mode_temp = []
+            for line in freqfile:
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[2])
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[4])))
+
         self.modes = np.array(mode_temp,dtype=modetype)
 
         return exceed_freqlim
@@ -414,21 +414,21 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        mode_temp = []
-        for line in freqfile:
-            if line[0] == '#' : continue # Skip comments
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[3])*10**6 # freq tu muHz
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim):
-               exceed_freqlim = True
-               continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,1.0)) # No inertia in file
-        freqfile.close()
+        with open(filename) as freqfile:
+            mode_temp = []
+            for line in freqfile:
+                if line[0] == '#' : continue # Skip comments
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[3])*10**6 # freq tu muHz
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,1.0)) # No inertia in file
+
         self.modes = np.array(mode_temp,dtype=modetype)
 
         return exceed_freqlim
@@ -454,23 +454,23 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        for i in range(7):
-            freqfile.readline()
-        mode_temp = []
-        for line in freqfile:
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[4])
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim):
-                exceed_freqlim = True
-                continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[7])))
-        freqfile.close()
-        self.modes = np.array(mode_temp,dtype=modetype)
+        with open(filename) as freqfile:
+            for i in range(7):
+                freqfile.readline()
+            mode_temp = []
+            for line in freqfile:
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[4])
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[7])))
+
+        self.modes = np.array(mode_temp, dtype=modetype)
 
         return exceed_freqlim
 
@@ -588,16 +588,15 @@ class Model:
           - The output frequencies are expressed in :math:`\mathrm{\mu Hz}`
         """
 
-        output = open(filename,"w")
-        # write header
-        output.write("# %1s %3s %22s %6s %22s\n"%("l","n","nu_theo (muHz)","unused","Inertia"))
-        for i in range(self.modes.shape[0]):
-            output.write("  %1d %3d %22.15e    0.0 %22.15e\n"%( \
-                self.modes["l"][i],                        \
-                self.modes["n"][i],                        \
-                self.modes["freq"][i]*self.glb[ifreq_ref], \
-                self.modes["inertia"][i]))
-        output.close()
+        with open(filename, "w") as output:
+            # write header
+            output.write("# %1s %3s %22s %6s %22s\n" % ("l", "n", "nu_theo (muHz)", "unused", "Inertia"))
+            for i in range(self.modes.shape[0]):
+                output.write("  %1d %3d %22.15e    0.0 %22.15e\n" % (
+                    self.modes["l"][i],
+                    self.modes["n"][i],
+                    self.modes["freq"][i]*self.glb[ifreq_ref],
+                    self.modes["inertia"][i]))
 
     def append_modes(self,modes):
         """
@@ -1681,14 +1680,13 @@ class Model_grid:
         self.ndim = len(self.grid_params)
 
         # set prefix and postfix:
-        listfile = open(filename,"r")
-        line = listfile.readline().strip()
-        columns = line.split()
-        if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
-        self.prefix = columns[0]
-        if (len(columns) > 1): self.postfix = columns[1]
-        if (self.postfix == "None"): self.postfix = ""
-        listfile.close()
+        with open(filename, "r") as listfile:
+            line = listfile.readline().strip()
+            columns = line.split()
+            if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
+            self.prefix = columns[0]
+            if (len(columns) > 1): self.postfix = columns[1]
+            if (self.postfix == "None"): self.postfix = ""
 
         # read list with numpy:
         print("Reading list file")
@@ -1767,9 +1765,8 @@ class Model_grid:
         print("I merged %d track(s)"%(imerge))
 
         # write list of models with spectra which are too small in a file:
-        output = open("models_small_spectra","w")
-        for name in models_small_spectra: output.write(name+"\n")
-        output.close()
+        with open("models_small_spectra", "w") as output:
+            for name in models_small_spectra: output.write(name+"\n")
 
         # sort tracks:
         for track in self.tracks: track.sort()
@@ -1824,86 +1821,84 @@ class Model_grid:
         self.ndim = len(self.grid_params)
 
         # set prefix and postfix:
-        listfile = open(filename,"r")
-        line = listfile.readline().strip()
-        columns = line.split()
-        if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
-        self.prefix = columns[0]
-        self.postfix = ""
+        with open(filename,"r") as listfile:
+            line = listfile.readline().strip()
+            columns = line.split()
+            if (len(columns) < 1): sys.exit("Erroneous first line in %s." % filename)
+            self.prefix = columns[0]
+            self.postfix = ""
 
-        # read models and put them into evolutionary tracks:
-        nmodels = 0
-        nmodes  = 0
-        models_small_spectra = []
-        norder  = np.zeros((4,2),dtype=ntype)
-        for line in listfile:
-            if (line[0] == "#"): continue
-            line = line.strip()
-            if (len(line) == 0): continue
+            # read models and put them into evolutionary tracks:
+            nmodels = 0
+            nmodes  = 0
+            models_small_spectra = []
+            norder  = np.zeros((4,2), dtype=ntype)
+            for line in listfile:
+                if line[0] == "#": continue
+                line = line.strip()
+                if len(line) == 0: continue
 
-            # read track file:
-            x0 = None
-            z0 = None
-            Mass0 = None
-            trackfile = open(self.prefix+line,"r")
-            # skip header:
-            for i in range(3): trackfile.readline()
-            # read mode structure
-            ntot = 0
-            for l in range(4):
-                columns = trackfile.readline().strip().split()
-                norder[l,0] = int(columns[0])
-                norder[l,1] = int(columns[1])
-                ntot += norder[l,1]
-            trackfile.close()
+                # read track file:
+                x0 = None
+                z0 = None
+                Mass0 = None
+                with open(self.prefix+line, "r") as trackfile:
+                    # skip header:
+                    for i in range(3): trackfile.readline()
+                    # read mode structure
+                    ntot = 0
+                    for l in range(4):
+                        columns = trackfile.readline().strip().split()
+                        norder[l,0] = int(columns[0])
+                        norder[l,1] = int(columns[1])
+                        ntot += norder[l,1]
 
-            # read models with numpy:
-            glbs = np.loadtxt(self.prefix+line,skiprows=7,usecols=range(1,11+2*ntot),dtype=gtype)
-            names = np.loadtxt(self.prefix+line,skiprows=7,usecols=(0,),dtype='str')
+                # read models with numpy:
+                glbs  = np.loadtxt(self.prefix+line, skiprows=7, usecols=range(1,11+2*ntot), dtype=gtype)
+                names = np.loadtxt(self.prefix+line, skiprows=7, usecols=(0,), dtype='str')
 
-            # read models
-            for i in range(glbs.shape[0]):
-                if (x0 is None): x0 = glbs[i,7]
-                if (z0 is None): z0 = glbs[i,6]
-                if (Mass0 is None): Mass0 = glbs[i,1]*constants.solar_mass
-                glb = np.empty((nglb,),dtype = gtype)
-                glb[imass]        = Mass0
-                glb[iradius]      = glbs[i,4]*constants.solar_radius
-                glb[iluminosity]  = constants.solar_luminosity*10.0**glbs[i,3]
-                glb[iz0]          = z0
-                glb[ix0]          = x0
-                glb[iage]         = glbs[i,0]
-                glb[itemperature] = glbs[i,2]
-                glb[iage_adim]    = glbs[i,0]  # may be replace later on
-                glb[user_params_index["Mass_true"]] = glbs[i,1]
-                glb[user_params_index["Xs"]] = glbs[i,7]
-                glb[user_params_index["Zs"]] = glbs[i,6]
-                glb[user_params_index["Xc"]] = glbs[i,8]
-                glb[user_params_index["Zc"]] = 1.0-glbs[i,9]-glbs[i,8]
+                # read models
+                for i in range(glbs.shape[0]):
+                    if (x0 is None): x0 = glbs[i,7]
+                    if (z0 is None): z0 = glbs[i,6]
+                    if (Mass0 is None): Mass0 = glbs[i,1]*constants.solar_mass
+                    glb = np.empty((nglb,), dtype=gtype)
+                    glb[imass]        = Mass0
+                    glb[iradius]      = glbs[i,4]*constants.solar_radius
+                    glb[iluminosity]  = constants.solar_luminosity*10.0**glbs[i,3]
+                    glb[iz0]          = z0
+                    glb[ix0]          = x0
+                    glb[iage]         = glbs[i,0]
+                    glb[itemperature] = glbs[i,2]
+                    glb[iage_adim]    = glbs[i,0]  # may be replace later on
+                    glb[user_params_index["Mass_true"]] = glbs[i,1]
+                    glb[user_params_index["Xs"]] = glbs[i,7]
+                    glb[user_params_index["Zs"]] = glbs[i,6]
+                    glb[user_params_index["Xc"]] = glbs[i,8]
+                    glb[user_params_index["Zc"]] = 1.0-glbs[i,9]-glbs[i,8]
 
-                aModel = Model(glb, _name = names[i])
-                exceed_freqlim = aModel.read_modes_Aldo(norder,glbs[i,10:])
-                aModel.multiply_modes(1.0/aModel.glb[ifreq_ref])  # make frequencies non-dimensional
-                aModel.sort_modes()
-                # We're assuming the models are grouped together in tracks, so 
-                # we only need to check the previous track:
-                if ((len(self.tracks) > 0) and (self.tracks[-1].matches(aModel))):
-                    self.tracks[-1].append(aModel)
-                else:
-                    aTrack = Track(aModel,self.grid_params)
-                    self.tracks.append(aTrack)
-                nmodels += 1
-                nmodes  += len(aModel.modes)
-                if (not exceed_freqlim):
-                    models_small_spectra.append(aModel.name)
-                if (not config.batch):
-                    print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
-                    print('\033[2A') # backup two line - might not work in all terminals
+                    aModel = Model(glb, _name=names[i])
+                    exceed_freqlim = aModel.read_modes_Aldo(norder, glbs[i,10:])
+                    aModel.multiply_modes(1.0/aModel.glb[ifreq_ref])  # make frequencies non-dimensional
+                    aModel.sort_modes()
+                    # We're assuming the models are grouped together in tracks, so
+                    # we only need to check the previous track:
+                    if len(self.tracks) > 0 and self.tracks[-1].matches(aModel):
+                        self.tracks[-1].append(aModel)
+                    else:
+                        aTrack = Track(aModel,self.grid_params)
+                        self.tracks.append(aTrack)
+                    nmodels += 1
+                    nmodes  += len(aModel.modes)
+                    if not exceed_freqlim:
+                        models_small_spectra.append(aModel.name)
+                    if not config.batch:
+                        print("%d %d %d" % (len(self.tracks), nmodels, nmodes))
+                        print('\033[2A') # backup two line - might not work in all terminals
 
-            del glbs
-            del names
+                del glbs
+                del names
 
-        listfile.close()
         print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
 
         # find span for each grid parameter prior to merging tracks:
@@ -1929,9 +1924,8 @@ class Model_grid:
         print("I merged %d track(s)"%(imerge))
 
         # write list of models with spectra which are too small in a file:
-        output = open("models_small_spectra","w")
-        for name in models_small_spectra: output.write(name+"\n")
-        output.close()
+        with open("models_small_spectra", "w") as output:
+            for name in models_small_spectra: output.write(name+"\n")
 
         # sort tracks:
         for track in self.tracks: track.sort()
