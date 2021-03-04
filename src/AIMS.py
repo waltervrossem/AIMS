@@ -3236,7 +3236,7 @@ def plot_echelle_diagram(my_model,my_params,model_name):
     for ext in config.plot_extensions:
         plt.savefig(os.path.join(output_folder,"echelle_"+model_name.replace(" ", "_")+"."+ext))
 
-    plt.clf()
+    plt.close()
 
 def plot_frequency_diff(my_model,my_params,model_name,scaled=False):
     """
@@ -3302,7 +3302,7 @@ def plot_frequency_diff(my_model,my_params,model_name,scaled=False):
         else:
             plt.savefig(os.path.join(output_folder,"diff_"+model_name.replace(" ", "_")+"."+ext))
 
-        plt.clf()
+        plt.close()
 
 def plot_walkers(samples, labels, filename, nw=3):
     """
@@ -3334,7 +3334,7 @@ def plot_walkers(samples, labels, filename, nw=3):
     for ext in config.plot_extensions:
         plt.savefig(filename+ext)
 
-    plt.clf()
+    plt.close()
 
 def plot_distrib_iter(samples, labels, folder):
     """
@@ -3370,7 +3370,7 @@ def plot_distrib_iter(samples, labels, folder):
         plt.ylabel(r"Walker distribution")
         for ext in config.plot_extensions:
             plt.savefig(os.path.join(output_folder,"distrib_iter_"+grid_params_MCMC_with_surf[i]+"."+ext))
-        plt.clf()
+        plt.close()
 
 def plot_histograms(samples, names, fancy_names, truths=None):
     """
@@ -3402,7 +3402,7 @@ def plot_histograms(samples, names, fancy_names, truths=None):
         for ext in config.plot_extensions:
             plt.savefig(os.path.join(output_folder,"histogram_"+names[i]+"."+ext))
 
-    plt.clf()
+    plt.close()
 
 def interpolation_tests(filename):
     """
@@ -3474,7 +3474,6 @@ def plot_frequencies(grid):
     plt.ylabel(r"Frequency, $\omega/\sqrt{GM/R^3}$",fontsize=15)
     plt.title(title,fontsize=20)
     plt.savefig("freq_non_dim.pdf")
-    plt.clf()
     plt.close()
 
     for n in range(nmin,nmax+1):
