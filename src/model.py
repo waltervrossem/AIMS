@@ -305,10 +305,11 @@ class Model:
         self.glb[ifreq_ref] = 5e5*math.sqrt(constants.G*self.glb[imass]/self.glb[iradius]**3)/math.pi
         """Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`"""
 
-        self.modes = np.empty([0],dtype=modetype)
         """array containing the modes (n, l, freq, inertia)"""
-
-        if (_modes is not None): self.append_modes(_modes)
+        if _modes is not None:
+            self.modes = np.array(_modes, dtype=modetype)
+        else:
+            self.modes = np.empty([0], dtype=modetype)
 
     def __del__(self):
         """
