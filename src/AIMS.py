@@ -989,7 +989,7 @@ class Likelihood:
                 if (not min_diff < diff): min_diff = diff
         
             # easy exit:
-            if (min_diff != min_diff):
+            if (np.isnan(min_diff)):
                 print("WARNING: cannot find large frequency separation")
                 return np.nan
             
@@ -1708,16 +1708,22 @@ class Likelihood:
         chi2 =  self.classic_weight*self.apply_constraints(my_model)
         reject_classic = 0
         if (chi2 < threshold): reject_classic = 1
-        mode_map, nmissing = self.find_map(my_model, config.use_n and config.read_n)
-        if (config.surface_option is None):
-            if (nmissing > 0): return log0, reject_classic, 1
-            chi2 += self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map)
-            return chi2, reject_classic, 0
+        if ((self.seismic_weight > 0) and (len(self.modes) > 0)):
+            mode_map, nmissing = self.find_map(my_model, config.use_n and config.read_n)
+            if (config.surface_option is None):
+                if (nmissing > 0): return log0, reject_classic, 1
+                chi2 += self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map)
+                return chi2, reject_classic, 0
+            else:
+                if (nmissing > 0): return log0, [0.0]*nsurf, reject_classic, 1
+                optimal_amplitudes = self.get_optimal_surface_amplitudes(my_model, mode_map)
+                chi2 += self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map,a=optimal_amplitudes)
+                return chi2, optimal_amplitudes, reject_classic, 0
         else:
-            if (nmissing > 0): return log0, [0.0]*nsurf, reject_classic, 1
-            optimal_amplitudes = self.get_optimal_surface_amplitudes(my_model, mode_map)
-            chi2 += self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map,a=optimal_amplitudes)
-            return chi2, optimal_amplitudes, reject_classic, 0
+            if (config.surface_option is None):
+                return chi2, reject_classic, 0
+            else:
+                return chi2, [0.0]*nsurf, reject_classic, 0
 
     def __call__(self, params):
         """
@@ -1739,9 +1745,11 @@ class Likelihood:
         if (params is None): return log0
         my_model = model.interpolate_model(grid,params[0:ndims-nsurf],grid.tessellation,grid.ndx)
         if (my_model is None): return log0
-        mode_map, nmissing = self.find_map(my_model, config.use_n)
-        if (nmissing > 0): return log0
-        chi2 = self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map,a=params[ndims-nsurf:ndims])
+        chi2 = 0.0
+        if ((self.seismic_weight > 0) and (len(self.modes) > 0)):
+            mode_map, nmissing = self.find_map(my_model, config.use_n)
+            if (nmissing > 0): return log0
+            chi2 += self.seismic_weight*self.compare_frequency_combinations(my_model,mode_map,a=params[ndims-nsurf:ndims])
         chi2 += self.classic_weight*self.apply_constraints(my_model)
 
         return chi2
@@ -3150,6 +3158,7 @@ def plot_echelle_diagram(my_model,my_params,model_name):
     msize = 6
     mode_map, nmissing = prob.likelihood.find_map(my_model, config.use_n)
     dnu = prob.likelihood.guess_dnu(with_n=True)
+    if (np.isnan(dnu)): return
     if (dnu < 1.0):
         dnu_str = "{0:7.2e}".format(dnu)
     elif (dnu < 10.0):
