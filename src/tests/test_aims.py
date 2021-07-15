@@ -289,6 +289,10 @@ def test_fit_data():
                  "dnu", "dnu0", "d2nu", "nu_min0","nu_min1","nu_min2"])
     AIMS.like.clear_seismic_constraints()
 
+    AIMS.my_map(AIMS.like.add_seismic_constraint, ["nu"])
+    AIMS.like.find_covariance()
+    AIMS.like.clear_seismic_constraints()
+
     AIMS.like.add_dnu_constraint_matrix("dnu", l_targets=[])
     AIMS.like.add_dnu_constraint_matrix("dnu")
     AIMS.like.add_dnu_constraint("dnu", l_targets=[])

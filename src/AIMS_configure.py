@@ -114,7 +114,7 @@ beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 #       results.
 #seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0","nu_min1","nu_min2"]
 #seismic_constraints = ["dnu0","r01","r02"]
-seismic_constraints = ["r02", "r01", "nu_min0", "nu", "avg_dnu0"]
+seismic_constraints = ["r02", "r01", "avg_dnu0"]
 
 #########################   Weighting   ########################################
 # Determines what type of weighting to apply to seismic and classic contraints.
