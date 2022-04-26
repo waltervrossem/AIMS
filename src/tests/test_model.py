@@ -265,7 +265,7 @@ def test_Model_grid():
     assert 0 <= t[0]
     assert 0 <= t[1] <= 20e9
 
-    assert pytest.approx(test.range('Z'), [0.018, 0.022])
+    assert test.range('Z') == pytest.approx([0.018, 0.022])
 
     test.test_interpolation()
 
