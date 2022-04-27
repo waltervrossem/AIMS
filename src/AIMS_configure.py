@@ -105,16 +105,31 @@ beta_Sonoi2015 = 4.0  # exponent used in the Sonoi et al. surface corrections
 
 # Set of seismic constraints to be used. Options include:
 #   - "nu": individual frequencies
+#   - "nu0": individual frequencies (radial modes only)
+#   - "nu_min0", "nu_min1", "nu_min2": radial mode with first, second, or third lowest frequency
 #   - "r02", "r01", "r10": various frequency ratios
+#   - "dnu": individual large frequency separation using all modes
 #   - "dnu0": individual large frequency separation using l=0
+#   - "d2nu": second differences (using all modes)
 #   - "avg_dnu": average large frequency separation using all l
 #   - "avg_dnu0": average large frequency separation using l=0
-# NOTE: combining "nu" with the other constraints leads to a (nearly)
-#       singular covariance matrix and is not expected to give good
-#       results.
+#   - "whosglad_dnu": WhoSGlAd version of average large frequency separation (all modes)
+#   - "whosglad_dnu0": WhoSGlAd version of average large frequency separation (l=0 modes)
+#   - "whosglad_r01", "whosglad_r02": WhoSGlAd version of average r01 and r02 frequency ratios
+#   - "whosglad_Delta01", "whosglad_Delta02": WhoSGlAd Delta01, Delta02 seismic constraints
+#   - "whosglad_eps0", "whosglad_eps1":  WhoSGlAd average frequency offset (l=0, l=1 modes, resp.)
+#   - "whosglad_AHe":  WhoSGlAd amplitude indicator for helium content
+#   - "whosglad_Abcz":  WhoSGlAd amplitude indicator for the base of the convection zone
+# NOTES: * combining "nu" with the other constraints leads to a (nearly) singular 
+#          covariance matrix and is not expected to give good results.
+#        * The WhoSGlAd method is based on a Gram-Schmidt orthogonalisation of the
+#          seismic constraints thus leading to (nearly) independant indicators.
+#          It is described in Farnir et al. (2019, A&A 622, A98)
 #seismic_constraints = ["r02","r01","r10","avg_dnu0","nu_min0","nu_min1","nu_min2"]
 #seismic_constraints = ["dnu0","r01","r02"]
 seismic_constraints = ["r02", "r01", "nu_min0", "avg_dnu0"]
+whosglad_Theta_He  = 0.0833 # this needs to be adjusted for a particular target
+whosglad_Theta_BCZ = 0.3007 # this needs to be adjusted for a particular target
 
 #########################   Weighting   ########################################
 # Determines what type of weighting to apply to seismic and classic contraints.
@@ -236,6 +251,8 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
                                  # tests.  This file can be analysed using
                                  # plot_test.py.  Only intervenes when
                                  # mode == "test_interpolation".
+interpolation_test_units = "microHz" # specify the frequency units used for
+                                     # interpolation tests (None = non-dim.)
 #########################   Output   #######################################
 # choice of parameters: "Mass", "Radius", "Luminosity", "X", "Y", "Z", "zsx_0",
 #                       "Fe_H", "M_H", "Age", "Teff", "Dnu", "numax", "Rho", "g",

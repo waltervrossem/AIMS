@@ -58,6 +58,10 @@ import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from bisect import bisect_right
 
+# maximum filename length
+#filename_dtype = "U1000"
+filename_dtype = "str"
+
 # Strings for age parameters
 age_str     = "Age"
 """ Name of the physical age parameter used in the interpolation """
@@ -70,7 +74,6 @@ tol     = 1e-6
 """ tolerance level for points slightly outside the grid """
 
 eps     = 1e-6
-#eps     = 0.26
 """ relative tolerance on parameters used for setting up evolutionary tracks """
 
 log0    = -1e150
@@ -1692,7 +1695,7 @@ class Model_grid:
         invperm = [1,]*(len(perm)+1)
         for i in range(len(perm)): invperm[perm[i]] = i+1
         glb = np.loadtxt(filename,skiprows=1,usecols=invperm,dtype=gtype)
-        names = np.loadtxt(filename,skiprows=1,usecols=(0,),dtype='str')
+        names = np.loadtxt(filename,skiprows=1,usecols=(0,),dtype=filename_dtype)
 
         # sort list: this separates the evolutionary tracks (which still need
         #            to be partitionned)
@@ -1847,7 +1850,7 @@ class Model_grid:
 
                 # read models with numpy:
                 glbs  = np.loadtxt(self.prefix+line, skiprows=7, usecols=range(1,11+2*ntot), dtype=gtype)
-                names = np.loadtxt(self.prefix+line, skiprows=7, usecols=(0,), dtype='str')
+                names = np.loadtxt(self.prefix+line, skiprows=7, usecols=(0,), dtype=filename_dtype)
 
                 # read models
                 for i in range(glbs.shape[0]):
@@ -2092,7 +2095,11 @@ class Model_grid:
         """
 
         ndx1, ndx2 = self.find_partition()
-        tessellation = Delaunay(self.grid[ndx2,:])
+        if (self.distort_mat is None):
+            tessellation = Delaunay(self.grid[ndx2,:])
+        else:
+            tessellation = Delaunay(np.dot(self.grid[ndx2,:],self.distort_mat))
+
 
         # initialisation
         results = []
@@ -2333,6 +2340,13 @@ def compare_models(model1,model2):
     :rtype: np.array
     """
 
+    if (config.interpolation_test_units == "microHz"):
+        C1, C2 = model1.glb[ifreq_ref], model1.glb[ifreq_ref]
+    elif (config.interpolation_test_units is None):
+        C1 = C2 = 1.0
+    else:
+        sys.exit("ERROR: Unrecognised units for interpolation_test_units in AIMS_configure.py")
+
     # initialisation:
     n_radial = 0
     n_radial_numax = 0
@@ -2340,8 +2354,8 @@ def compare_models(model1,model2):
     n_non_radial_numax = 0
     result = np.zeros((6+nglb,),dtype=gtype)
     # define frequency interval around numax:
-    numax = 0.5*(model1.numax/model1.glb[ifreq_ref] \
-          +      model2.numax/model2.glb[ifreq_ref])
+    numax = 0.5*(C1*model1.numax/model1.glb[ifreq_ref] \
+          +      C2*model2.numax/model2.glb[ifreq_ref])
     a = 0.8*numax
     b = 1.2*numax
 
@@ -2356,8 +2370,8 @@ def compare_models(model1,model2):
         if (model1.modes['n'][i1] > model2.modes['n'][i2]): i2+=1; continue
 
         # now the two modes have the same n and l values:
-        diff = abs(model1.modes['freq'][i1] - model2.modes['freq'][i2])
-        avg_freq =(model1.modes['freq'][i1] + model2.modes['freq'][i2])/2.0
+        diff = abs(C1*model1.modes['freq'][i1] - C2*model2.modes['freq'][i2])
+        avg_freq =(C1*model1.modes['freq'][i1] + C2*model2.modes['freq'][i2])/2.0
         if (model1.modes['l'][i1] == 0):
             if (result[0] < diff): result[0] = diff 
             diff *= diff  # square diff

@@ -806,6 +806,22 @@ class Likelihood:
           2. The cumulative index of the frequency combination
         """
 
+        # the following variables are used in the WhoSGlAd method 
+        self.Rkkinv = None
+        """
+        Inverse of R matrix from the WhoSGlAd method (see Eqs. (D.5) and (D.10)
+        from Farnir et al. (2019))
+
+        .. note::
+           The first index corresponds to the p vector whereas the second index
+           corresponds to the normalised q vector.
+        """
+        
+        self.qk = None
+        """
+        Normalised q vectors from the WhoSGlAd method (Farnir et al. 2019).
+        """
+        
     def find_weights_new(self):
         """
         Find absolute weights for seismic and classic constraints based on options
@@ -1097,6 +1113,17 @@ class Likelihood:
           - ``d2nu``: second differences (using all modes)
           - ``avg_dnu``: average large frequency separation (using all modes)
           - ``avg_dnu0``: average large frequency separation (using radial modes only)
+          - ``whosglad_dnu``: WhoSGlAd version of average large frequency separation (all modes)
+          - ``whosglad_dnu0``: WhoSGlAd version of average large frequency separation (l=0 modes)
+          - ``whosglad_dnu1``: WhoSGlAd version of average large frequency separation (l=1 modes)
+          - ``whosglad_r01``: WhoSGlAd version of average r01 frequency ratio
+          - ``whosglad_r02``: WhoSGlAd version of average r02 frequency ratio
+          - ``whosglad_Delta01``: WhoSGlAd Delta01 seismic constraint
+          - ``whosglad_Delta02``: WhoSGlAd Delta02 seismic constraint
+          - ``whosglad_eps0``:  WhoSGlAd average frequency offset (l=0 modes)
+          - ``whosglad_eps1``:  WhoSGlAd average frequency offset (l=1 modes)
+          - ``whosglad_AHe``:  WhoSGlAd amplitude indicator for helium content
+          - ``whosglad_Abcz``:  WhoSGlAd amplitude indicator for the base of the convection zone
 
         :type string: string
         """
@@ -1145,6 +1172,51 @@ class Likelihood:
                 self.add_dnu_constraint(string, l_targets=None)
             else:
                 self.add_dnu_constraint(string, l_targets=[int(string[7:])])
+            return
+
+        if (string.startswith("whosglad_dnu")):
+            self.construct_whosglad_basis()
+            if (len(string) == 12):
+                self.add_whosglad_dnu_constraint(string, l_targets=None)
+            else:
+                self.add_whosglad_dnu_constraint(string, l_targets=[int(string[12:])])
+            return
+
+        if (string.startswith("whosglad_r0")):
+            if (len(string) == 11):
+                print("Unknown type of seismic constraint: "+string)
+                print("Skipping ...")
+            else:
+                self.construct_whosglad_basis()
+                self.add_whosglad_ratio_constraint(string, l_target=int(string[11:]))
+            return
+
+        if (string.startswith("whosglad_Delta0")):
+            if (len(string) == 15):
+                print("Unknown type of seismic constraint: "+string)
+                print("Skipping ...")
+            else:
+                self.construct_whosglad_basis()
+                self.add_whosglad_Delta_constraint(string, l_target=int(string[15:]))
+            return
+
+        if (string.startswith("whosglad_eps")):
+            if (len(string) == 12):
+                print("Unknown type of seismic constraint: "+string)
+                print("Skipping ...")
+            else:
+                self.construct_whosglad_basis()
+                self.add_whosglad_epsilon_constraint(string, l_target=int(string[12:]))
+            return
+
+        if (string == "whosglad_AHe"):
+            self.construct_whosglad_basis()
+            self.add_whosglad_AHe_constraint(string)
+            return
+
+        if (string == "whosglad_Abcz"):
+            self.construct_whosglad_basis()
+            self.add_whosglad_Abcz_constraint(string)
             return
 
         print("Unknown type of seismic constraint: "+string)
@@ -1440,6 +1512,350 @@ class Likelihood:
 
             n += 1
         print("Number of added seismic constraints: %d"%(n))
+
+    def dot_product_whosglad(self, v1, v2):
+        """
+        Dot product used for constructing an orthonormal set of seismic indicators
+        using the WhoSGlAd method (Farnir et al. 2019).
+
+        :param v1: a vector of frequencies (or some polynomial of the radial order)
+        :type v1: float np.array
+
+        :param v2: a vector of frequencies (or some polynomial of the radial order)
+        :type v2: float np.array
+
+        :return: the dot product between v1 and v2
+        :rtype: float
+        """
+
+        result = 0.0
+        for i in range(len(self.modes)):
+            result += v1[i]*v2[i]/self.modes[i].dfreq**2
+        return result
+
+    def construct_whosglad_basis(self,maxpower=2,glitchpower=-5):
+        """
+        Construct orthogonal basis for the smooth component of a pulsation spectrum
+        using the Gram-Schmidt orthonormalisation method as described in the WhoSGlAd
+        method (Farnir et al. 2019).
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+
+        :param glitchpower: lower power used in Helium glitch component
+        :type glitchpower: int
+        """
+
+        # easy exit:
+        if ((self.Rkkinv is not None) and (self.qk is not None)): return
+
+        l_list = self.find_l_list(None,npowers=maxpower+1)
+        n = len(self.modes)
+        nl = len(l_list)
+        nt = (maxpower+1)*nl + 6
+        pk = np.zeros((n,nt),dtype=np.float64)
+        j = 0
+        for l in l_list:
+            for k in range(maxpower+1):
+                for i in range(n):
+                    if (self.modes[i].l != l): continue
+                    pk[i,j] = self.modes[i].n**k
+                j += 1
+
+        j = (maxpower+1)*nl
+        for i in range(n):
+            ntilde = self.modes[i].n + self.modes[i].l/2.0
+            pk[i,j]   = math.sin(4.0*math.pi*ntilde*config.whosglad_Theta_He)*ntilde**glitchpower
+            pk[i,j+1] = math.cos(4.0*math.pi*ntilde*config.whosglad_Theta_He)*ntilde**glitchpower
+            pk[i,j+2] = math.sin(4.0*math.pi*ntilde*config.whosglad_Theta_He)*ntilde**(glitchpower+1)
+            pk[i,j+3] = math.cos(4.0*math.pi*ntilde*config.whosglad_Theta_He)*ntilde**(glitchpower+1)
+            pk[i,j+4] = math.sin(4.0*math.pi*ntilde*config.whosglad_Theta_BCZ)*ntilde**-2.0
+            pk[i,j+5] = math.cos(4.0*math.pi*ntilde*config.whosglad_Theta_BCZ)*ntilde**-2.0
+
+        Rkk = np.zeros((nt,nt),dtype=np.float64)
+        self.Rkkinv = np.zeros((nt,nt),dtype=np.float64)
+        self.qk = np.zeros((n,nt),dtype=np.float64)
+        for i in range(nt):
+            self.qk[:,i] = pk[:,i].copy()
+            for j in range(i):
+                Rkk[j,i] = self.dot_product_whosglad(pk[:,i],self.qk[:,j])
+                self.qk[:,i] -= self.qk[:,j]*Rkk[j,i]
+            aux = math.sqrt(self.dot_product_whosglad(self.qk[:,i],self.qk[:,i]))
+            self.qk[:,i] /= aux
+            Rkk[i,i] = self.dot_product_whosglad(self.qk[:,i],pk[:,i])
+            self.Rkkinv[i,i] = 1.0/Rkk[i,i]
+            for j in range(i):
+                for k in range(j,i):
+                    self.Rkkinv[j,i] -= Rkk[k,i]*self.Rkkinv[j,k]/Rkk[i,i]
+
+        # sanity check:
+        freq_fit = np.zeros((n,),dtype=np.float64)
+        freq_vec = np.array([mode.freq for mode in self.modes])
+        for j in range(nt):
+            akl = self.dot_product_whosglad(self.qk[:,j],freq_vec)
+            freq_fit += akl*self.qk[:,j]
+            if (j == (maxpower+1)*nl-1):
+                dfreq1 = freq_fit-np.array(freq_vec)
+            if (j == (maxpower+1)*nl+3):
+                dfreq2 = freq_fit-np.array(freq_vec)
+        dfreq3 = freq_fit-np.array(freq_vec)
+        print("WhoSGlAd chi2(smooth): %e"%(self.dot_product_whosglad(dfreq1,dfreq1)))
+        print("WhoSGlAd chi2(He):     %e"%(self.dot_product_whosglad(dfreq2,dfreq2)))
+        print("WhoSGlAd chi2(He+BCZ): %e"%(self.dot_product_whosglad(dfreq3,dfreq3)))
+
+    def add_whosglad_dnu_constraint(self, string,l_targets=[0], maxpower=2):
+        """
+        Add an average large frequency separation as a contraint using the WhoSGlAd
+        method (Farnir et al. 2019).  This approach has the advantage of leading to
+        (near) orthogonal seismic indicators.
+
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param l_targets: specifies for which l values the large frequency
+          separation is to be calculated.  If ``None`` is supplied, all
+          modes will be used.
+        :type l_targets: list of int
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        l_list_ref = self.find_l_list(None,npowers=maxpower+1)
+        l_list = self.find_l_list(l_targets,npowers=maxpower+1)
+
+        # easy exit:
+        if (len(l_list) == 0):
+            print("WARNING: unable to add WhoSGlAd large separation constraint.")
+            print("         Try adding observed frequencies.")
+            return
+
+        n = len(self.modes)
+        a_combination = Combination()
+
+        if (len(l_list) == 1):
+            ndx = (maxpower+1)*l_list_ref.index(l_list[0])+1
+            for i in range(n):
+                a_combination.add_coeff(i,self.qk[i,ndx]*self.Rkkinv[ndx,ndx]/(self.modes[i].dfreq**2))
+        else:
+            indices = [(maxpower+1)*l_list_ref.index(l)+1 for l in l_list]
+
+            den = 0.0 
+            for ndx in indices:
+                den += 1.0/self.Rkkinv[ndx,ndx]**2
+            for i in range(n):
+                num = 0.0
+                for ndx in indices:
+                    num += self.qk[i,ndx]/(self.Rkkinv[ndx,ndx]*self.modes[i].dfreq**2)
+                a_combination.add_coeff(i,num/den)
+
+        a_combination_function = Combination_function(string,functions.identity,functions.identity_gradient)
+        a_combination_function.add_combination(a_combination)
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
+
+    def add_whosglad_ratio_constraint(self, string, l_target, maxpower=2):
+        """
+        Add an average frequency ratio as a contraint using the WhoSGlAd
+        method (Farnir et al. 2019).  This approach has the advantage of
+        leading to (near) orthogonal seismic indicators.
+           
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param l_target: specifies for which l to calculate the average
+          frequency ratio.
+        :type l_target: int
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        l_list = self.find_l_list(None,npowers=maxpower+1)
+
+        # easy exit:
+        if (l_target == 0):
+            print("WARNING: unable to add WhoSGlAd ratio constraint using l=0.")
+            print("         Please try a different constraint ...")
+            return
+        if ((l_target not in l_list) or (0 not in l_list)):
+            print("WARNING: unable to add WhoSGlAd ratio constraint.")
+            print("         Try adding observed frequencies.")
+            return
+
+        n = len(self.modes)
+        ndx0 = (maxpower+1)*l_list.index(0)
+        ndxl = (maxpower+1)*l_list.index(l_target)
+        a_combination_num = Combination()
+        a_combination_den = Combination()
+ 
+        for i in range(n):
+            a_combination_num.add_coeff(i,(self.qk[i,ndx0]*self.Rkkinv[ndx0,ndx0] \
+                -self.qk[i,ndxl]*self.Rkkinv[ndxl,ndxl])/(self.modes[i].dfreq**2))
+            a_combination_den.add_coeff(i,self.qk[i,ndx0+1]*self.Rkkinv[ndx0+1,ndx0+1] \
+                /(self.modes[i].dfreq**2))
+
+        offset = l_target/2.0 - self.Rkkinv[ndxl,ndxl+1]/self.Rkkinv[ndxl+1,ndxl+1] \
+               + self.Rkkinv[ndx0,ndx0+1]/self.Rkkinv[ndx0+1,ndx0+1]
+        a_combination_function = Combination_function(string,functions.ratio, \
+             functions.ratio_gradient,_offset=offset)
+        a_combination_function.add_combination(a_combination_num)
+        a_combination_function.add_combination(a_combination_den)
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
+
+    def add_whosglad_Delta_constraint(self, string, l_target, maxpower=2):
+        """
+        Add a ratio of large frequency separations as a contraint using
+        the WhoSGlAd method (Farnir et al. 2019).  This approach has the
+        advantage of leading to (near) orthogonal seismic indicators.
+           
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param l_target: specifies for which l to calculate the average
+          Delta constraint.
+        :type l_target: int
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        l_list = self.find_l_list(None,npowers=maxpower+1)
+
+        # easy exit:
+        if (l_target == 0):
+            print("WARNING: unable to add WhoSGlAd Delta constraint using l=0.")
+            print("         Please try a different constraint ...")
+            return
+        if ((l_target not in l_list) or (0 not in l_list)):
+            print("WARNING: unable to add WhoSGlAd Delta constraint.")
+            print("         Try adding observed frequencies.")
+            return
+
+        n = len(self.modes)
+        ndx0 = (maxpower+1)*l_list.index(0)+1
+        ndxl = (maxpower+1)*l_list.index(l_target)+1
+        a_combination_num = Combination()
+        a_combination_den = Combination()
+ 
+        for i in range(n):
+            a_combination_num.add_coeff(i,self.qk[i,ndxl]*self.Rkkinv[ndxl,ndxl] \
+                /self.modes[i].dfreq**2)
+            a_combination_den.add_coeff(i,self.qk[i,ndx0]*self.Rkkinv[ndx0,ndx0] \
+                /self.modes[i].dfreq**2)
+
+        a_combination_function = Combination_function(string, functions.ratio, \
+            functions.ratio_gradient,_offset=-1.0)
+        a_combination_function.add_combination(a_combination_num)
+        a_combination_function.add_combination(a_combination_den)
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
+
+    def add_whosglad_epsilon_constraint(self, string, l_target, maxpower=2):
+        """
+        Add an average frequency offset as a contraint using the WhoSGlAd
+        method (Farnir et al. 2019).  This approach has the advantage of
+        leading to (near) orthogonal seismic indicators.
+           
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param l_target: specifies for which l to calculate the average
+          epsilon offset.
+        :type l_target: int
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        l_list = self.find_l_list(None,npowers=maxpower+1)
+
+        # easy exit:
+        if ((l_target not in l_list) or (0 not in l_list)):
+            print("WARNING: unable to add WhoSGlAd epsilon constraint.")
+            print("         Try adding observed frequencies.")
+            return
+
+        n = len(self.modes)
+        ndxl = (maxpower+1)*l_list.index(l_target)
+
+        a_combination_num = Combination()
+        a_combination_den = Combination()
+ 
+        for i in range(n):
+            a_combination_num.add_coeff(i,(self.qk[i,ndxl]*self.Rkkinv[ndxl,ndxl] \
+                +self.qk[i,ndxl+1]*self.Rkkinv[ndxl,ndxl+1])/self.modes[i].dfreq**2)
+            a_combination_den.add_coeff(i,self.qk[i,ndxl+1]*self.Rkkinv[ndxl+1,ndxl+1] \
+                /self.modes[i].dfreq**2)
+
+        a_combination_function = Combination_function(string, functions.ratio, \
+            functions.ratio_gradient, _offset=-l_target/2.0)
+        a_combination_function.add_combination(a_combination_num)
+        a_combination_function.add_combination(a_combination_den)
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
+
+    def add_whosglad_AHe_constraint(self, string, maxpower=2):
+        """
+        Add a seismic constraint which provides a normalised He glitch amplitude
+        using the WhoSGlAd method (Farnir et al. 2019).  This approach has the
+        advantage of leading to (near) orthogonal seismic indicators.
+           
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        n = len(self.modes)
+        ndx = (maxpower+1)*len(self.find_l_list(None,npowers=maxpower+1))
+
+        a_combination_function = Combination_function(string, functions.norm, \
+            functions.norm_gradient)
+        for j in range(4):
+            a_combination = Combination()
+            for i in range(n):
+                a_combination.add_coeff(i,self.qk[i,ndx+j]/self.modes[i].dfreq**2)
+            a_combination_function.add_combination(a_combination)
+
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
+
+    def add_whosglad_Abcz_constraint(self, string, maxpower=2):
+        """
+        Add a seismic constraint which provides a normalised glitch amplitude
+        for the base of the convection zone using the WhoSGlAd method (Farnir
+        et al. 2019).  This approach has the advantage of leading to (near)
+        orthogonal seismic indicators.
+           
+        :param string: name of this seismic constraint
+        :type string: string
+
+        :param maxpower: maximum power in Pj(n)=n^j polynomial
+        :type maxpower: int
+        """
+
+        n = len(self.modes)
+        ndx = (maxpower+1)*len(self.find_l_list(None,npowers=maxpower+1))+4
+
+        a_combination_function = Combination_function(string, functions.norm, \
+            functions.norm_gradient)
+        for j in range(2):
+            a_combination = Combination()
+            for i in range(n):
+                a_combination.add_coeff(i,self.qk[i,ndx+j]/self.modes[i].dfreq**2)
+            a_combination_function.add_combination(a_combination)
+
+        a_combination_function.find_values([mode.freq for mode in self.modes])
+        self.combination_functions.append(a_combination_function)
+        print("Number of added seismic constraints:  1")
 
     def find_covariance(self):
         """
@@ -2267,9 +2683,12 @@ def init_walkers():
 
     return p0
 
-def run_emcee():
+def run_emcee(p0):
     """
     Run the emcee program.
+
+    :param p0: the initial set of walkers
+    :type p0: np.array
 
     :return: the ``emcee`` sampler for the MCMC run
     :rtype: emcee sampler object
@@ -2285,20 +2704,36 @@ def run_emcee():
     else:
         sampler = emcee.EnsembleSampler(config.nwalkers, ndims, prob, pool=pool)
 
+    # initialisation of percentiles:
+    mid_values = []
+    percentiles_25 = []
+    percentiles_75 = []
+
     # initial burn-in:
     print("Burn-in iterations")
     for p, lnprob, lnlike in tqdm(sampler.sample(p0, iterations = config.nsteps0, storechain=False),total=config.nsteps0):
-        pass
+        if (config.PT):
+            mid_values.append(np.percentile(p[0],50.0,axis=0))
+            percentiles_25.append(np.percentile(p[0],25.0,axis=0))
+            percentiles_75.append(np.percentile(p[0],75.0,axis=0))
+        else:
+            mid_values.append(np.percentile(p,50.0,axis=0))
+            percentiles_25.append(np.percentile(p,25.0,axis=0))
+            percentiles_75.append(np.percentile(p,75.0,axis=0))
     sampler.reset()
 
     # production run:
     print("Production iterations")
     if (config.PT):
         for p, lnprob, lnlike in tqdm(sampler.sample(p, lnprob0 = lnprob, lnlike0 = lnlike, iterations = config.nsteps),total=config.nsteps):
-            pass
+            mid_values.append(np.percentile(p[0],50.0,axis=0))
+            percentiles_25.append(np.percentile(p[0],25.0,axis=0))
+            percentiles_75.append(np.percentile(p[0],75.0,axis=0))
     else:
         for p, lnprob, lnlike in tqdm(sampler.sample(p, lnprob0 = lnprob, iterations = config.nsteps),total=config.nsteps):
-            pass
+            mid_values.append(np.percentile(p,50.0,axis=0))
+            percentiles_25.append(np.percentile(p,25.0,axis=0))
+            percentiles_75.append(np.percentile(p,75.0,axis=0))
 
     # Print acceptance fraction
     print("Mean acceptance fraction: {0:.5f}".format(np.mean(sampler.acceptance_fraction)))
@@ -2309,7 +2744,7 @@ def run_emcee():
     except emcee.autocorr.AutocorrError:
         print("Autocorrelation time not available")
 
-    return sampler
+    return sampler, np.array(mid_values), np.array(percentiles_25), np.array(percentiles_75)
 
 def find_blobs(samples):
     """
@@ -2547,6 +2982,10 @@ def write_readme(filename, elapsed_time):
             output_file.write(str_float.format("Surface exponent, b",config.b_Kjeldsen2008))
         if (config.surface_option == "Sonoi2015"):
             output_file.write(str_float.format("Surface parameter, beta",config.beta_Sonoi2015))
+
+        if (prob.likelihood.Rkkinv is not None):
+            output_file.write(str_float.format("WhoSGlAd theta_He", config.whosglad_Theta_He))
+            output_file.write(str_float.format("WhoSGlAd theta_BCZ",config.whosglad_Theta_BCZ))
 
         output_file.write(string_to_title("Priors"))
         for name,distribution in zip(grid_params_MCMC_with_surf, prob.priors.priors):
@@ -3284,8 +3723,9 @@ def plot_frequency_diff(my_model,my_params,model_name,scaled=False):
         n_values[l] = np.array([mode.n for mode in prob.likelihood.modes if mode.l == l])
         nu_obs    = np.array([mode.freq for mode in prob.likelihood.modes if mode.l == l])
         error_obs = np.array([mode.dfreq for mode in prob.likelihood.modes if mode.l == l])
-        nu_theo   = np.array([freq[mode_map[j]] for j in range(len(mode_map)) \
-                      if (mode_map[j] != -1) and (my_model.modes['l'][mode_map[j]] == l)])
+        f = lambda j: freq[j] if j != -1 else np.nan
+        nu_theo   = np.array([f(mode_map[j]) for j in range(len(mode_map)) \
+                      if (my_model.modes['l'][mode_map[j]] == l)])
         if (scaled):
             diff_values[l] = (nu_theo-nu_obs)/error_obs
         else:
@@ -3345,7 +3785,7 @@ def plot_walkers(samples, labels, filename, nw=3):
 
     plt.close()
 
-def plot_distrib_iter(samples, labels, folder):
+def plot_distrib_iter_old(samples, labels, folder):
     """
     Plot individual distribution of walkers as a function of iterations.
     
@@ -3380,6 +3820,46 @@ def plot_distrib_iter(samples, labels, folder):
         for ext in config.plot_extensions:
             plt.savefig(os.path.join(output_folder,"distrib_iter_"+grid_params_MCMC_with_surf[i]+"."+ext))
         plt.close()
+
+def plot_distrib_iter(mid_values, percentiles_25, percentiles_75, labels, folder):
+    """
+    Plot individual distribution of walkers as a function of iterations.
+
+    :param samples: samples from the emcee run
+    :param mid_values: mid values of walker distribution as a function of iteration number
+    :param percentiles_25: 25th percentiles of walker distribution as a function of iteration number
+    :param percentiles_75: 75th percentiles of walker distribution as a function of iteration number
+    :param labels: labels for the different dimensions in parameters space
+    :param folder: specify name of file in which to save plots of walkers.
+
+    :type samples: np.array
+    :type mid_values: np.array
+    :type percentiles_25: np.array
+    :type percentiles_75: np.array
+    :type labels: list of strings
+    :type folder: string
+
+    .. warning::    
+      This method must be applied before the samples are reshaped,
+      and information on individual walkers lost.
+    """
+
+    nsteps = config.nsteps0 + config.nsteps  # total number of steps
+    yfill  = np.empty((2*nsteps,),dtype=np.float64)
+    xfill  = np.array(list(range(nsteps))+list(range(nsteps-1,-1,-1)))
+    for i in range(ndims):
+        plt.figure()
+        yfill[:nsteps] = percentiles_25[:,i]
+        yfill[nsteps:] = percentiles_75[::-1,i]
+        plt.fill(xfill,yfill,"c")
+        plt.plot(xfill[:nsteps],mid_values[:,i],"b")
+        plt.axvline(config.nsteps0,ls=":",c="k")
+        plt.title(labels[i])
+        plt.xlabel(r"Iteration, $n$")
+        plt.ylabel(r"Walker distribution")
+        for ext in config.plot_extensions:
+            plt.savefig(os.path.join(folder,"distrib_iter_"+grid_params_MCMC_with_surf[i]+"."+ext))
+        plt.clf()
 
 def plot_histograms(samples, names, fancy_names, truths=None):
     """
@@ -3632,7 +4112,7 @@ if __name__ == "__main__":
         like.find_weights()
 
     # run emcee:
-    sampler = run_emcee()
+    sampler, mid_values, percentiles_25, percentiles_75 = run_emcee(p0)
 
     # Collect results:
     if (config.PT):
@@ -3651,7 +4131,7 @@ if __name__ == "__main__":
         plot_walkers(samples, labels[1:], os.path.join(output_folder,"walkers."), nw = 3)
 
     if (config.with_distrib_iter):
-        plot_distrib_iter(samples, labels[1:], output_folder)
+        plot_distrib_iter(mid_values, percentiles_25, percentiles_75, labels[1:], output_folder)
 
     # Reshape the samples and obtain auxiliary quantities:
     # NOTE: choosing order='C' leads to much better sub-sampling since the
@@ -3756,7 +4236,7 @@ if __name__ == "__main__":
                 plt.close('all')
 
     if (config.with_triangles):
-        fig = corner.corner(samples[:,1:], truths=best_grid_params, labels=labels[1:])
+        fig = corner.corner(samples[:,1:], truths=best_grid_params[:ndims], labels=labels[1:])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder,"triangle."+ext))
             plt.close('all')
