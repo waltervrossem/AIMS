@@ -1932,9 +1932,9 @@ class Likelihood:
 
         # initialise arrays: 
         self.ncomb  = np.array([len(acf.combinations) for acf in self.combination_functions])
-        self.ncoeff = np.empty((ncomb_total,),dtype=np.int)
+        self.ncoeff = np.empty((ncomb_total,),dtype=int)
         self.coeff  = np.empty((nmax,ncomb_total),dtype=model.ftype)
-        self.indices= np.empty((nmax,ncomb_total),dtype=np.int)
+        self.indices= np.empty((nmax,ncomb_total),dtype=int)
 
         for i in range(ncomb_total):
             self.ncoeff[i] = len(combinations[i].index)
@@ -1985,7 +1985,7 @@ class Likelihood:
             mode
         """
 
-        mode_map = np.empty((len(self.modes),),dtype=np.int)
+        mode_map = np.empty((len(self.modes),),dtype=int)
 
         # sanity checks:
         if (len(self.modes) == 0): return mode_map, 0
@@ -2705,11 +2705,11 @@ def run_emcee(p0):
 
     if (config.PT):
         print("Number of temp.:      %d"%(config.ntemps))
-        betas = ptemcee.sampler.default_beta_ladder(ndims_total, config.ntemps, Tmax=None)
-        sampler = ptemcee.Sampler(config.nwalkers, ndims_total, like_function, \
-                                  prior_function, betas=betas, pool=pool)
+        betas = ptemcee.sampler.default_beta_ladder(ndims, config.ntemps, Tmax=None)
+        sampler = ptemcee.Sampler(config.nwalkers, ndims, prob.likelihood, \
+                                  prob.priors, betas=betas, pool=pool)
     else:
-        sampler = emcee.EnsembleSampler(config.nwalkers, ndims_total, prob, pool=pool)
+        sampler = emcee.EnsembleSampler(config.nwalkers, ndims, prob, pool=pool)
 
     # initialisation of percentiles:
     percentiles = []
