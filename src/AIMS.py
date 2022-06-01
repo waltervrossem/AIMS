@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = "2.2.0"
+__version__ = u"2.1.0"
 
 # AIMS configuration option
 import AIMS_configure as config # user-defined configuration parameters
@@ -2101,7 +2101,7 @@ class Likelihood:
         # if mat is singular, use np.linalg.lstsq(mat,b) instead
         result = np.linalg.solve(mat,b)
 
-        # if need be append the fixed parameter:
+        # if need be, append the fixed parameter:
         if (config.surface_option == "Kjeldsen2008_2"):
             result = np.append(result,my_model.b_Kjeldsen2008)
         if (config.surface_option == "Sonoi2015_2"):
@@ -3040,8 +3040,10 @@ def write_readme(filename, elapsed_time):
             output_file.write(str(grid.distort_mat))
 
         output_file.write(string_to_title("EMCEE parameters"))
+        output_file.write(str_string.format("EMCEE version",emcee.__version__))
         output_file.write(str_string.format("With parallel tempering", boolean2str[config.PT]))
         if (config.PT):
+            output_file.write(str_string.format("PTEMCEE version",ptemcee.__version__))
             output_file.write(str_string.format("Adaptive tempering",boolean2str[config.PTadapt]))
             output_file.write(str_decimal.format("Number of temperatures", config.ntemps))
         output_file.write(str_decimal.format("Number of walkers", config.nwalkers))

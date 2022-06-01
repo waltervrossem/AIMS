@@ -732,20 +732,20 @@ class Model:
           The array operations lead to the creation of a new array with the
           result, which avoids modifications of the original frequencies and inertias.
         """
-        
+ 
+        # easy exit:
         if (surface_option is None):                   return np.zeros(len(self.modes), dtype=ftype)
-        if (surface_option == "Kjeldsen2008"):         return a[0]*self.modes['freq']**config.b_Kjeldsen2008
-        if (surface_option == "Kjeldsen2008_scaling"): return a[0]*self.modes['freq']**self.b_Kjeldsen2008
-        if (surface_option == "Kjeldsen2008_2"):       return a[0]*self.modes['freq']**a[1]
-        if (surface_option == "Ball2014"):             return a[0]*self.modes['freq']**3/self.modes['inertia']
-        if (surface_option == "Ball2014_2"):           return a[0]*self.modes['freq']**3/self.modes['inertia'] \
-                                                            + a[1]/(self.modes['freq']*self.modes['inertia'])
-        if (surface_option == "Sonoi2015"):            return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**config.beta_Sonoi2015))
-        if (surface_option == "Sonoi2015_scaling"):    return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**self.beta_Sonoi2015))
-        if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**a[1]))
+
+        freq = self.glb[ifreq_ref]*self.modes['freq']/self.numax
+        if (surface_option == "Kjeldsen2008"):         return a[0]*freq**config.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_scaling"): return a[0]*freq**self.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_2"):       return a[0]*freq**a[1]
+        if (surface_option == "Ball2014"):             return a[0]*freq**3/self.modes['inertia']
+        if (surface_option == "Ball2014_2"):           return a[0]*freq**3/self.modes['inertia'] \
+                                                            + a[1]/(freq*self.modes['inertia'])
+        if (surface_option == "Sonoi2015"):            return a[0]*(1.0-1.0/(1.0+freq**config.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_scaling"):    return a[0]*(1.0-1.0/(1.0+freq**self.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+freq**a[1]))
         raise ValueError("Unknown surface correction: " + surface_option)
 
     @property
