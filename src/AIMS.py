@@ -173,6 +173,9 @@ nreject_seismic = 0
 nreject_prior   = 0
 """ Number of models rejected based on priors """
 
+autocorr_time = []
+""" integrated autocorrelelation time (this is useful for testing convergence) """
+
 class Distribution:
 
     """
@@ -1925,9 +1928,9 @@ class Likelihood:
 
         # initialise arrays: 
         self.ncomb  = np.array([len(acf.combinations) for acf in self.combination_functions])
-        self.ncoeff = np.empty((ncomb_total,),dtype=np.int)
+        self.ncoeff = np.empty((ncomb_total,),dtype=int)
         self.coeff  = np.empty((nmax,ncomb_total),dtype=model.ftype)
-        self.indices= np.empty((nmax,ncomb_total),dtype=np.int)
+        self.indices= np.empty((nmax,ncomb_total),dtype=int)
 
         for i in range(ncomb_total):
             self.ncoeff[i] = len(combinations[i].index)
@@ -1978,7 +1981,7 @@ class Likelihood:
             mode
         """
 
-        mode_map = np.empty((len(self.modes),),dtype=np.int)
+        mode_map = np.empty((len(self.modes),),dtype=int)
 
         # sanity checks:
         if (len(self.modes) == 0): return mode_map, 0
@@ -2738,10 +2741,14 @@ def run_emcee(p0):
     # Print acceptance fraction
     print("Mean acceptance fraction: {0:.5f}".format(np.mean(sampler.acceptance_fraction)))
     # Estimate the integrated autocorrelation time for the time series in each parameter.
+
+    global autocorr_time
     try:
+        # c: minimum number of autocorrelation times needed to trust estimate (default: 10)
         autocorr_time =  sampler.get_autocorr_time(c=1.0)
-        print("Autocorrelation time: %s"%(str(autocorr_time)))
     except emcee.autocorr.AutocorrError:
+        print("Autocorrelation time not available")
+    except IndexError:
         print("Autocorrelation time not available")
 
     return sampler, np.array(mid_values), np.array(percentiles_25), np.array(percentiles_75)
