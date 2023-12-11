@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = "2.0.0"
+__version__ = u"2.1.0"
 
 # AIMS configuration option
 import AIMS_configure as config # user-defined configuration parameters
@@ -70,9 +70,10 @@ import numpy as np
 from scipy.stats import truncnorm
 import emcee
 import corner
+if (config.PT): import ptemcee
 from lxml import etree
 from operator import attrgetter
-from multiprocessing import Pool
+from multiprocessing import Pool, set_start_method
 
 # provide a way to deactivate tqdm, if AIMS is running in batch mode
 # or if tqdm is not available:
@@ -82,6 +83,9 @@ if (config.batch):
 else:
     from tqdm import tqdm
 
+# recreate np.int and np.float aliases if need be
+if (not hasattr(np, "float")): np.float = float
+if (not hasattr(np, "int")):   np.int = int
 
 # parameters associated with the grid
 grid             = None   
@@ -172,6 +176,12 @@ nreject_seismic = 0
 
 nreject_prior   = 0
 """ Number of models rejected based on priors """
+
+autocorr_time = []
+""" integrated autocorrelelation time (this is useful for testing convergence) """
+
+mc2 = None
+""" True if emcee's version is 2 or prior """
 
 class Distribution:
 
@@ -1925,9 +1935,9 @@ class Likelihood:
 
         # initialise arrays: 
         self.ncomb  = np.array([len(acf.combinations) for acf in self.combination_functions])
-        self.ncoeff = np.empty((ncomb_total,),dtype=np.int)
+        self.ncoeff = np.empty((ncomb_total,),dtype=int)
         self.coeff  = np.empty((nmax,ncomb_total),dtype=model.ftype)
-        self.indices= np.empty((nmax,ncomb_total),dtype=np.int)
+        self.indices= np.empty((nmax,ncomb_total),dtype=int)
 
         for i in range(ncomb_total):
             self.ncoeff[i] = len(combinations[i].index)
@@ -1978,7 +1988,7 @@ class Likelihood:
             mode
         """
 
-        mode_map = np.empty((len(self.modes),),dtype=np.int)
+        mode_map = np.empty((len(self.modes),),dtype=int)
 
         # sanity checks:
         if (len(self.modes) == 0): return mode_map, 0
@@ -2094,7 +2104,7 @@ class Likelihood:
         # if mat is singular, use np.linalg.lstsq(mat,b) instead
         result = np.linalg.solve(mat,b)
 
-        # if need be append the fixed parameter:
+        # if need be, append the fixed parameter:
         if (config.surface_option == "Kjeldsen2008_2"):
             result = np.append(result,my_model.b_Kjeldsen2008)
         if (config.surface_option == "Sonoi2015_2"):
@@ -2256,8 +2266,7 @@ class Probability:
 
 def check_configuration():
     """
-    Test the version of the EMCEE package to see if it is compatible with
-    AIMS.  If not, print a warning message.
+    Test the version of the EMCEE package and set the mc2 variable accordingly.
 
     Test the values of the variables in check_configuration to make
     sure they're acceptable.  If an unacceptable value is found, then
@@ -2265,10 +2274,9 @@ def check_configuration():
     value.
     """
 
+    global mc2
     emcee_version = int(emcee.__version__.split(".")[0])
-    if (emcee_version > 2):
-        print("WARNING: you are using EMCEE version 3 or later.  It may")
-        print("         not be possible to apply parallel temporing.")
+    mc2 = (emcee_version < 3)
 
     assert ((config.nwalkers%2) == 0), "nwalkers should be even.  Please modify AIMS_configure.py"
     return
@@ -2690,8 +2698,9 @@ def run_emcee(p0):
     :param p0: the initial set of walkers
     :type p0: np.array
 
-    :return: the ``emcee`` sampler for the MCMC run
-    :rtype: emcee sampler object
+    :return: the ``emcee`` sampler for the MCMC run, array with walker percentiles
+             as a function of iteration number
+    :rtype: emcee sampler object, np.array
     """
 
     print("Number of walkers:    %d"%(config.nwalkers))
@@ -2699,52 +2708,65 @@ def run_emcee(p0):
 
     if (config.PT):
         print("Number of temp.:      %d"%(config.ntemps))
-        sampler = emcee.PTSampler(config.ntemps, config.nwalkers, ndims, \
-                                  prob.likelihood, prob.priors, pool=pool)
+        betas = ptemcee.sampler.default_beta_ladder(ndims, config.ntemps, Tmax=None)
+        sampler = ptemcee.Sampler(config.nwalkers, ndims, prob.likelihood, \
+                                  prob.priors, betas=betas, pool=pool)
     else:
         sampler = emcee.EnsembleSampler(config.nwalkers, ndims, prob, pool=pool)
 
     # initialisation of percentiles:
-    mid_values = []
-    percentiles_25 = []
-    percentiles_75 = []
+    percentiles = []
+    pvalues = (25.0,50.0,75.0)
 
     # initial burn-in:
     print("Burn-in iterations")
-    for p, lnprob, lnlike in tqdm(sampler.sample(p0, iterations = config.nsteps0, storechain=False),total=config.nsteps0):
-        if (config.PT):
-            mid_values.append(np.percentile(p[0],50.0,axis=0))
-            percentiles_25.append(np.percentile(p[0],25.0,axis=0))
-            percentiles_75.append(np.percentile(p[0],75.0,axis=0))
+    if (config.PT):
+        for p, lnprob, lnlike in tqdm(sampler.sample(p0, iterations = config.nsteps0, storechain=False, adapt=config.PTadapt),total=config.nsteps0):
+            percentiles.append(np.percentile(p[0],pvalues,axis=0))
+    else:
+        if (mc2):
+            for p, lnprob, lnlike in tqdm(sampler.sample(p0, iterations = config.nsteps0, storechain=False),total=config.nsteps0):
+                percentiles.append(np.percentile(p,pvalues,axis=0))
         else:
-            mid_values.append(np.percentile(p,50.0,axis=0))
-            percentiles_25.append(np.percentile(p,25.0,axis=0))
-            percentiles_75.append(np.percentile(p,75.0,axis=0))
+            for sample in sampler.sample(p0, iterations = config.nsteps0, progress=not(config.batch), store=False):
+                p = sample.coords
+                percentiles.append(np.percentile(p,pvalues,axis=0))
     sampler.reset()
 
     # production run:
     print("Production iterations")
     if (config.PT):
-        for p, lnprob, lnlike in tqdm(sampler.sample(p, lnprob0 = lnprob, lnlike0 = lnlike, iterations = config.nsteps),total=config.nsteps):
-            mid_values.append(np.percentile(p[0],50.0,axis=0))
-            percentiles_25.append(np.percentile(p[0],25.0,axis=0))
-            percentiles_75.append(np.percentile(p[0],75.0,axis=0))
+        for p, lnprob, lnlike in tqdm(sampler.sample(p, iterations = config.nsteps, adapt=config.PTadapt),total=config.nsteps):
+            percentiles.append(np.percentile(p[0],pvalues,axis=0))
     else:
-        for p, lnprob, lnlike in tqdm(sampler.sample(p, lnprob0 = lnprob, iterations = config.nsteps),total=config.nsteps):
-            mid_values.append(np.percentile(p,50.0,axis=0))
-            percentiles_25.append(np.percentile(p,25.0,axis=0))
-            percentiles_75.append(np.percentile(p,75.0,axis=0))
+        if (mc2):
+            for p, lnprob, lnlike in tqdm(sampler.sample(p, lnprob0 = lnprob, iterations = config.nsteps),total=config.nsteps):
+                percentiles.append(np.percentile(p,pvalues,axis=0))
+        else:
+            for sample in sampler.sample(p, iterations = config.nsteps, progress=not(config.batch)):
+                p = sample.coords
+                percentiles.append(np.percentile(p,pvalues,axis=0))
 
     # Print acceptance fraction
     print("Mean acceptance fraction: {0:.5f}".format(np.mean(sampler.acceptance_fraction)))
+
     # Estimate the integrated autocorrelation time for the time series in each parameter.
+    global autocorr_time
     try:
-        autocorr_time =  sampler.get_autocorr_time(c=1.0)
+        if (config.PT):
+            autocorr_time =  sampler.get_autocorr_time()
+        else:
+            if (mc2):
+                # c: minimum number of autocorrelation times needed to trust estimate (default: 10)
+                autocorr_time =  sampler.get_autocorr_time(c=1.0)
+            else:
+                # tol: minimum number of autocorrelation times needed to trust estimate (default: 50)
+                autocorr_time =  sampler.get_autocorr_time(tol=0.0)
         print("Autocorrelation time: %s"%(str(autocorr_time)))
     except emcee.autocorr.AutocorrError:
         print("Autocorrelation time not available")
 
-    return sampler, np.array(mid_values), np.array(percentiles_25), np.array(percentiles_75)
+    return sampler, np.array(percentiles)
 
 def find_blobs(samples):
     """
@@ -3021,13 +3043,17 @@ def write_readme(filename, elapsed_time):
             output_file.write(str(grid.distort_mat))
 
         output_file.write(string_to_title("EMCEE parameters"))
+        output_file.write(str_string.format("EMCEE version",emcee.__version__))
         output_file.write(str_string.format("With parallel tempering", boolean2str[config.PT]))
         if (config.PT):
+            output_file.write(str_string.format("PTEMCEE version",ptemcee.__version__))
+            output_file.write(str_string.format("Adaptive tempering",boolean2str[config.PTadapt]))
             output_file.write(str_decimal.format("Number of temperatures", config.ntemps))
         output_file.write(str_decimal.format("Number of walkers", config.nwalkers))
         output_file.write(str_decimal.format("Number of burn-in steps", config.nsteps0))
         output_file.write(str_decimal.format("Number of production steps", config.nsteps))
         output_file.write(str_decimal.format("Thinning parameter", config.thin))
+        output_file.write(str_string.format("Integrated autocorrelation time",str(autocorr_time)))
 
         output_file.write(string_to_title("Initialisation"))
         if (config.samples_file is None):
@@ -3753,6 +3779,26 @@ def plot_frequency_diff(my_model,my_params,model_name,scaled=False):
 
         plt.close()
 
+def swap_dimensions(array):
+    """
+    Swaps the two first dimensions of an array.
+    This is useful for handling the different conventions used to store
+    the samples in emcee3 and ptemcee.
+
+    :param array: input array
+    :type array: np.array
+
+    :return: array with swapped dimensions
+    :rtype: np.array
+    """
+
+    shape = array.shape
+    new_shape = (shape[1], shape[0])+shape[2:]
+    new_array = np.empty(new_shape,dtype=array.dtype)
+    for i in range(new_shape[0]):
+        new_array[i,:,...] = array[:,i,...]
+    return new_array
+
 def plot_walkers(samples, labels, filename, nw=3):
     """
     Plot individual walkers.
@@ -3821,21 +3867,15 @@ def plot_distrib_iter_old(samples, labels, folder):
             plt.savefig(os.path.join(output_folder,"distrib_iter_"+grid_params_MCMC_with_surf[i]+"."+ext))
         plt.close()
 
-def plot_distrib_iter(mid_values, percentiles_25, percentiles_75, labels, folder):
+def plot_distrib_iter(percentiles, labels, folder):
     """
     Plot individual distribution of walkers as a function of iterations.
 
-    :param samples: samples from the emcee run
-    :param mid_values: mid values of walker distribution as a function of iteration number
-    :param percentiles_25: 25th percentiles of walker distribution as a function of iteration number
-    :param percentiles_75: 75th percentiles of walker distribution as a function of iteration number
+    :param percentiles: array with percentiles from emcee run
     :param labels: labels for the different dimensions in parameters space
     :param folder: specify name of file in which to save plots of walkers.
 
-    :type samples: np.array
-    :type mid_values: np.array
-    :type percentiles_25: np.array
-    :type percentiles_75: np.array
+    :type percentiles: np.array
     :type labels: list of strings
     :type folder: string
 
@@ -3849,10 +3889,10 @@ def plot_distrib_iter(mid_values, percentiles_25, percentiles_75, labels, folder
     xfill  = np.array(list(range(nsteps))+list(range(nsteps-1,-1,-1)))
     for i in range(ndims):
         plt.figure()
-        yfill[:nsteps] = percentiles_25[:,i]
-        yfill[nsteps:] = percentiles_75[::-1,i]
+        yfill[:nsteps] = percentiles[:,0,i]    # 25th percentile
+        yfill[nsteps:] = percentiles[::-1,2,i] # 75th percentile
         plt.fill(xfill,yfill,"c")
-        plt.plot(xfill[:nsteps],mid_values[:,i],"b")
+        plt.plot(xfill[:nsteps],percentiles[:,1,i],"b") # 50th percentile
         plt.axvline(config.nsteps0,ls=":",c="k")
         plt.title(labels[i])
         plt.xlabel(r"Iteration, $n$")
@@ -4091,6 +4131,7 @@ if __name__ == "__main__":
     #       like Pool, but can actually slow down execution (even
     #       compared to non-parallel execution).
     if (config.parallel):
+        set_start_method("fork")
         pool = Pool(processes = config.nprocesses)
         my_map = pool.map
     else:
@@ -4112,15 +4153,19 @@ if __name__ == "__main__":
         like.find_weights()
 
     # run emcee:
-    sampler, mid_values, percentiles_25, percentiles_75 = run_emcee(p0)
+    sampler, percentiles = run_emcee(p0)
 
     # Collect results:
     if (config.PT):
         samples = sampler.chain[0,...]
-        lnprob  = sampler.lnprobability[0,...]
+        lnprob  = sampler.logprobability[0,...]
     else:
-        samples = sampler.chain
-        lnprob  = sampler.lnprobability
+        if (mc2):
+            samples = sampler.chain
+            lnprob  = sampler.lnprobability
+        else:
+            samples = swap_dimensions(sampler.get_chain())
+            lnprob  = swap_dimensions(sampler.get_log_prob())
 
     # Write file with parameters used in this run
     elapsed_time = time.time() - t0
@@ -4131,7 +4176,7 @@ if __name__ == "__main__":
         plot_walkers(samples, labels[1:], os.path.join(output_folder,"walkers."), nw = 3)
 
     if (config.with_distrib_iter):
-        plot_distrib_iter(mid_values, percentiles_25, percentiles_75, labels[1:], output_folder)
+        plot_distrib_iter(percentiles, labels[1:], output_folder)
 
     # Reshape the samples and obtain auxiliary quantities:
     # NOTE: choosing order='C' leads to much better sub-sampling since the
