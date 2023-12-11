@@ -73,7 +73,7 @@ import corner
 if (config.PT): import ptemcee
 from lxml import etree
 from operator import attrgetter
-from multiprocessing import Pool
+from multiprocessing import Pool, set_start_method
 
 # provide a way to deactivate tqdm, if AIMS is running in batch mode
 # or if tqdm is not available:
@@ -83,6 +83,9 @@ if (config.batch):
 else:
     from tqdm import tqdm
 
+# recreate np.int and np.float aliases if need be
+if (not hasattr(np, "float")): np.float = float
+if (not hasattr(np, "int")):   np.int = int
 
 # parameters associated with the grid
 grid             = None   
@@ -4128,6 +4131,7 @@ if __name__ == "__main__":
     #       like Pool, but can actually slow down execution (even
     #       compared to non-parallel execution).
     if (config.parallel):
+        set_start_method("fork")
         pool = Pool(processes = config.nprocesses)
         my_map = pool.map
     else:
