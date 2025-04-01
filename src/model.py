@@ -37,10 +37,13 @@ a number of operations, such as:
 """
 
 __docformat__ = 'restructuredtext'
-
+import os
+import sys
 # AIMS configuration:
+if 'AIMS_configure.py' in os.listdir(os.getcwd()):
+    sys.path= [os.getcwd(), *sys.path]
 import AIMS_configure as config
-
+print(f'AIMS_configure.py path in model.py: {config.__file__}')
 # packages from within AIMS:
 import constants
 import utilities
@@ -50,7 +53,6 @@ import aims_fortran
 import math
 import numpy as np
 import random
-import sys
 from operator import methodcaller
 import matplotlib
 if (config.backend is not None): matplotlib.use(config.backend)

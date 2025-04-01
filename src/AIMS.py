@@ -45,10 +45,13 @@ of seismic an classic constraints.
 
 __docformat__ = 'restructuredtext'
 __version__ = u"2.1.0"
-
+import os
+import sys
 # AIMS configuration option
+if 'AIMS_configure.py' in os.listdir(os.getcwd()):
+    sys.path= [os.getcwd(), *sys.path]
 import AIMS_configure as config # user-defined configuration parameters
-
+print(f'AIMS_configure.py path: {config.__file__}')
 # import modules from the AIMS package
 import model
 import constants
@@ -57,8 +60,6 @@ import aims_fortran
 import functions
 
 import dill
-import os
-import sys
 import time
 import math
 import matplotlib
@@ -4073,6 +4074,8 @@ if __name__ == "__main__":
     else:
         os.makedirs(output_folder)
 
+    # save a copy of config used
+    os.system(f'cp {config.__file__} {output_folder}')
 
     # create output folder for OSM:
     if (config.with_osm):
