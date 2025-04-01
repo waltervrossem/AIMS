@@ -1,5 +1,6 @@
 sphinx
 sphinx-rtd-theme
+sphinx-last-updated-by-git
 pytest
 pytest-cov
 docstr-coverage
@@ -12,5 +13,6 @@ lxml
 scipy
 corner
 dill
-emcee==2.2.1
+emcee
+ptemcee
 tqdm

@@ -41,6 +41,11 @@ __docformat__ = 'restructuredtext'
 # AIMS configuration:
 import AIMS_configure as config
 
+# packages from within AIMS:
+import constants
+import utilities
+import aims_fortran
+
 # various packages needed for AIMS
 import math
 import numpy as np
@@ -53,10 +58,9 @@ import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from bisect import bisect_right
 
-# packages from within AIMS:
-import constants
-import utilities
-import aims_fortran
+# maximum filename length
+#filename_dtype = "U1000"
+filename_dtype = "str"
 
 # Strings for age parameters
 age_str     = "Age"
@@ -70,7 +74,6 @@ tol     = 1e-6
 """ tolerance level for points slightly outside the grid """
 
 eps     = 1e-6
-#eps     = 0.26
 """ relative tolerance on parameters used for setting up evolutionary tracks """
 
 log0    = -1e150
@@ -201,10 +204,8 @@ def string_to_latex(string,prefix="",postfix=""):
     if (string == "b_Kjeldsen2008"): return r'$%sb_{\mathrm{Kjeldsen\,et\,al.\,(2008)}}%s$'%(prefix,postfix)
     if (string == "beta_Sonoi2015"): return r'$%s\beta_{\mathrm{Sonoi\,et\,al.\,(2015)}}%s$'%(prefix,postfix)
 
-    try:
-        return user_params_latex[string]%(prefix,postfix)
-    except KeyError:
-        sys.exit("ERROR: unrecognised model quantity: "+string)
+    # raises a KeyError if `string` isn't a valid key
+    return user_params_latex[string] % (prefix, postfix)
 
 def get_surface_parameter_names(surface_option):
     """
@@ -226,7 +227,7 @@ def get_surface_parameter_names(surface_option):
     if (surface_option == "Sonoi2015"):            return ("alpha_surf",)
     if (surface_option == "Sonoi2015_scaling"):    return ("alpha_surf",)
     if (surface_option == "Sonoi2015_2"):          return ("alpha_surf","beta_Sonoi2015")
-    sys.exit("ERROR: Unknown surface correction: "+surface_option)
+    raise ValueError("Unknown surface correction: " + surface_option)
 
 class Model:
 
@@ -273,10 +274,8 @@ class Model:
         if (string == "beta_Sonoi2015"): return self.beta_Sonoi2015
         if (string == "b_Kjeldsen2008"): return self.b_Kjeldsen2008
 
-        try:
-            return self.glb[user_params_index[string]]
-        except KeyError:
-            sys.exit("ERROR: unrecognised model quantity: "+string)
+        # raises a KeyError if `string` isn't a valid key
+        return self.glb[user_params_index[string]]
 
     def __init__(self, _glb, _name=None, _modes=None):
         """
@@ -309,10 +308,11 @@ class Model:
         self.glb[ifreq_ref] = 5e5*math.sqrt(constants.G*self.glb[imass]/self.glb[iradius]**3)/math.pi
         """Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`"""
 
-        self.modes = np.empty([0],dtype=modetype)
         """array containing the modes (n, l, freq, inertia)"""
-
-        if (_modes is not None): self.append_modes(_modes)
+        if _modes is not None:
+            self.modes = np.array(_modes, dtype=modetype)
+        else:
+            self.modes = np.empty([0], dtype=modetype)
 
     def __del__(self):
         """
@@ -350,8 +350,8 @@ class Model:
         if (config.mode_format == "MESA"):     return self.read_file_MESA(filename)
         if (config.mode_format == "agsm"):     return self.read_file_agsm(filename)
         if (config.mode_format == "PLATO"):    return self.read_file_PLATO(filename)
-        sys.exit("ERROR: unrecognised format \""+config.mode_format+"\".\n" \
-                +"       Please choose another value for mode_format in AIMS_configure.py")
+        raise ValueError("Unrecognised format \""+config.mode_format+"\".\n" +
+                         "Please choose another value for mode_format in AIMS_configure.py")
 
     def read_file_CLES(self,filename):
         """
@@ -374,21 +374,21 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        freqfile.readline() # skip head
-        mode_temp = [] 
-        for line in freqfile:
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[2])
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim): 
-                exceed_freqlim = True
-                continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[4])))
-        freqfile.close()
+        with open(filename) as freqfile:
+            freqfile.readline() # skip head
+            mode_temp = []
+            for line in freqfile:
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[2])
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[4])))
+
         self.modes = np.array(mode_temp,dtype=modetype)
 
         return exceed_freqlim
@@ -414,21 +414,21 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        mode_temp = []
-        for line in freqfile:
-            if line[0] == '#' : continue # Skip comments
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[3])*10**6 # freq tu muHz
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim):
-               exceed_freqlim = True
-               continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,1.0)) # No inertia in file
-        freqfile.close()
+        with open(filename) as freqfile:
+            mode_temp = []
+            for line in freqfile:
+                if line[0] == '#' : continue # Skip comments
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[3])*10**6 # freq tu muHz
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,1.0)) # No inertia in file
+
         self.modes = np.array(mode_temp,dtype=modetype)
 
         return exceed_freqlim
@@ -454,23 +454,23 @@ class Model:
 
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
-        freqfile = open(filename)
-        for i in range(7):
-            freqfile.readline()
-        mode_temp = []
-        for line in freqfile:
-            line = line.strip()
-            columns = line.split()
-            n = int(columns[1])
-            freq = utilities.to_float(columns[4])
-            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-            if (freq > freqlim):
-                exceed_freqlim = True
-                continue
-            if (config.npositive and (n < 0)): continue  # remove g-modes if need be
-            mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[7])))
-        freqfile.close()
-        self.modes = np.array(mode_temp,dtype=modetype)
+        with open(filename) as freqfile:
+            for i in range(7):
+                freqfile.readline()
+            mode_temp = []
+            for line in freqfile:
+                line = line.strip()
+                columns = line.split()
+                n = int(columns[1])
+                freq = utilities.to_float(columns[4])
+                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+                if (freq > freqlim):
+                    exceed_freqlim = True
+                    continue
+                if (config.npositive and (n < 0)): continue  # remove g-modes if need be
+                mode_temp.append((n,int(columns[0]),freq,utilities.to_float(columns[7])))
+
+        self.modes = np.array(mode_temp, dtype=modetype)
 
         return exceed_freqlim
 
@@ -496,7 +496,7 @@ class Model:
         narr,larr,farr,iarr,nn,exceed_freqlim =  \
             aims_fortran.read_file_agsm(filename,config.npositive,config.agsm_cutoff, \
             config.cutoff*self.cutoff)
-        self.modes = np.array(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn]),dtype=modetype)
+        self.modes = np.array(list(zip(narr[0:nn],larr[0:nn],farr[0:nn],iarr[0:nn])),dtype=modetype)
 
         return exceed_freqlim
 
@@ -588,16 +588,15 @@ class Model:
           - The output frequencies are expressed in :math:`\mathrm{\mu Hz}`
         """
 
-        output = open(filename,"w")
-        # write header
-        output.write("# %1s %3s %22s %6s %22s\n"%("l","n","nu_theo (muHz)","unused","Inertia"))
-        for i in range(self.modes.shape[0]):
-            output.write("  %1d %3d %22.15e    0.0 %22.15e\n"%( \
-                self.modes["l"][i],                        \
-                self.modes["n"][i],                        \
-                self.modes["freq"][i]*self.glb[ifreq_ref], \
-                self.modes["inertia"][i]))
-        output.close()
+        with open(filename, "w") as output:
+            # write header
+            output.write("# %1s %3s %22s %6s %22s\n" % ("l", "n", "nu_theo (muHz)", "unused", "Inertia"))
+            for i in range(self.modes.shape[0]):
+                output.write("  %1d %3d %22.15e    0.0 %22.15e\n" % (
+                    self.modes["l"][i],
+                    self.modes["n"][i],
+                    self.modes["freq"][i]*self.glb[ifreq_ref],
+                    self.modes["inertia"][i]))
 
     def append_modes(self,modes):
         """
@@ -733,21 +732,21 @@ class Model:
           The array operations lead to the creation of a new array with the
           result, which avoids modifications of the original frequencies and inertias.
         """
-        
+ 
+        # easy exit:
         if (surface_option is None):                   return np.zeros(len(self.modes), dtype=ftype)
-        if (surface_option == "Kjeldsen2008"):         return a[0]*self.modes['freq']**config.b_Kjeldsen2008
-        if (surface_option == "Kjeldsen2008_scaling"): return a[0]*self.modes['freq']**self.b_Kjeldsen2008
-        if (surface_option == "Kjeldsen2008_2"):       return a[0]*self.modes['freq']**a[1]
-        if (surface_option == "Ball2014"):             return a[0]*self.modes['freq']**3/self.modes['inertia']
-        if (surface_option == "Ball2014_2"):           return a[0]*self.modes['freq']**3/self.modes['inertia'] \
-                                                            + a[1]/(self.modes['freq']*self.modes['inertia'])
-        if (surface_option == "Sonoi2015"):            return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**config.beta_Sonoi2015))
-        if (surface_option == "Sonoi2015_scaling"):    return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**self.beta_Sonoi2015))
-        if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+(self.glb[ifreq_ref]*self.modes['freq'] \
-                                                            / self.numax)**a[1]))
-        sys.exit("ERROR: Unknown surface correction: "+surface_option)
+
+        freq = self.glb[ifreq_ref]*self.modes['freq']/self.numax
+        if (surface_option == "Kjeldsen2008"):         return a[0]*freq**config.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_scaling"): return a[0]*freq**self.b_Kjeldsen2008
+        if (surface_option == "Kjeldsen2008_2"):       return a[0]*freq**a[1]
+        if (surface_option == "Ball2014"):             return a[0]*freq**3/self.modes['inertia']
+        if (surface_option == "Ball2014_2"):           return a[0]*freq**3/self.modes['inertia'] \
+                                                            + a[1]/(freq*self.modes['inertia'])
+        if (surface_option == "Sonoi2015"):            return a[0]*(1.0-1.0/(1.0+freq**config.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_scaling"):    return a[0]*(1.0-1.0/(1.0+freq**self.beta_Sonoi2015))
+        if (surface_option == "Sonoi2015_2"):          return a[0]*(1.0-1.0/(1.0+freq**a[1]))
+        raise ValueError("Unknown surface correction: " + surface_option)
 
     @property
     def b_Kjeldsen2008(self):
@@ -1229,7 +1228,7 @@ class Track:
         :rtype: boolean
         """
 
-        for i in range(self.mode_indices[imodel],self.mode_indices[i+1]):
+        for i in range(self.mode_indices[imodel], self.mode_indices[imodel+1]-1):
             #if (self.modes['l'][i] > 0): continue
             if (self.modes['l'][i] != self.modes['l'][i+1]): continue
             if (self.modes['freq'][i] > self.modes['freq'][i+1]):
@@ -1254,7 +1253,7 @@ class Track:
         :rtype: float
         """
 
-        dnu = self.find_large_separation(i)
+        dnu = self.find_large_separation(imodel)
         one = n = nu = 0.0
         for i in range(self.mode_indices[imodel],self.mode_indices[imodel+1]):
             if (self.modes['l'][i] != ltarget): continue
@@ -1372,12 +1371,9 @@ class Track:
             sorted (according to age).
         """
 
-        if ("Xc" in user_params_index):
-            ixc = user_params_index["Xc"]
-        else:
-            print('ERROR: "Xc" is not a grid parameter.  It cannot be')
-            print('       used to calculate the dimensionless age.')
-            sys.exit(1)
+        # Raises a key error if Xc isn't in the grid,
+        # which should be informative enough
+        ixc = user_params_index["Xc"]
 
         Xc_start = self.glb[0,ixc]
         Xc_stop  = self.glb[-1,ixc]
@@ -1470,7 +1466,7 @@ class Track:
 
         ages  = list(self.glb[:,iage])
         freqs = []
-        for i in range(self.names):
+        for i in range(len(self.names)):
            for j in range(self.mode_indices[i],self.mode_indices[i+1]):
                if ((self.modes['n'][j] == ntarget) and (self.modes['l'][j] == ltarget)):
                    freqs.append(self.modes['freq'][j])
@@ -1499,7 +1495,7 @@ class Track:
 
         ages  = list(self.glb[:,iage])
         freqs = []
-        for i in range(self.names):
+        for i in range(len(self.names)):
            for j in range(self.mode_indices[i],self.mode_indices[i+1]):
                if ((self.modes['n'][j] == ntarget) and (self.modes['l'][j] == ltarget)):
                    freqs.append(self.modes['freq'][j]*self.glb[i,ifreq_ref])
@@ -1519,8 +1515,8 @@ class Track:
         if (len(self.modes) < 1):
             return -1,-1,-1,-1
         else:
-            np.min(self.modes['n']), np.max(self.modes['n']), \
-            np.min(self.modes['l']), np.max(self.modes['l'])
+            return np.min(self.modes['n']), np.max(self.modes['n']), \
+                   np.min(self.modes['l']), np.max(self.modes['l'])
 
     @property
     def age_range(self):
@@ -1681,14 +1677,16 @@ class Model_grid:
         self.ndim = len(self.grid_params)
 
         # set prefix and postfix:
-        listfile = open(filename,"r")
-        line = listfile.readline().strip()
-        columns = line.split()
-        if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
-        self.prefix = columns[0]
-        if (len(columns) > 1): self.postfix = columns[1]
-        if (self.postfix == "None"): self.postfix = ""
-        listfile.close()
+        with open(filename, "r") as listfile:
+            line = listfile.readline().strip()
+            columns = line.split()
+
+            if len(columns) < 1:
+                raise IOError("Erroneous first line in %s." % filename)
+
+            self.prefix = columns[0]
+            if (len(columns) > 1): self.postfix = columns[1]
+            if (self.postfix == "None"): self.postfix = ""
 
         # read list with numpy:
         print("Reading list file")
@@ -1697,7 +1695,7 @@ class Model_grid:
         invperm = [1,]*(len(perm)+1)
         for i in range(len(perm)): invperm[perm[i]] = i+1
         glb = np.loadtxt(filename,skiprows=1,usecols=invperm,dtype=gtype)
-        names = np.loadtxt(filename,skiprows=1,usecols=(0,),dtype='str')
+        names = np.loadtxt(filename,skiprows=1,usecols=(0,),dtype=filename_dtype)
 
         # sort list: this separates the evolutionary tracks (which still need
         #            to be partitionned)
@@ -1713,15 +1711,13 @@ class Model_grid:
         # sanity check:
         for i in range(len(self.grid_params)):
             span = params_span[i]
-            if (np.isnan(span)):
-                sys.exit("ERROR: the values of some models parameters are NaN.")
-            if (np.isinf(span)):
-                sys.exit("ERROR: the values of some models parameters are infinite.")
-            if (span == 0.0): 
-                print("ERROR: parameter %s is constant in your grid."%(self.grid_params[i]))
-                print("       Therefore, it cannot be used as a grid parameter.")
-                print("       Please edit the value of grid_params in AIMS_configure.py")
-                sys.exit(1)
+            if np.isnan(span):
+                raise ValueError("The values of some models parameters are NaN.")
+            if np.isinf(span):
+                raise ValueError("The values of some models parameters are infinite.")
+            if span == 0.0:
+                raise ValueError("ERROR: parameter %s is constant in your grid" % self.grid_params[i] +
+                                 "and cannot be used as a grid parameter.")
 
         # create tracks: 
         print("Creating evolutionary tracks")
@@ -1767,9 +1763,8 @@ class Model_grid:
         print("I merged %d track(s)"%(imerge))
 
         # write list of models with spectra which are too small in a file:
-        output = open("models_small_spectra","w")
-        for name in models_small_spectra: output.write(name+"\n")
-        output.close()
+        with open("models_small_spectra", "w") as output:
+            for name in models_small_spectra: output.write(name+"\n")
 
         # sort tracks:
         for track in self.tracks: track.sort()
@@ -1806,17 +1801,11 @@ class Model_grid:
 
         # sanity check:
         if (len(config.user_params) != 5):
-            sys.exit('ERROR: contents of user_params variable incompatible with Aldo format.')
-        if ("Xc" not in user_params_index): 
-            sys.exit('ERROR: "Xc" missing from user_params variable but needed for Aldo format.')
-        if ("Zc" not in user_params_index): 
-            sys.exit('ERROR: "Zc" missing from user_params variable but needed for Aldo format.')
-        if ("Xs" not in user_params_index): 
-            sys.exit('ERROR: "Xs" missing from user_params variable but needed for Aldo format.')
-        if ("Zs" not in user_params_index): 
-            sys.exit('ERROR: "Zs" missing from user_params variable but needed for Aldo format.')
-        if ("Mass_true" not in user_params_index): 
-            sys.exit('ERROR: "Mass_true" missing from user_params variable but needed for Aldo format.')
+            raise ValueError('user_params should have length 5 for Aldo format but got %i.' % len(config.user_params))
+
+        for key in ['Xc', 'Zc', 'Xs', 'Zs', 'Mass_true']:
+            if not key in user_params_index:
+                raise KeyError("%s missing from user_params variable but needed for Aldo format." % key)
 
         self.grid_params = config.grid_params
 
@@ -1824,86 +1813,87 @@ class Model_grid:
         self.ndim = len(self.grid_params)
 
         # set prefix and postfix:
-        listfile = open(filename,"r")
-        line = listfile.readline().strip()
-        columns = line.split()
-        if (len(columns) < 1): sys.exit("Erroneous first line in %s."%(filename))
-        self.prefix = columns[0]
-        self.postfix = ""
+        with open(filename,"r") as listfile:
+            line = listfile.readline().strip()
+            columns = line.split()
 
-        # read models and put them into evolutionary tracks:
-        nmodels = 0
-        nmodes  = 0
-        models_small_spectra = []
-        norder  = np.zeros((4,2),dtype=ntype)
-        for line in listfile:
-            if (line[0] == "#"): continue
-            line = line.strip()
-            if (len(line) == 0): continue
+            if (len(columns) < 1):
+                raise IOError("Erroneous first line in %s." % filename)
 
-            # read track file:
-            x0 = None
-            z0 = None
-            Mass0 = None
-            trackfile = open(self.prefix+line,"r")
-            # skip header:
-            for i in range(3): trackfile.readline()
-            # read mode structure
-            ntot = 0
-            for l in range(4):
-                columns = trackfile.readline().strip().split()
-                norder[l,0] = int(columns[0])
-                norder[l,1] = int(columns[1])
-                ntot += norder[l,1]
-            trackfile.close()
+            self.prefix = columns[0]
+            self.postfix = ""
 
-            # read models with numpy:
-            glbs = np.loadtxt(self.prefix+line,skiprows=7,usecols=range(1,11+2*ntot),dtype=gtype)
-            names = np.loadtxt(self.prefix+line,skiprows=7,usecols=(0,),dtype='str')
+            # read models and put them into evolutionary tracks:
+            nmodels = 0
+            nmodes  = 0
+            models_small_spectra = []
+            norder  = np.zeros((4,2), dtype=ntype)
+            for line in listfile:
+                if line[0] == "#": continue
+                line = line.strip()
+                if len(line) == 0: continue
 
-            # read models
-            for i in range(glbs.shape[0]):
-                if (x0 is None): x0 = glbs[i,7]
-                if (z0 is None): z0 = glbs[i,6]
-                if (Mass0 is None): Mass0 = glbs[i,1]*constants.solar_mass
-                glb = np.empty((nglb,),dtype = gtype)
-                glb[imass]        = Mass0
-                glb[iradius]      = glbs[i,4]*constants.solar_radius
-                glb[iluminosity]  = constants.solar_luminosity*10.0**glbs[i,3]
-                glb[iz0]          = z0
-                glb[ix0]          = x0
-                glb[iage]         = glbs[i,0]
-                glb[itemperature] = glbs[i,2]
-                glb[iage_adim]    = glbs[i,0]  # may be replace later on
-                glb[user_params_index["Mass_true"]] = glbs[i,1]
-                glb[user_params_index["Xs"]] = glbs[i,7]
-                glb[user_params_index["Zs"]] = glbs[i,6]
-                glb[user_params_index["Xc"]] = glbs[i,8]
-                glb[user_params_index["Zc"]] = 1.0-glbs[i,9]-glbs[i,8]
+                # read track file:
+                x0 = None
+                z0 = None
+                Mass0 = None
+                with open(self.prefix+line, "r") as trackfile:
+                    # skip header:
+                    for i in range(3): trackfile.readline()
+                    # read mode structure
+                    ntot = 0
+                    for l in range(4):
+                        columns = trackfile.readline().strip().split()
+                        norder[l,0] = int(columns[0])
+                        norder[l,1] = int(columns[1])
+                        ntot += norder[l,1]
 
-                aModel = Model(glb, _name = names[i])
-                exceed_freqlim = aModel.read_modes_Aldo(norder,glbs[i,10:])
-                aModel.multiply_modes(1.0/aModel.glb[ifreq_ref])  # make frequencies non-dimensional
-                aModel.sort_modes()
-                # We're assuming the models are grouped together in tracks, so 
-                # we only need to check the previous track:
-                if ((len(self.tracks) > 0) and (self.tracks[-1].matches(aModel))):
-                    self.tracks[-1].append(aModel)
-                else:
-                    aTrack = Track(aModel,self.grid_params)
-                    self.tracks.append(aTrack)
-                nmodels += 1
-                nmodes  += len(aModel.modes)
-                if (not exceed_freqlim):
-                    models_small_spectra.append(aModel.name)
-                if (not config.batch):
-                    print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
-                    print('\033[2A') # backup two line - might not work in all terminals
+                # read models with numpy:
+                glbs  = np.loadtxt(self.prefix+line, skiprows=7, usecols=range(1,11+2*ntot), dtype=gtype)
+                names = np.loadtxt(self.prefix+line, skiprows=7, usecols=(0,), dtype=filename_dtype)
 
-            del glbs
-            del names
+                # read models
+                for i in range(glbs.shape[0]):
+                    if (x0 is None): x0 = glbs[i,7]
+                    if (z0 is None): z0 = glbs[i,6]
+                    if (Mass0 is None): Mass0 = glbs[i,1]*constants.solar_mass
+                    glb = np.empty((nglb,), dtype=gtype)
+                    glb[imass]        = Mass0
+                    glb[iradius]      = glbs[i,4]*constants.solar_radius
+                    glb[iluminosity]  = constants.solar_luminosity*10.0**glbs[i,3]
+                    glb[iz0]          = z0
+                    glb[ix0]          = x0
+                    glb[iage]         = glbs[i,0]
+                    glb[itemperature] = glbs[i,2]
+                    glb[iage_adim]    = glbs[i,0]  # may be replace later on
+                    glb[user_params_index["Mass_true"]] = glbs[i,1]
+                    glb[user_params_index["Xs"]] = glbs[i,7]
+                    glb[user_params_index["Zs"]] = glbs[i,6]
+                    glb[user_params_index["Xc"]] = glbs[i,8]
+                    glb[user_params_index["Zc"]] = 1.0-glbs[i,9]-glbs[i,8]
 
-        listfile.close()
+                    aModel = Model(glb, _name=names[i])
+                    exceed_freqlim = aModel.read_modes_Aldo(norder, glbs[i,10:])
+                    aModel.multiply_modes(1.0/aModel.glb[ifreq_ref])  # make frequencies non-dimensional
+                    aModel.sort_modes()
+                    # We're assuming the models are grouped together in tracks, so
+                    # we only need to check the previous track:
+                    if len(self.tracks) > 0 and self.tracks[-1].matches(aModel):
+                        self.tracks[-1].append(aModel)
+                    else:
+                        aTrack = Track(aModel,self.grid_params)
+                        self.tracks.append(aTrack)
+                    nmodels += 1
+                    nmodes  += len(aModel.modes)
+                    if not exceed_freqlim:
+                        models_small_spectra.append(aModel.name)
+                    if not config.batch:
+                        print("%d %d %d" % (len(self.tracks), nmodels, nmodes))
+                        print('\033[2A') # backup two line - might not work in all terminals
+
+                del glbs
+                del names
+
         print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
 
         # find span for each grid parameter prior to merging tracks:
@@ -1929,9 +1919,8 @@ class Model_grid:
         print("I merged %d track(s)"%(imerge))
 
         # write list of models with spectra which are too small in a file:
-        output = open("models_small_spectra","w")
-        for name in models_small_spectra: output.write(name+"\n")
-        output.close()
+        with open("models_small_spectra", "w") as output:
+            for name in models_small_spectra: output.write(name+"\n")
 
         # sort tracks:
         for track in self.tracks: track.sort()
@@ -1963,7 +1952,7 @@ class Model_grid:
         elif (config.replace_age_adim == "scale_Xc"):
             for track in self.tracks: track.age_adim_to_scale_Xc()
         else:
-            sys.exit("ERROR: unknown option for replace_scale_age in AIMS_configure.py")
+            raise ValueError("Unknown option %s for replace_scale_age in AIMS_configure.py." % config.replace_age_adim)
 
     def check_age_adim(self):
         """
@@ -1972,7 +1961,7 @@ class Model_grid:
         """
 
         for track in self.tracks:
-            if (not track.is_sorted_adim()):
+            if not track.is_sorted_adim():
                 sys.exit("ERROR: track(s) not strictly sorted according to dimensionless age")
 
     def range(self,aParam):
@@ -2106,7 +2095,11 @@ class Model_grid:
         """
 
         ndx1, ndx2 = self.find_partition()
-        tessellation = Delaunay(self.grid[ndx2,:])
+        if (self.distort_mat is None):
+            tessellation = Delaunay(self.grid[ndx2,:])
+        else:
+            tessellation = Delaunay(np.dot(self.grid[ndx2,:],self.distort_mat))
+
 
         # initialisation
         results = []
@@ -2167,7 +2160,7 @@ class Model_grid:
         for track in self.tracks:
             for i in range(len(track.names)):
                 if (not track.freq_sorted(i)):
-                    print(model.names[i])
+                    print(track.names[i])
                     Teffs_out.append(track.glb[i,itemperature])
                     Lums_out.append(math.log10(track.glb[i,iluminosity]/constants.solar_luminosity))
                 else:
@@ -2347,6 +2340,13 @@ def compare_models(model1,model2):
     :rtype: np.array
     """
 
+    if (config.interpolation_test_units == "microHz"):
+        C1, C2 = model1.glb[ifreq_ref], model1.glb[ifreq_ref]
+    elif (config.interpolation_test_units is None):
+        C1 = C2 = 1.0
+    else:
+        sys.exit("ERROR: Unrecognised units for interpolation_test_units in AIMS_configure.py")
+
     # initialisation:
     n_radial = 0
     n_radial_numax = 0
@@ -2354,8 +2354,8 @@ def compare_models(model1,model2):
     n_non_radial_numax = 0
     result = np.zeros((6+nglb,),dtype=gtype)
     # define frequency interval around numax:
-    numax = 0.5*(model1.numax/model1.glb[ifreq_ref] \
-          +      model2.numax/model2.glb[ifreq_ref])
+    numax = 0.5*(C1*model1.numax/model1.glb[ifreq_ref] \
+          +      C2*model2.numax/model2.glb[ifreq_ref])
     a = 0.8*numax
     b = 1.2*numax
 
@@ -2370,8 +2370,8 @@ def compare_models(model1,model2):
         if (model1.modes['n'][i1] > model2.modes['n'][i2]): i2+=1; continue
 
         # now the two modes have the same n and l values:
-        diff = abs(model1.modes['freq'][i1] - model2.modes['freq'][i2])
-        avg_freq =(model1.modes['freq'][i1] + model2.modes['freq'][i2])/2.0
+        diff = abs(C1*model1.modes['freq'][i1] - C2*model2.modes['freq'][i2])
+        avg_freq =(C1*model1.modes['freq'][i1] + C2*model2.modes['freq'][i2])/2.0
         if (model1.modes['l'][i1] == 0):
             if (result[0] < diff): result[0] = diff 
             diff *= diff  # square diff
@@ -2581,7 +2581,7 @@ def find_ages(coefs, tracks, age):
 
     else:
 
-        sys.exit("ERROR: unrecognised age_interpolation option")
+        raise ValueError("Unrecognised age_interpolation option %s." % config.age_interpolation)
 
 def interpolate_model(grid,pt,tessellation,ndx):
     """

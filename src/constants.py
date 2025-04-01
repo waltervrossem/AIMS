@@ -102,5 +102,5 @@ solar_z          = 0.0169  # Grevesse & Sauval (1998)
 #solar_z          = 0.0131  # Asplund et al. (2009), Lebreton
 """ the solar metallicity content """
 
-Yp               = 0.16 # 0.248
+Yp               = 0.248 # 0.16
 """ Primordial helium """

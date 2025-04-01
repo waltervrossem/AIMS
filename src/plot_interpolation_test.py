@@ -406,16 +406,15 @@ if __name__ == "__main__":
 
     filename = sys.argv[1]
 
-    input_data = open(filename,"rb")
-    [ndim, nglb, titles, grid, ndx1, ndx2, tessellation, results_age1, \
-        results_age2, results_track] = dill.load(input_data)
+    with open(filename, "rb") as input_data:
+        [ndim, nglb, titles, grid, ndx1, ndx2, tessellation, results_age1, \
+         results_age2, results_track] = dill.load(input_data)
 
-    if (ndim != 3):
-        print("I'm sorry, but I can only plot handle 3D grids.")
-        sys.exit(1)
+        if (ndim != 3):
+            print("I'm sorry, but I can only plot handle 3D grids.")
+            sys.exit(1)
 
-    results_age = [results_age1, results_age2]
-    input_data.close()
+        results_age = [results_age1, results_age2]
 
     plot3D(results_age1,0,tpe="max",title="Max radial error (nincr = 1)",truncate=1)
     plot3D(results_age2,0,tpe="max",title="Max radial error (nincr = 2)")

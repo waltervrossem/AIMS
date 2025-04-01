@@ -63,18 +63,17 @@ def duplicate_ages(track):
     return any(track.glb[i,iage] == track.glb[i+1,iage] for i in range(len(track.names)-1))
 
 def save_track(track,ndx):
-    filename = "track%d.txt"%(ndx)
-    f = open(filename,"w")
-    f.write("%s\n"%(str(track.params)))
-    for i in range(len(track.names)):
-        f.write("*"*60+"\n")
-        f.write("%s\n"%(track.names[i]))
-        f.write("Global parameters\n")
-        f.write("   %s\n"%(str(track.glb[i])))
-        f.write("Modes:\n")
-        for j in range(track.mode_indices[i],track.mode_indices[i+1]):
-           f.write("   %s\n"%(str(track.modes[j])))
-    f.close()
+    filename = "track%d.txt" % ndx
+    with open(filename, "w") as f:
+        f.write("%s\n"%(str(track.params)))
+        for i in range(len(track.names)):
+            f.write("*"*60+"\n")
+            f.write("%s\n"%(track.names[i]))
+            f.write("Global parameters\n")
+            f.write("   %s\n"%(str(track.glb[i])))
+            f.write("Modes:\n")
+            for j in range(track.mode_indices[i],track.mode_indices[i+1]):
+                f.write("   %s\n"%(str(track.modes[j])))
 
 def check_tracks_sorted(grid):
     for i in range(len(grid.tracks)):

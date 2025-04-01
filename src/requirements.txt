@@ -1,0 +1,9 @@
+numpy
+matplotlib
+lxml
+scipy
+corner
+dill
+emcee
+ptemcee
+tqdm
