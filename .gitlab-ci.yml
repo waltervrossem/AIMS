@@ -26,6 +26,8 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
   - pip install -r etc/CI/requirements.txt
+  - pip install meson
+  - pip install ninja
  
 stages:
   - build
