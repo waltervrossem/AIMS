@@ -119,3 +119,6 @@ dmypy.json
 
 # Pycharm
 .idea
+
+# local gitlab-ci
+.gitlab-ci-local
