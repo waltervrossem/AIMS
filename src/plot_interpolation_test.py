@@ -42,11 +42,11 @@ This utility allows various types of plots:
   - ``result[model_number,ndim+0]`` = maximum error on the radial modes
   - ``result[model_number,ndim+1]`` = RMS error on the radial modes
   - ``result[model_number,ndim+2]`` = RMS error on the radial modes near
-    :math:`\\nu_{\mathrm{max}}`
+    :math:`\\nu_{\\mathrm{max}}`
   - ``result[model_number,ndim+3]`` = maximum error on the non radial modes
   - ``result[model_number,ndim+4]`` = RMS error on the non radial modes
   - ``result[model_number,ndim+5]`` = RMS error on the non radial modes near
-    :math:`\\nu_{\mathrm{max}}`
+    :math:`\\nu_{\\mathrm{max}}`
   - ``result[model_number,ndim+6+[0:nglb]]`` = errors on the global parameters
 
   where:

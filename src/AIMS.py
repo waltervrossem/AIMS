@@ -38,8 +38,8 @@ of seismic an classic constraints.
 .. warning::
   In various places in this module, for instance in the :py:class:`Prior_list`
   and :py:class:`Likelihood` classes, various methods return what is described
-  as a :math:`\chi^2` value.  Technically, these are not :math:`\chi^2` values,
-  but rather :math:`-\chi^2/2`, i.e. the argument of the exponential function
+  as a :math:`\\chi^2` value.  Technically, these are not :math:`\\chi^2` values,
+  but rather :math:`-\\chi^2/2`, i.e. the argument of the exponential function
   which intervenes in the Gaussian probability distribution.
 """
 
@@ -581,8 +581,8 @@ class Mode:
         """
         :param _n: radial order of observed mode
         :param _l: harmonic degree of observed mode.
-        :param _freq: pulsation frequency (in :math:`\mathrm{\mu Hz}`). 
-        :param _dfreq: error bar on pulsation frequency (in :math:`\mathrm{\mu Hz}`).
+        :param _freq: pulsation frequency (in :math:`\\mathrm{\\mu Hz}`).
+        :param _dfreq: error bar on pulsation frequency (in :math:`\\mathrm{\\mu Hz}`).
 
         :type _n: int
         :type _l: int
@@ -605,10 +605,10 @@ class Mode:
         """Harmonic degree of observed mode."""
         
         self.freq = _freq
-        """Pulsation frequency (in :math:`\mathrm{\mu Hz}`)."""
+        """Pulsation frequency (in :math:`\\mathrm{\\mu Hz}`)."""
         
         self.dfreq = _dfreq
-        """Error bar on pulsation frequency (in :math:`\mathrm{\mu Hz}`)."""
+        """Error bar on pulsation frequency (in :math:`\\mathrm{\\mu Hz}`)."""
 
     def match(self,a_mode):
         """
@@ -1948,13 +1948,13 @@ class Likelihood:
 
     def apply_constraints(self,my_model):
         """
-        Calculate a :math:`\chi^2` value for the set of constraints (excluding
+        Calculate a :math:`\\chi^2` value for the set of constraints (excluding
         seismic constraints based on mode frequencies).
         
-        :param my_model: model for which the :math:`\chi^2` value is being calculated
+        :param my_model: model for which the :math:`\\chi^2` value is being calculated
         :type my_model: :py:class:`model.Model`
 
-        :return: the :math:`\chi^2` value deduced from classic constraints
+        :return: the :math:`\\chi^2` value deduced from classic constraints
         :rtype: float
         """
 
@@ -1969,7 +1969,7 @@ class Likelihood:
         This finds a map which indicates the correspondance between observed
         modes and theoretical modes from ``my_model``.
 
-        :param my_model: model for which the :math:`\chi^2` value is being calculated
+        :param my_model: model for which the :math:`\\chi^2` value is being calculated
         :param use_n: specify whether to use the radial order when finding the map
                      from observed modes to theoretical modes.  If ``False``, the map
                      is based on frequency proximity.
@@ -2014,11 +2014,11 @@ class Likelihood:
 
     def compare_frequency_combinations(self, my_model, mode_map, a=[]):
         """
-        This finds a :math:`\chi^2` value based on a comparison of frequency
+        This finds a :math:`\\chi^2` value based on a comparison of frequency
         combination functions, as defined in the :py:data:`combination_function`
         variable.
         
-        :param my_model: model for which the :math:`\chi^2` value is being calculated
+        :param my_model: model for which the :math:`\\chi^2` value is being calculated
         :param mode_map: a mapping which relates observed modes to theoretical ones
         :param a: parameters of surface correction terms
 
@@ -2026,7 +2026,7 @@ class Likelihood:
         :type mode_map: list of int
         :type a: array-like
 
-        :return: the :math:`\chi^2` value for the seismic constraints
+        :return: the :math:`\\chi^2` value for the seismic constraints
         :rtype: float
 
         .. note::
@@ -2116,13 +2116,13 @@ class Likelihood:
 
     def evaluate(self, my_model):
         """
-        Calculate ln of likelihood function (i.e. a :math:`\chi^2` value) for a given
+        Calculate ln of likelihood function (i.e. a :math:`\\chi^2` value) for a given
         model.
         
-        :param my_model: model for which the :math:`\chi^2` value is being calculated
+        :param my_model: model for which the :math:`\\chi^2` value is being calculated
         :type my_model: :py:class:`model.Model`
 
-        :return: the :math:`\chi^2` value, optionally the optimal surface amplitudes
+        :return: the :math:`\\chi^2` value, optionally the optimal surface amplitudes
            (depending on the value of :py:data:`AIMS_configure.surface_option`),
            integers to indicate whether the model was rejected due to classic
            or seismic contraints
@@ -2154,14 +2154,14 @@ class Likelihood:
 
     def __call__(self, params):
         """
-        Calculate ln of likelihood function (i.e. a :math:`\chi^2` value) for a given
+        Calculate ln of likelihood function (i.e. a :math:`\\chi^2` value) for a given
         set of parameters.
         
-        :param params: set of parmaeters for which the :math:`\chi^2` value is being
+        :param params: set of parmaeters for which the :math:`\\chi^2` value is being
           calculated.
         :type params: array-like
 
-        :return: the :math:`\chi^2` value
+        :return: the :math:`\\chi^2` value
         :rtype: float
 
         .. note:: 
