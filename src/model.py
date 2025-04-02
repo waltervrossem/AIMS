@@ -457,7 +457,7 @@ class Model:
         freqlim = config.cutoff*self.cutoff
         exceed_freqlim = False
         with open(filename) as freqfile:
-            for i in range(7):
+            for i in range(6):
                 freqfile.readline()
             mode_temp = []
             for line in freqfile:
