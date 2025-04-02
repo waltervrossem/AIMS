@@ -400,27 +400,27 @@ def test_fit_data():
     pos, prob, state = sampler.run_mcmc(pos, 200)
 
     # quantitative contraints are 10x observations in data/test.aimsobs
-    assert sampler.flatchain[:,0].mean() == pytest.approx(1.0, abs=0.01)
-    assert sampler.flatchain[:,1].mean() == pytest.approx(0.02, abs=0.001)
+    assert sampler.get_chain(flat=True)[:,0].mean() == pytest.approx(1.0, abs=0.01)
+    assert sampler.get_chain(flat=True)[:,1].mean() == pytest.approx(0.02, abs=0.001)
 
     # all this really tests is that the output has narrowed the
     # distribution compared to the initial uniform distribution p0,
     # which was deliberately broad
-    assert sampler.flatchain[:,0].std() < p0[:,0].std()
-    assert sampler.flatchain[:,1].std() < p0[:,1].std()
+    assert sampler.get_chain(flat=True)[:,0].std() < p0[:,0].std()
+    assert sampler.get_chain(flat=True)[:,1].std() < p0[:,1].std()
 
-    AIMS.write_samples('tests/data/tmp.samples', ['Mass'], sampler.flatchain[:,:1])
-    AIMS.write_statistics('tests/data/tmp.stats', ['Mass'], sampler.flatchain[:,:1])
-    AIMS.write_percentiles('tests/data/tmp.percentiles', ['Mass'], sampler.flatchain[:,:1])
+    AIMS.write_samples('tests/data/tmp.samples', ['Mass'], sampler.get_chain(flat=True)[:,:1])
+    AIMS.write_statistics('tests/data/tmp.stats', ['Mass'], sampler.get_chain(flat=True)[:,:1])
+    AIMS.write_percentiles('tests/data/tmp.percentiles', ['Mass'], sampler.get_chain(flat=True)[:,:1])
     AIMS.config.tight_ball = False
     AIMS.write_readme('tests/data/tmp.readme', 0.0)
-    AIMS.write_combinations('tests/data/tmp.combinations', sampler.flatchain)
+    AIMS.write_combinations('tests/data/tmp.combinations', sampler.get_chain(flat=True))
 
     # garbage data in the correct format
     LEGACY_keys = ['Radius', 'Mass', 'log_g', 'Rho', 'Age', 'Teff',
                    'Fe_H', 'Luminosity', 'X', 'Y', 'Xc']
     AIMS.write_LEGACY_summary('tests/data/tmp.legacy', '0', LEGACY_keys,
-                              sampler.flatchain[:,[0]*len(LEGACY_keys)])
+                              sampler.get_chain(flat=True)[:,[0]*len(LEGACY_keys)])
 
     # restore settings
     AIMS.config = config
