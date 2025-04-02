@@ -14,5 +14,5 @@ scipy
 corner
 dill
 emcee
-ptemcee
+ptemcee @ git+https://github.com/waltervrossem/ptemcee@f6e91e7
 tqdm
