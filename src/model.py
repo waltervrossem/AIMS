@@ -878,9 +878,8 @@ class Model:
         .. note::
           The relevant values are given in :py:mod:`constants`
         """
-
         try:
-            return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))/constants.A_FeH
+            return self.MH / constants.A_FeH
         except ValueError:
             return log0 # a rather low value
 
@@ -904,7 +903,7 @@ class Model:
         """
 
         try:
-            return math.log10(self.glb[iz0]*constants.solar_x/(self.glb[ix0]*constants.solar_z))/constants.A_FeH
+            return self.MH0 / constants.A_FeH
         except ValueError:
             return log0 # a rather low value
 
@@ -924,9 +923,37 @@ class Model:
         .. note::
           The relevant values are given in :py:mod:`constants`
         """
+        available_keys = user_params_index.keys()
+        have_Zs = False
+        have_Ys = False
+        have_Xs = False
+        have_ZXs = False
+        if 'Zs' in available_keys:
+            Zs = self.glb[user_params_index["Zs"]]
+            have_Zs = True
+        if 'Ys' in available_keys:
+            Ys = self.glb[user_params_index["Ys"]]
+            have_Ys = True
+        if 'Xs' in available_keys:
+            Xs = self.glb[user_params_index["Xs"]]
+            have_Xs = True
+        if 'ZXs' in available_keys:
+            ZXs = self.glb[user_params_index["ZXs"]]
+            have_ZXs = True
+        if 'ZHsurf' in available_keys:
+            ZXs = self.glb[user_params_index["ZHsurf"]]
+            have_ZXs = True
+
+        if not have_Zs:
+            if have_Xs and have_Ys:
+                Zs = 1 - self.glb[user_params_index["Xs"]] - self.glb[user_params_index["Ys"]]
+                have_Zs = True
+            if have_ZXs and have_Xs:
+                Zs = ZXs * Xs
+                have_Zs = True
 
         try:
-            return math.log10(self.glb[user_params_index["Zs"]]*constants.solar_x/(self.glb[user_params_index["Xs"]]*constants.solar_z))
+            return math.log10(Zs*constants.solar_x/(Xs*constants.solar_z))
         except ValueError:
             return log0 # a rather low value
 
