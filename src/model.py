@@ -342,7 +342,7 @@ class Model:
         :rtype: boolean
 
         .. note::
-          At this stage the frequencies should be expressed in :math:`\mu\mathrm{Hz}`.
+          At this stage the frequencies should be expressed in :math:`\\mu\\mathrm{Hz}`.
           They will be non-dimensionalised in :py:func:`read_model_list_standard`.
         """
 
@@ -587,7 +587,7 @@ class Model:
         :type filename: string
 
         .. note::
-          - The output frequencies are expressed in :math:`\mathrm{\mu Hz}`
+          - The output frequencies are expressed in :math:`\\mathrm{\\mu Hz}`
         """
 
         with open(filename, "w") as output:
@@ -1008,7 +1008,7 @@ class Model:
         The :math:`\\nu_{\\mathrm{max}}` value is obtained from the
         following scaling relation:
 
-            :math:`\\frac{\\nu_{\\mathrm{max}}}{\\nu_{\\mathrm{max},\odot}} \
+            :math:`\\frac{\\nu_{\\mathrm{max}}}{\\nu_{\\mathrm{max},\\odot}} \
                       = \\left(\\frac{M}{M_{\\odot}}\\right)                \
                         \\left(\\frac{R}{R_{\\odot}}\\right)^{-2}           \
                         \\left(\\frac{T_{\\mathrm{eff}}}{T_{\\mathrm{eff},\\odot}}\\right)^{-1/2}`
@@ -1032,7 +1032,7 @@ class Model:
         The :math:`\\nu_{\\mathrm{cut-off}}` value is obtained from the
         following scaling relation:
 
-            :math:`\\frac{\\nu_{\\mathrm{cut-off}}}{\\nu_{\\mathrm{cut-off},\odot}} \
+            :math:`\\frac{\\nu_{\\mathrm{cut-off}}}{\\nu_{\\mathrm{cut-off},\\odot}} \
                       = \\left(\\frac{M}{M_{\\odot}}\\right)                        \
                         \\left(\\frac{R}{R_{\\odot}}\\right)^2                      \
                         \\left(\\frac{T_{\\mathrm{eff}}}{T_{\\mathrm{eff},\\odot}}\\right)^{-1/2}`
@@ -1685,13 +1685,13 @@ class Model_grid:
 
           1. the second part of the path.  When concatenated with the prefix
              on the first line, this should give the full path to the model.
-          2. The stellar mass in :math:`\mathrm{g}`
-          3. The stellar radius in :math:`\mathrm{cm}`
-          4. The stellar luminosity in :math:`\mathrm{g.cm^2.s^{-3}}`
+          2. The stellar mass in :math:`\\mathrm{g}`
+          3. The stellar radius in :math:`\\mathrm{cm}`
+          4. The stellar luminosity in :math:`\\mathrm{g.cm^2.s^{-3}}`
           5. The metallicity
           6. The hydrogen content
-          7. The stellar age in :math:`\mathrm{Myrs}`
-          8. The effective temperature in :math:`\mathrm{K}`
+          7. The stellar age in :math:`\\mathrm{Myrs}`
+          8. The effective temperature in :math:`\\mathrm{K}`
           9. A dimensionless age parameter
 
           The following columns contain the parameters specified in the
@@ -2359,11 +2359,11 @@ def compare_models(model1,model2):
       - ``result[0]`` = maximum error on the radial modes
       - ``result[1]`` = RMS error on the radial modes
       - ``result[2]`` = RMS error on the radial modes near
-        :math:`\\nu_{\mathrm{max}}`
+        :math:`\\nu_{\\mathrm{max}}`
       - ``result[3]`` = maximum error on the non radial modes
       - ``result[4]`` = RMS error on the non radial modes
       - ``result[5]`` = RMS error on the non radial modes near
-        :math:`\\nu_{\mathrm{max}}`
+        :math:`\\nu_{\\mathrm{max}}`
       - ``result[6+[0:nglb]]`` = errors on the global parameters
 
     :rtype: np.array
