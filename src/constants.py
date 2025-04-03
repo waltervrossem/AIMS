@@ -48,7 +48,7 @@ A module which contains the following physical constants:
 | :py:const:`Yp`               | primordial helium                    | dimensionless                       |
 +------------------------------+--------------------------------------+-------------------------------------+
 | :py:const:`A_FeH`            | multiplicative constant in           | dimensionless                       |
-|                              | :math:`\\mathrm{[M/H]=A_{FeH}[Fe/H]}`|                                     |
+|                              | :math:`\\mathrm{[M/H]=A_{FeH}[Fe/H]}` |                                     |
 +------------------------------+--------------------------------------+-------------------------------------+
 
 .. note::
