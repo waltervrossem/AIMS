@@ -25,8 +25,10 @@ A module which contains various utility methods for handling strings and floats.
 
 __docformat__ = 'restructuredtext'
 
-import numpy as np
 import sys
+
+import numpy as np
+
 
 def to_float(s):
     """
@@ -43,7 +45,8 @@ def to_float(s):
       Fortran style numbers).
     """
 
-    return float(s.replace("d","e").replace("D","e"))
+    return float(s.replace("d", "e").replace("D", "e"))
+
 
 def is_number(s):
     """
@@ -61,10 +64,11 @@ def is_number(s):
     """
 
     try:
-        float(s.replace("d","e").replace("D","e"))
+        float(s.replace("d", "e").replace("D", "e"))
         return True
     except ValueError:
         return False
+
 
 def trim(s):
     """
@@ -77,10 +81,12 @@ def trim(s):
     :rtype: string
     """
     ndx = s.find("#")
-    if (ndx == -1): ndx = len(s)
+    if (ndx == -1):
+        ndx = len(s)
     return s[:ndx]
 
-def sparse_print(filename,mat):
+
+def sparse_print(filename, mat):
     """
     Print a sparse matrix (for debug purposes only):
 
@@ -94,10 +100,12 @@ def sparse_print(filename,mat):
     with open(filename, "w") as output_file:
         it = np.nditer(mat, flags=['multi_index'])
         while not it.finished:
-            if (it[0] != 0.0): output_file.write("%22.15e %s\n"%(it[0], it.multi_index))
+            if (it[0] != 0.0):
+                output_file.write("%22.15e %s\n" % (it[0], it.multi_index))
             it.iternext()
 
-def my_map(fct,lst):
+
+def my_map(fct, lst):
     """
     Systematically applies a function to a list of items.  This deals with
     the python3 behaviour of map which returns a map object rather than a
@@ -109,7 +117,8 @@ def my_map(fct,lst):
     :param lst: the list to which is applied the function
     :type lst: list
     """
-    return list(map(fct,lst))
+    return list(map(fct, lst))
+
 
 def my_input():
     """
@@ -123,4 +132,3 @@ def my_input():
     else:
         # python 2
         return raw_input()
-
