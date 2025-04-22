@@ -66,6 +66,7 @@ import dill
 import time
 import math
 import matplotlib
+import shutil
 
 if (config.backend is not None):
     matplotlib.use(config.backend)
@@ -2976,7 +2977,7 @@ def write_statistics(filename, labels, samples):
             for j in range(n):
                 output_file.write('{0:25.15e} '.format(
                     covariance[i, j] / math.sqrt(covariance[i, i] * covariance[j, j])))
-                output_file.write("\n")
+            output_file.write("\n")
 
 
 def write_percentiles(filename, labels, samples):
@@ -3814,13 +3815,16 @@ def plot_echelle_diagram(my_model, my_params, model_name):
     plt.plot((dnu, dnu), (nu_min, nu_max), "k:")
     for l in range(lmax + 1):
         plt.errorbar(nu_obs[l] % dnu, nu_obs[l], xerr=error_obs[l], fmt="r" + style[l], markersize=msize)
+        plt.errorbar(nu_obs[l] % dnu + dnu, nu_obs[l], xerr=error_obs[l], fmt="r" + style[l], markersize=msize)
 
     if (config.surface_option is not None):
         for l in range(lmax + 1):
             plt.plot(nu_theo_surf[l] % dnu, nu_theo_surf[l], "c" + style[l], markersize=msize)
+            plt.plot(nu_theo_surf[l] % dnu + dnu, nu_theo_surf[l], "c" + style[l], markersize=msize)
 
     for l in range(lmax + 1):
         plt.plot(nu_theo[l] % dnu, nu_theo[l], "b" + style[l], markersize=msize)
+        plt.plot(nu_theo[l] % dnu + dnu, nu_theo[l], "b" + style[l], markersize=msize)
 
     plt.title("Model: " + model_name)
     plt.xlabel(r"Reduced frequency, $\nu$ mod " + dnu_str + r" $\mu$Hz")
@@ -4219,8 +4223,9 @@ if __name__ == "__main__":
     else:
         os.makedirs(output_folder)
 
-    # save a copy of config used
-    os.system(f'cp {config.__file__} {output_folder}')
+    # save a copy of config and input file used
+    shutil.copy2(config.__file__, output_folder)
+    shutil.copy2(sys.argv[1], output_folder)
 
     # create output folder for OSM:
     if (config.with_osm):
