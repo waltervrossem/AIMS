@@ -2130,7 +2130,7 @@ class Model_grid:
 
         for track in self.tracks:
             if not track.is_sorted_adim():
-                sys.exit("ERROR: track(s) not strictly sorted according to dimensionless age")
+                raise ValueError("ERROR: track(s) not strictly sorted according to dimensionless age")
 
     def range(self, aParam):
         """
@@ -2524,7 +2524,7 @@ def compare_models(model1, model2):
     elif (config.interpolation_test_units is None):
         C1 = C2 = 1.0
     else:
-        sys.exit("ERROR: Unrecognised units for interpolation_test_units in AIMS_configure.py")
+        raise ValueError("ERROR: Unrecognised units for interpolation_test_units in AIMS_configure.py")
 
     # initialisation:
     n_radial = 0

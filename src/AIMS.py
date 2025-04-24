@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.1.0"
+__version__ = u"2.1.1"
 
 import os
 import sys
@@ -4174,7 +4174,7 @@ def plot_frequencies(grid):
     plt.savefig("freq_dim.pdf")
 
 
-if __name__ == "__main__":
+def main():
     """
     AIMS = Asteroseismic Inference on a Massive Scale
     """
@@ -4185,18 +4185,17 @@ if __name__ == "__main__":
     # this if for writing binary data
     if (config.mode == "write_grid"):
         write_binary_data(config.list_grid, config.binary_grid)
-        sys.exit(0)
+        return
 
     # this if for testing the interpolation
     if (config.mode == "test_interpolation"):
         interpolation_tests(config.interpolation_file)
-        sys.exit(0)
+        return
 
     # sanity check
     if (config.mode != "fit_data"):
-        print("ERROR: unrecognised value (\"%s\") for the" % (config.mode))
-        print("       variable mode in AIMS_configure.py. Aborting")
-        sys.exit(1)
+        raise ValueError("ERROR: unrecognised value (\"%s\") for the\n"
+        "       variable mode in AIMS_configure.py. Aborting" % (config.mode))
 
     # check number of arguments
     assert (len(sys.argv) > 1), "Usage: AIMS.py observations_file"
@@ -4213,7 +4212,7 @@ if __name__ == "__main__":
     # check for existence of output folder:
     if (os.path.exists(output_folder)):
         if (os.path.isfile(output_folder)):
-            sys.exit('Unable to overwrite file "%s" with folder' % (output_folder))
+            raise FileExistsError('Unable to overwrite file "%s" with folder' % (output_folder))
         else:
             print('WARNING: output folder "%s" already exists.' % (output_folder))
             print('         Should I overwrite this folder (y/n)?')
@@ -4231,7 +4230,7 @@ if __name__ == "__main__":
     if (config.with_osm):
         if (os.path.exists(config.output_osm)):
             if (os.path.isfile(config.output_osm)):
-                sys.exit('Unable to overwrite file "%s" with folder' % ( \
+                raise FileExistsError('Unable to overwrite file "%s" with folder' % ( \
                     config.output_osm))
         else:
             os.makedirs(config.output_osm)
@@ -4267,7 +4266,7 @@ if __name__ == "__main__":
                 priors.add_prior(Distribution("Uninformative", []))
             else:
                 if (param_name in model.get_surface_parameter_names(config.surface_option)):
-                    sys.exit("Please define prior for surface effects in configuration file.")
+                    raise ValueError("Please define prior for surface effects in configuration file.")
                 else:
                     priors.add_prior(Distribution("Uniform", grid.range(param_name)))
 
@@ -4444,3 +4443,6 @@ if __name__ == "__main__":
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
             plt.close('all')
+
+if __name__ == "__main__":
+    main()

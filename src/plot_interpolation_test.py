@@ -152,8 +152,7 @@ def plot3D(results,error_ndx,tpe="max",title=None,truncate=0):
             else:
                 value = np.nan
         else:
-            print("ERROR: unrecognised type: "+str(tpe))
-            sys.exit(1)
+            raise ValueError("ERROR: unrecognised type: "+str(tpe))
         if (value > 0.0):
             z.append(math.log10(value))
             x.append(results[i][0,0])
@@ -401,8 +400,7 @@ if __name__ == "__main__":
     """
 
     if (len(sys.argv) < 2):
-        print("Usage: plot_interpolation_test.py data_file")
-        sys.exit(1)
+        raise ValueError("Usage: plot_interpolation_test.py data_file")
 
     filename = sys.argv[1]
 
@@ -411,8 +409,7 @@ if __name__ == "__main__":
          results_age2, results_track] = dill.load(input_data)
 
         if (ndim != 3):
-            print("I'm sorry, but I can only plot handle 3D grids.")
-            sys.exit(1)
+            raise ValueError("I'm sorry, but I can only plot handle 3D grids.")
 
         results_age = [results_age1, results_age2]
 
