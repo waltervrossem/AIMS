@@ -4218,7 +4218,7 @@ def main():
             print('         Should I overwrite this folder (y/n)?')
             answer = utilities.my_input().strip()
             if (answer[0].upper() != "Y"):
-                sys.exit(0)
+                return
     else:
         os.makedirs(output_folder)
 
