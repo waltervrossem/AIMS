@@ -4178,7 +4178,7 @@ def plot_frequencies(grid):
     plt.savefig("freq_dim.pdf")
 
 
-def main():
+if __name__ == "__main__":
     """
     AIMS = Asteroseismic Inference on a Massive Scale
     """
@@ -4189,12 +4189,12 @@ def main():
     # this if for writing binary data
     if (config.mode == "write_grid"):
         write_binary_data(config.list_grid, config.binary_grid)
-        return
+        sys.exit(0)
 
     # this if for testing the interpolation
     if (config.mode == "test_interpolation"):
         interpolation_tests(config.interpolation_file)
-        return
+        sys.exit(0)
 
     # sanity check
     if (config.mode != "fit_data"):
@@ -4222,7 +4222,7 @@ def main():
             print('         Should I empty this folder (y/n)?')
             answer = utilities.my_input().strip()
             if (answer[0].upper() != "Y"):
-                return
+                sys.exit(0)
             shutil.rmtree(output_folder)
             os.makedirs(output_folder, exist_ok=True)
     else:
@@ -4450,6 +4450,3 @@ def main():
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
             plt.close('all')
-
-if __name__ == "__main__":
-    main()
