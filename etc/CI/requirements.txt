@@ -14,5 +14,7 @@ scipy
 corner
 dill
 emcee
-ptemcee @ git+https://github.com/waltervrossem/ptemcee@f6e91e7
+ptemcee@git+https://github.com/waltervrossem/ptemcee@f6e91e7
 tqdm
+meson
+ninja
