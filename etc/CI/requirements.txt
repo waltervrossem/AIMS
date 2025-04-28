@@ -7,14 +7,4 @@ docstr-coverage
 pipreqs
 pylint
 mypy
-numpy
-matplotlib
-lxml
-scipy
-corner
-dill
-emcee
-ptemcee@git+https://github.com/waltervrossem/ptemcee@f6e91e7
-tqdm
-meson
-ninja
+-r ../../src/requirements.txt
