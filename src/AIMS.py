@@ -4219,10 +4219,12 @@ def main():
             raise FileExistsError('Unable to overwrite file "%s" with folder' % (output_folder))
         else:
             print('WARNING: output folder "%s" already exists.' % (output_folder))
-            print('         Should I overwrite this folder (y/n)?')
+            print('         Should I empty this folder (y/n)?')
             answer = utilities.my_input().strip()
             if (answer[0].upper() != "Y"):
                 return
+            shutil.rmtree(output_folder)
+            os.makedirs(output_folder, exist_ok=True)
     else:
         os.makedirs(output_folder)
 
