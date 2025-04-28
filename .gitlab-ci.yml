@@ -22,13 +22,10 @@ cache:
 before_script:
   - apt-get update && apt-get -y install make gfortran
   - python -V  # Print out python version for debugging
-  - pip install virtualenv
-  - virtualenv venv
+  - python -m venv venv
   - source venv/bin/activate
   - pip install -r etc/CI/requirements.txt
-  - pip install meson
-  - pip install ninja
- 
+
 stages:
   - build
   - test
