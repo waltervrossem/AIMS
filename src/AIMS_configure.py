@@ -282,6 +282,7 @@ with_distrib_iter=True         # decide whether to plot distrib_iter
 with_echelle    = True         # decide whether to plot echelle diagrams
 with_histograms = True         # decide whether to plot histograms
 with_triangles  = True         # decide whether to make triangle plots
+triangle_params = ['Radius','Age','Teff','Luminosity']           # Params to use for triangle plots
 with_rejected   = True         # decide whether to make triangle plots with accepted/rejected models
 plot_extensions = ['png']      # extensions (and formats) for all simple plots
 tri_extensions  = ['png']      # extensions (and formats) for triangle plots

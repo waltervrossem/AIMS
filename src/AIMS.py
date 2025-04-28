@@ -4446,7 +4446,16 @@ if __name__ == "__main__":
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle." + ext))
             plt.close('all')
-        fig = corner.corner(samples_big[:, 1:], truths=best_grid_params, labels=labels_big[1:])
+
+        triangle_ind = slice(1, samples_big.shape[1])
+        triangle_truths_ind = slice(samples_big.shape[1] - 1)
+        if hasattr(config, 'triangle_params'):
+            if config.triangle_params is not None:
+                triangle_ind = [i for i, name in enumerate(names_big) if name in config.triangle_params]
+                triangle_truths_ind = [i-1 for i in triangle_ind]
+
+        fig = corner.corner(samples_big[:, triangle_ind], truths=np.asarray(best_grid_params)[triangle_truths_ind],
+                            labels=np.asarray(labels_big)[triangle_ind])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
             plt.close('all')
