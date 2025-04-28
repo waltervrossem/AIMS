@@ -275,6 +275,7 @@ extended_model  = False        # if True, print all models frequencies
                                # (not just those with observed counterparts)
 with_osm        = False        # decide whether to write output files for OSM 
                                # (=Optimal Stellar Model by R. Samadi)
+write_samples   = True         # whether to write samples files
 with_combinations = True       # decide whether to write file with model combinations
 with_walkers    = True         # decide whether to plot walkers
 with_distrib_iter=True         # decide whether to plot distrib_iter

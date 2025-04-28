@@ -98,6 +98,10 @@ if (not hasattr(np, "float")):
 if (not hasattr(np, "int")):
     np.int = int
 
+# If config file does not have write_samples, default to True
+if not hasattr(config, 'write_samples'):
+    config.write_samples = True
+
 # parameters associated with the grid
 grid = None
 """ grid of models """
@@ -4351,8 +4355,9 @@ def main():
         pool.join()
 
     # write various text files:
-    write_samples(os.path.join(output_folder, "samples.txt"), labels, samples)
-    write_samples(os.path.join(output_folder, "samples_big.txt"), labels_big, samples_big)
+    if config.write_samples:
+        write_samples(os.path.join(output_folder, "samples.txt"), labels, samples)
+        write_samples(os.path.join(output_folder, "samples_big.txt"), labels_big, samples_big)
     write_statistics(os.path.join(output_folder, "results.txt"), names_big[1:], samples[:, 1:])
     write_statistics(os.path.join(output_folder, "results_big.txt"), names_big[1:], samples_big[:, 1:])
     write_percentiles(os.path.join(output_folder, "percentiles.txt"), \
