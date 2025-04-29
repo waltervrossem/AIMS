@@ -784,6 +784,9 @@ class Likelihood:
         self.constraints = []
         """List of constraints which intervene in the likelihood function."""
 
+        self.nonconstraints = []
+        """List of constraints which are only used during plotting and not used in the likelihood function."""
+
         self.cov = None
         """Covariance matrix which intervenes when calculating frequency combinations."""
 
@@ -973,12 +976,19 @@ class Likelihood:
                 else:
                     if (len(columns) < 3):
                         continue
+
+                    if columns[0].startswith('-'):  # Non-constraint data
+                        add_constraint_func = self.add_nonconstraint
+                        columns[0] = columns[0][1:]  # Remove leading -
+                    else:
+                        add_constraint_func = self.add_constraint
+
                     if (utilities.is_number(columns[1])):
-                        self.add_constraint((columns[0],
+                        add_constraint_func((columns[0],
                                              Distribution("Gaussian",
                                                           utilities.my_map(utilities.to_float, columns[1:]))))
                     else:
-                        self.add_constraint((columns[0],
+                        add_constraint_func((columns[0],
                                              Distribution(columns[1],
                                                           utilities.my_map(utilities.to_float, columns[2:]))))
 
@@ -1015,6 +1025,33 @@ class Likelihood:
         if (name == "G"):
             name = "log_g"
         self.constraints.append((name, distribution))
+
+    def add_nonconstraint(self, nonconstraint):
+        """
+        Add a supplementary constraint to the list of non-constraints.
+
+        :param constraint: supplementary constraint
+        :type constraint: (string, :py:class:`Distribution`)
+        """
+
+        (name, distribution) = nonconstraint
+
+        # look for single letter constraints and "translate" them to their full name:
+        if (name == "T"):
+            name = "Teff"
+        if (name == "L"):
+            name = "Luminosity"
+        if (name == "R"):
+            name = "Radius"
+        if (name == "M"):
+            name = "M_H"
+        if (name == "G"):
+            name = "log_g"
+
+        if name in np.asarray(self.constraints)[:,0]:
+            raise ValueError(f'Non-constraint {name} already in constraints. Check input file.')
+        else:
+            self.nonconstraints.append((name, distribution))
 
     def guess_dnu(self, with_n=False):
         """
@@ -2612,8 +2649,8 @@ def find_best_model():
 
     best_grid_params = best_grid_params + utilities.my_map(best_grid_model.string_to_param, config.output_params)
 
-    print("Best model:  " + str(best_grid_result) + " " + str(best_grid_params))
-    best_grid_model.print_me()
+    # print("Best model:  " + str(best_grid_result) + " " + str(best_grid_params))
+    # best_grid_model.print_me()
 
 
 def find_best_model_in_track(ntrack):
@@ -4284,6 +4321,10 @@ if __name__ == "__main__":
     labels_big = labels + utilities.my_map(model.string_to_latex, config.output_params)
     names_big = ("lnP",) + grid_params_MCMC_with_surf + config.output_params
 
+    for constraint in like.constraints + like.nonconstraints:
+        if constraint[0] not in names_big:
+            print(f'Warning! Constraint {constraint[0]} has no matching grid/user parameter.')
+
     # start pool of parallel processes
     # NOTE: multiprocessing.pool.TheadPool doesn't duplicate memory
     #       like Pool, but can actually slow down execution (even
@@ -4421,13 +4462,28 @@ if __name__ == "__main__":
     #                     sys.argv[1][3:], names_big[1:], samples_big[:,1:])
 
     # make various plots:
+    obs_constraints = [None for _ in names_big]
+    for i, name in enumerate(names_big):
+        i_constraint = []
+        i_nonconstraint = []
+        if len(like.constraints) > 0:
+            i_constraint = np.nonzero(np.asarray(like.constraints)[:,0] == name)[0]
+        if len(like.nonconstraints) > 0:
+            i_nonconstraint = np.nonzero(np.asarray(like.nonconstraints)[:,0] == name)[0]
+
+        if len(i_constraint) != 0:
+            obs_constraints[i] = like.constraints[i_constraint[0]][1].mean
+        if len(i_nonconstraint) != 0:
+            obs_constraints[i] = like.nonconstraints[i_nonconstraint[0]][1].mean
+    obs_constraints = np.asarray(obs_constraints)
+
     if (best_grid_model is None):
         plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"])
     else:
         plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[best_grid_result])
 
     if (config.with_histograms):
-        plot_histograms(samples_big[:, 1:], names_big[1:], labels_big[1:], truths=best_grid_params)
+        plot_histograms(samples_big[:, 1:], names_big[1:], labels_big[1:], truths=obs_constraints[1:])
 
     if (config.with_rejected):
         if (len(rejected_parameters) >= ndims - nsurf):
@@ -4442,7 +4498,7 @@ if __name__ == "__main__":
                 plt.close('all')
 
     if (config.with_triangles):
-        fig = corner.corner(samples[:, 1:], truths=best_grid_params[:ndims], labels=labels[1:])
+        fig = corner.corner(samples[:, 1:], truths=obs_constraints[1:ndims+1], labels=labels[1:])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle." + ext))
             plt.close('all')
@@ -4452,9 +4508,8 @@ if __name__ == "__main__":
         if hasattr(config, 'triangle_params'):
             if config.triangle_params is not None:
                 triangle_ind = [i for i, name in enumerate(names_big) if name in config.triangle_params]
-                triangle_truths_ind = [i-1 for i in triangle_ind]
 
-        fig = corner.corner(samples_big[:, triangle_ind], truths=np.asarray(best_grid_params)[triangle_truths_ind],
+        fig = corner.corner(samples_big[:, triangle_ind], truths=obs_constraints[triangle_ind],
                             labels=np.asarray(labels_big)[triangle_ind])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
