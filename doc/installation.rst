@@ -1,6 +1,15 @@
 Installation
 ============
 
+To avoid issues with other python installations, it is recommended to use a virtual
+environment and instsall the required packages there, activate the environment, and
+then compile it::
+
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r src/requirements.txt
+    make --directory=src
+
 As of version 1.2, a few strategic parts of the code have been rewritten in
 FORTRAN thus leading to a considerable speed up.  These FORTRAN subroutines
 are then integrated into the AIMS code thanks to the
