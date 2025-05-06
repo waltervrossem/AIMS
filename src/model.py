@@ -63,6 +63,7 @@ if (config.backend is not None):
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from bisect import bisect_right
+import h5py
 
 # maximum filename length
 # filename_dtype = "U1000"
@@ -1794,6 +1795,8 @@ class Model_grid:
 
         if (config.mode_format == "Aldo"):
             self.read_model_list_Aldo(filename)
+        elif (config.mode_format == "BASTA"):
+            self.read_model_list_BASTA(filename)
         else:
             self.read_model_list_standard(filename)
 
@@ -2062,7 +2065,7 @@ class Model_grid:
         # find span for each grid parameter prior to merging tracks:
         grid_temp = np.asarray([track.params for track in self.tracks])
         params_span = np.array([np.max(grid_temp[:, i]) - np.min(grid_temp[:, i]) \
-                                for i in range(1, grid_temp.shape[1])])
+                               for i in range(grid_temp.shape[1])])
         del grid_temp
 
         # merge tracks which are too close:
@@ -2102,6 +2105,225 @@ class Model_grid:
         # need to create grid from scratch since tracks have been sorted.
         self.grid = np.asarray([track.params for track in self.tracks])
 
+    def read_model_list_BASTA(self,filename):
+        """
+        Read list of models in BASTA format from a file and construct a grid.
+
+        BASTA grids are contained HDF5 files with a tree-like structure.
+
+        :param filename: name of the file with the list of track files.
+        :type filename: string
+        """
+
+        # sanity check (to be completed if need be) ...
+
+        qdict = {
+            "FeH":"Fe_H",
+            "FeHini":"Fe_H0",
+            "MeH":"M_H",
+            "MeHini":"M_H0",
+            "alphaFe":"alpha_Fe",
+            "alphaMLT":"alpha_MLT",
+            "massini":"Mass0",
+            "ove":"alpha_OV",
+            "rho":"Rho",
+            "rhocen":"RhoC",
+            "xcen":"Xc",
+            "xini":"X0",
+            "xsur":"Xs",
+            "ycen":"Yc",
+            "yini":"Y0",
+            "ysur":"Ys",
+            "zcen":"Zc",
+            "zini":"Z0",
+            "zsur":"Zs",
+        }
+
+        qlatexdict = {
+            "FeH":r"Iron content, $%s[Fe/H]%s$",
+            "FeHini":r"Iron content, $%s[Fe/H]_0%s$",
+            "LPhot":r"Luminosity, $%sL%s$",
+            "Mbcz":r"Mass BCZ, $%sM_{\mathrm{BCZ}}%s$",
+            "Mcore":r"Core mass, $%sM_{\mathrm{core}}%s$",
+            "McoreX":r"H core mass, $%sM_{\mathrm{H,\,core}}%s$",
+            "MeH":r"Metallicity, $%s[M/H]%s$",
+            "MeHini":r"Metallicity, $%s[M/H]_0%s$",
+            "Rbcz":r"Radius BCZ, $%sR_{\mathrm{BCZ}}%s$",
+            "Rcore":r"Core radius, $%sR_{\mathrm{BCZ}}%s$",
+            "RcoreX":r"H core radius, $%sR_{\mathrm{H,\,BCZ}}%s$",
+            "Teff":r"Temperature, $%sT_{\mathrm{eff}}%s$",
+            "ZAMSLPhot":r"ZAMS luminosity, $%sL_{\mathrm{ZAMS}}%s$",
+            "ZAMSTeff":r"ZAMS temperature, $%sT_{\mathrm{eff,\,ZAMS}}%s$",
+            "age":r"Age (Myrs)",
+            "alphaFe":r"$%s\alpha_{\mathrm{Fe}}%s$",
+            "alphaMLT":r"Mixing length parameter, $%s\alpha_{\mathrm{MLT}}%s$",
+            "dnuscal":r"$%s\Delta\nu_{\mathrm{scal.}}%s$",
+            "massfin":r"Mass, $%sM%s$",
+            "massini":r"Initial mass, $%sM_0%s$",
+            "numax":r"$%s\nu_{\mathrm{max}}%s$",
+            "ove":r"Overshoot parameter, $%s\alpha_{\mathrm{ov.}}%s$",
+            "radPhot":r"Photospheric radius, $%sR_{\mathrm{phot.}}%s$",
+            "radTot":r"Total radius, $%sR_{\mathrm{tot.}}%s$",
+            "rho":r"Mean density, $%s\rho%s$",
+            "rhocen":r"Central density, $%s\rho_{\mathrm{C}}%s$",
+            "tau0":r"Acoustic radius, $%s\tau%s$",
+            "taubcz":r"BZC acoustic radius, $%s\tau_{\mathrm{BCZ}}%s$",
+            "tauhe":r"He acoustic radius, $%s\tau_{\mathrm{He}}%s$",
+            "xcen":r"Central hydrogen, $%sX_c%s$",
+            "xini":r"Initial hydrogen, $%sX_0%s$",
+            "xsur":r"Hydrogen content, $%sX_s%s$",
+            "ycen":r"Central helium, $%sY_c%s$",
+            "yini":r"Initial helium, $%sY_0%s$",
+            "ysur":r"Helium content, $%sY_s%s$",
+            "zcen":r"Central metallicity, $%sZ_c%s$",
+            "zini":r"Initial metallicity, $%sZ_0%s$",
+            "zsur":r"Metallicity, $%sZ_s%s$",
+        }
+
+        self.grid_params = config.grid_params
+
+        # set the correct dimension:
+        self.ndim = len(self.grid_params)
+
+        # set prefix and postfix:
+        self.prefix = "%s:"%(filename)
+        self.postfix = ""
+
+        # read grid
+        h5_grid = h5py.File(filename)
+
+        # read models and put them into evolutionary tracks:
+        nmodels = 0
+        nmodes  = 0
+
+        # get names of quantities in tracks
+        track0 = list(h5_grid["grid/tracks/"].keys())[0]
+        quantities = list(h5_grid["grid/tracks/%s/"%(track0)].keys())
+        quantities_del = ["name", "osc", "osckey", "volume_weight", "age", "massfin", \
+                          "Teff", "zini", "xini", "radPhot", "LPhot"]
+        for q in quantities_del:
+            if (q in quantities):
+                del quantities[quantities.index(q)]
+        config.user_params = []
+        for q in quantities:
+            if (q in qdict):
+                q1 = qdict[q]
+            else:
+                q1 = q
+            if (q in qlatexdict):
+                q2 = qlatexdict[q]
+            else:
+                q2 = q
+            config.user_params.append((q1,q2))
+        global nglb, nlin, ifreq_ref, iradius, iluminosity
+        nglb        = 9 + len(quantities)
+        nlin        = 6 + len(quantities)
+        ifreq_ref   = 6 + len(quantities)
+        iradius     = 7 + len(quantities)
+        iluminosity = 8 + len(quantities)
+        init_user_param_dict()
+        self.user_params = config.user_params
+
+        # read tracks
+        for track in list(h5_grid["grid/tracks/"].keys()):
+
+            # get models names:
+            names = list(map(lambda s: "%s/%s"%(track,s.decode("utf-8")), \
+                             h5_grid["grid/tracks/%s/name"%(track)]))
+            nmodels_track = len(names)
+
+            # get global quantities
+            glb = np.zeros((nmodels_track,nglb),dtype=gtype)
+            glb[:,iage]         = np.array(h5_grid["grid/tracks/%s/age"%(track)]) # (in Myrs ?)
+            glb[:,imass]        = np.array(h5_grid["grid/tracks/%s/massfin"%(track)]) \
+                                * constants.solar_mass # conversion to g
+            glb[:,itemperature] = np.array(h5_grid["grid/tracks/%s/Teff"%(track)]) # K
+            glb[:,iz0]          = np.array(h5_grid["grid/tracks/%s/zini"%(track)])
+            glb[:,ix0]          = np.array(h5_grid["grid/tracks/%s/xini"%(track)])
+            glb[:,iradius]      = np.array(h5_grid["grid/tracks/%s/radPhot"%(track)]) \
+                                * constants.solar_radius # conversion to cm
+            glb[:,iluminosity]  = np.array(h5_grid["grid/tracks/%s/LPhot"%(track)]) \
+                                * constants.solar_luminosity # conversion to erg/s
+            glb[:,ifreq_ref]    = 5e5*np.sqrt(constants.G*glb[:,imass]/glb[:,iradius]**3)/np.pi #muHz
+            for q in quantities:
+                if (q in qdict):
+                    glb[:,user_params_index[qdict[q]]] = np.array(h5_grid["grid/tracks/%s/%s"%(track,q)])
+                else:
+                    glb[:,user_params_index[q]] = np.array(h5_grid["grid/tracks/%s/%s"%(track,q)])
+
+            # initialise track
+            aModel = Model(glb[0,:], _name=names[0])
+            aTrack = Track(aModel,self.grid_params)
+            aTrack.names = names
+            aTrack.glb = glb
+
+            # get mode frequencies and inertias
+            nmodes_track = 0
+            for n in range(nmodels_track):
+                nmodes_track += len(h5_grid["grid/tracks/%s/osc"%(track)][n][0])
+            aTrack.modes = np.empty((nmodes_track,),dtype=modetype)
+            nmodes_track = 0
+            aTrack.mode_indices = [nmodes_track,]
+            for i in range(nmodels_track):
+                n = len(h5_grid["grid/tracks/%s/osc"%(track)][i][0])
+                aTrack.modes["n"][nmodes_track:nmodes_track+n]       = h5_grid["grid/tracks/%s/osckey"%(track)][i][1][:]
+                aTrack.modes["l"][nmodes_track:nmodes_track+n]       = h5_grid["grid/tracks/%s/osckey"%(track)][i][0][:]
+                aTrack.modes["freq"][nmodes_track:nmodes_track+n]    = h5_grid["grid/tracks/%s/osc"%(track)][i][0][:] \
+                                                                     / glb[i,ifreq_ref]
+                aTrack.modes["inertia"][nmodes_track:nmodes_track+n] = h5_grid["grid/tracks/%s/osc"%(track)][i][1][:]
+                nmodes_track += n
+                aTrack.mode_indices.append(nmodes_track)
+
+            aTrack.nmodes = nmodes_track
+            self.tracks.append(aTrack)
+            nmodels += nmodels_track
+            nmodes += nmodes_track
+            del glb
+            del names
+
+            if (not config.batch):
+                print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
+                print('\033[2A') # backup two line - might not work in all terminals
+
+        h5_grid.close()
+        print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
+
+        # find span for each grid parameter prior to merging tracks:
+        grid_temp   = np.asarray([track.params for track in self.tracks])
+        params_span = np.array([np.max(grid_temp[:,i])-np.min(grid_temp[:,i]) \
+                               for i in range(grid_temp.shape[1])])
+        del grid_temp
+
+        # merge tracks which are too close:
+        imerge = 0
+        i = 1
+        params_span *= eps
+        while (i < len(self.tracks)):
+            aModel = Model(self.tracks[i].glb[0])
+            for j in range(i):
+                if (self.tracks[j].matches(aModel,params_tol=params_span)):
+                    self.tracks[j].append_track(self.tracks[i])
+                    del self.tracks[i]
+                    imerge += 1
+                    break
+            else:
+                i+=1
+        print("I merged %d track(s)"%(imerge))
+
+        # sort tracks:
+        for track in self.tracks: track.sort()
+
+        # sanity check:
+        for track in self.tracks:
+            if track.remove_duplicate_ages():
+                print("WARNING: the track %s = %s"%(str(track.grid_params),str(track.params)))
+                print("         has models with the same age.  Removing duplicate models.")
+
+        # update list of indices:
+        self.ndx = range(len(self.tracks))
+
+        # need to create grid from scratch since tracks have been sorted.
+        self.grid = np.asarray([track.params for track in self.tracks])
     def replace_age_adim(self):
         """
         This replaces the dimensionless ages in the tracks according to the

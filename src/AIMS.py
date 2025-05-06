@@ -2909,6 +2909,8 @@ def run_emcee(p0):
         print("Autocorrelation time: %s" % (str(autocorr_time)))
     except emcee.autocorr.AutocorrError:
         print("Autocorrelation time not available")
+    except IndexError:
+        print("Autocorrelation time not available")
 
     return sampler, np.array(percentiles)
 
