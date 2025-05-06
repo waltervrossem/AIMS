@@ -3611,7 +3611,7 @@ def write_osm_xml(filename, my_params, my_model):
             target_osm = etree.Element("target")
             target_osm.set("name", "log_zsx_s")
             value_osm = etree.SubElement(target_osm, "value")
-            value_osm.text = "%22.15e" % (distrib.mean + np.log10(constants.solar_z / constants.solar_x))
+            value_osm.text = "%22.15e" % (distrib.mean + np.log10(config.solar_z / config.solar_x))
             sigma_osm = etree.SubElement(target_osm, "sigma")
             sigma_osm.text = "%22.15e" % (distrib.error_bar)
             config_osm.append(target_osm)

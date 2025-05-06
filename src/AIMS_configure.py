@@ -254,6 +254,24 @@ interpolation_file = "interpolation_test"  # Name of the file to which to
                                  # mode == "test_interpolation".
 interpolation_test_units = "microHz" # specify the frequency units used for
                                      # interpolation tests (None = non-dim.)
+#########################   Grid specific constants   ######################
+# solar_x = 0.7336  # Grevesse & Noels (1993)
+solar_x = 0.7345  # Grevesse & Sauval (1998)
+# solar_x = 0.7392  # Asplund et al. (2005)
+# solar_x = 0.7381  # Asplund et al. (2009)
+# solar_x = 0.7355 # Asplund et al. (2009), Lebreton
+""" the solar hydrogen content """
+
+# solar_z = 0.0179  # Grevesse & Noels (1993)
+solar_z = 0.0169  # Grevesse & Sauval (1998)
+# solar_z = 0.0122  # Asplund et al. (2005)
+# solar_z = 0.0134  # Asplund et al. (2009)
+# solar_z = 0.0131  # Asplund et al. (2009), Lebreton
+""" the solar metallicity content """
+
+Yp = 0.2485
+""" Primordial helium """
+
 #########################   Output   #######################################
 # choice of parameters: "Mass", "Radius", "Luminosity", "X", "Y", "Z", "zsx_0",
 #                       "Fe_H", "M_H", "Age", "Teff", "Dnu", "numax", "Rho", "g",

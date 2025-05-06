@@ -328,7 +328,7 @@ class Model:
         if (string == "M_H0"):
             return self.MH0
         if (string == "dY_dZ"):
-            return (1.0 - self.glb[iz0] - self.glb[ix0] - constants.Yp) / self.glb[iz0]
+            return (1.0 - self.glb[iz0] - self.glb[ix0] - config.Yp) / self.glb[iz0]
         if (string == age_str):
             return self.glb[iage]
         if (string == age_adim_str):
@@ -1055,7 +1055,7 @@ class Model:
                 have_Zs = True
 
         try:
-            return math.log10(Zs * constants.solar_x / (Xs * constants.solar_z))
+            return math.log10(Zs * config.solar_x / (Xs * config.solar_z))
         except ValueError:
             return log0  # a rather low value
 
@@ -1077,7 +1077,7 @@ class Model:
         """
 
         try:
-            return math.log10(self.glb[iz0] * constants.solar_x / (self.glb[ix0] * constants.solar_z))
+            return math.log10(self.glb[iz0] * config.solar_x / (self.glb[ix0] * config.solar_z))
         except ValueError:
             return log0  # a rather low value
 
