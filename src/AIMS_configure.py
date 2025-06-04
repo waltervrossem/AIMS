@@ -236,7 +236,11 @@ user_params = (('Zs', 'Surface metallicity, $%sZ_s%s$'), \
                ('Xc', 'Central hydrogen, $%sX_c%s$'), \
                ('alpha_MLT', 'Mixing-length parameter, $%s\\alpha%s$'), \
                ('Tc', 'Central temperature, $%sT_c%s$'))
-
+alpha_Fe_param = None
+""" [alpha/Fe] used to calculate A_FeH correction factor. Can be a float or string. If a string, it must be a
+ grid parameter."""
+use_Asplund_A_FeH = True  # If True, uses the Asplund 09 metal mixture for the Salaris correction. If False,
+                          # use the gs98 metal mixture
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions

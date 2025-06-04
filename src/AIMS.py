@@ -44,11 +44,13 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.2.0"
+waltervrossem__version__ = u"2.3.0"
 
 import os
 import sys
 
+os.environ["OMP_NUM_THREADS"] = "1"
+import numpy as np
 # AIMS configuration option
 if 'AIMS_configure.py' in os.listdir(os.getcwd()):
     sys.path = [os.getcwd(), *sys.path]
@@ -73,7 +75,6 @@ if (config.backend is not None):
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-import numpy as np
 from scipy.stats import truncnorm
 import emcee
 import corner
@@ -227,6 +228,9 @@ class Distribution:
 
         self.values = _values
         """List of parameters relevant to probability function"""
+
+    def __repr__(self):
+        return f"Distribution('{self.type}', {self.values})"
 
     def __call__(self, value):
         """
@@ -2493,7 +2497,7 @@ def write_list_file(filename):
             # if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i])
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None)
                 output.write("%20s " % (amodel.name))  # the filename
                 output.write("%22.15e " % (amodel.glb[model.imass]))  # the mass (in g)
                 output.write("%22.15e " % (amodel.glb[model.iradius]))  # the radius (in cm)
@@ -2535,7 +2539,7 @@ def write_SPInS_file_cgs(filename):
         for track in grid.tracks:
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i],
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None,
                                      _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
                 output.write("%22.15e " % (amodel.glb[model.iage_adim]))  # dimensionless age parameter
                 output.write("%22.15e " % (amodel.glb[model.iage]))  # the age (in Myrs)
@@ -2578,7 +2582,7 @@ def write_SPInS_file_solar(filename):
         for track in grid.tracks:
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i],
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None,
                                      _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
                 output.write("%22.15e " % (amodel.glb[model.iage_adim]))  # dimensionless age
                 output.write("%22.15e " % (amodel.glb[model.iage]))  # the age (in Myrs)
@@ -2676,7 +2680,8 @@ def find_best_model_in_track(ntrack):
     reject_prior = 0
     track = grid.tracks[ntrack]
     for i in range(len(track.names)):
-        amodel = model.Model(track.glb[i], _name=track.names[i], \
+        aFe = model.get_aFe(track)
+        amodel = model.Model(track.glb[i], _name=track.names[i], aFe=aFe,
                              _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
         result, rc, rs, rp = prob.evaluate(amodel)
         reject_classic += rc
@@ -2749,10 +2754,7 @@ def init_walkers():
             ii = 0
             ntotal = config.ntemps * config.nwalkers
             for k in range(config.ntemps):
-                for j in range(config.nwalkers):
-                    if (not config.batch):
-                        print("%d/%d" % (ii, ntotal))
-                        print('\033[2A')  # backup two lines - might not work in all terminals
+                for j in tqdm(range(config.nwalkers)):
                     params = None
                     counter = 0
                     while (prob.is_outside(params)):
@@ -3956,7 +3958,7 @@ def plot_frequency_diff(my_model, my_params, model_name, scaled=False):
     else:
         plt.ylabel(r"Frequency differences, $\nu_{\mathrm{theo}}-\nu_{\mathrm{obs}}$ (in $\mu$Hz)")
     plt.legend()
-
+    plt.axhline(0, ls='--', color='grey', zorder=-10)
     # save plot
     for ext in config.plot_extensions:
         if (scaled):

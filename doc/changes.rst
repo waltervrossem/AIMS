@@ -4,6 +4,11 @@ List of changes
 +--------------+---------------------------------------------------------------------------+
 | **Version**  | **Changes**                                                               |
 +--------------+---------------------------------------------------------------------------+
+| 2.3.0        | * added BASTA format for grid                                             |
+|              | * moved solar_x, solar_y, and Yp to AIMS_configure.py as these are        |
+|              |   specific to the grid                                                    |
+|              | * added option to scale [Fe/H] using [alpha/Fe] if available              |
++--------------+---------------------------------------------------------------------------+
 | 2.2.0        | * fixed compilation error for compatibility with python>=3.12 and numpy>=2|
 |              | * add option to plot a subset of params in corner plot                    |
 |              | * add option to make writing samples files optional                       |
