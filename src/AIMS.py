@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-waltervrossem__version__ = u"2.3.0"
+__version__ = u"2.3.0"
 
 import os
 import sys
