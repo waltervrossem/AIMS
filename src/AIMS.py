@@ -2774,53 +2774,36 @@ def init_walkers():
             tight_ball_distributions = prob.priors
 
         print("Generating walkers...")
-        if (config.PT):
+        if config.PT:
             p0 = np.zeros([config.ntemps, config.nwalkers, ndims])
-
-            ii = 0
             ntotal = config.ntemps * config.nwalkers
-            for k in range(config.ntemps):
-                for j in tqdm(range(config.nwalkers)):
-                    params = None
-                    counter = 0
-                    while (prob.is_outside(params)):
-                        if (counter > config.max_iter):
-                            raise ValueError("Too many iterations to produce walkers.")
-                        params = tight_ball_distributions.realisation()
-                        counter += 1
-                    p0[k, j, :] = params
-                    ii += 1
-            print("%d/%d" % (ii, ntotal))
-
-            # include the parameters of the best model as the first walker:
-            if (config.tight_ball):
-                for i in range(ndims):
-                    p0[0, 0, i] = best_grid_params[i]
-
         else:
             p0 = np.zeros([config.nwalkers, ndims])
-
-            ii = 0
             ntotal = config.nwalkers
-            for j in range(config.nwalkers):
-                if (not config.batch):
-                    print("%d/%d" % (ii, ntotal))
-                    print('\033[2A')  # backup two lines - might not work in all terminals
-                params = None
-                counter = 0
-                while (prob.is_outside(params)):
-                    if (counter > config.max_iter):
-                        raise ValueError("Too many iterations to produce walkers.")
-                    params = tight_ball_distributions.realisation()
-                    counter += 1
-                p0[j, :] = params
-                ii += 1
-            print("%d/%d" % (ii, ntotal))
 
-            # include the parameters of the best model as the first walker:
-            if (config.tight_ball):
-                for i in range(ndims):
-                    p0[0, i] = best_grid_params[i]
+        for ii in tqdm(range(ntotal)):
+
+            params = None
+            counter = 0
+            while (prob.is_outside(params)):
+                if (counter > config.max_iter):
+                    raise ValueError(f"Too many iterations to produce walkers. Walker index {ii}, num walkers {ntotal} Max iter {config.max_iter}")
+                params = tight_ball_distributions.realisation()
+                counter += 1
+
+            if config.PT:
+                k = ii // config.nwalkers
+                j = ii % config.nwalkers
+                p0[k, j, :] = params
+            else:
+                p0[ii, :] = params
+
+        # include the parameters of the best model as the first walker:
+        if (config.tight_ball):
+            if config.PT:
+                p0[0, 0, :] = best_grid_params[:ndims]
+            else:
+                p0[0, :] = best_grid_params[:ndims]
 
     else:
         print("Initialise walkers from samples file")
@@ -3531,6 +3514,34 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
 
     if return_dict:
         return out
+
+
+# def calculate_HDSwBC(samples, bimod_coeff, n=1000, kind='irrational'):
+#     """
+#     Calculate the Hartigan Dip Statistic with bimodality coefficient.
+#
+#     :param samples:
+#     :param bimod_coeff:
+#     :param n: Number of bootstrap samples.
+#     :param kind:
+#     :return:
+#     """
+#     alpha_U =
+#     alpha_L =
+#
+#     if kind == 'linear':
+#         alpha = (alpha_U - alpha_L) * bimod_coeff + alpha_L
+#     elif kind == 'quadratic':
+#         alpha = (alpha_U - alpha_L) * bimod_coeff**2 + alpha_L
+#     elif kind == 'exponential':
+#         alpha_UL = (alpha_U/alpha_L)
+#         alpha = alpha_UL ** (bimod_coeff + np.log(alpha_L)/np.log(alpha_UL))
+#     elif kind == 'irrational':
+#         alpha = np.sqrt((alpha_U - alpha_L)**2 * bimod_coeff) + alpha_L
+#     else:
+#         raise ValueError(f'Unknown kind {kind}.')
+#
+#     dip, pval = diptest.diptest(x)
 
 def string_to_title(string):
     """
@@ -4444,6 +4455,30 @@ if __name__ == "__main__":
     # seed random number generator (NOTE: this is not thread-safe):
     np.random.seed()
 
+    # load grid and associated quantities
+    grid = load_binary_data(config.binary_grid)
+    grid_params_MCMC = grid.grid_params + (model.age_str,)
+    grid_params_MCMC_with_surf = grid_params_MCMC \
+                                 + model.get_surface_parameter_names(config.surface_option)
+    nsurf = len(model.get_surface_parameter_names(config.surface_option))
+    ndims = len(grid_params_MCMC_with_surf)
+
+    # Remove duplicates
+    n_output_params = len(config.output_params)
+    new_output = []
+    duplicates = []
+    for name in config.output_params:
+        if name in grid_params_MCMC_with_surf:
+            duplicates.append(name)
+        else:
+            if name in new_output:
+                duplicates.append(name)
+            else:
+                new_output.append(name)
+    config.output_params = tuple(new_output)
+    if len(config.output_params) != n_output_params:
+        print(f'Warning! Duplicate output_params in AIMS_configure.py: {", ".join(duplicates)}')
+
     # define likelihood function:
     like = Likelihood()
     like.read_constraints(sys.argv[1], factor=1.0)
@@ -4452,14 +4487,6 @@ if __name__ == "__main__":
     like.find_covariance()
     like.create_combination_arrays()
     like.find_weights()
-
-    # load grid and associated quantities
-    grid = load_binary_data(config.binary_grid)
-    grid_params_MCMC = grid.grid_params + (model.age_str,)
-    grid_params_MCMC_with_surf = grid_params_MCMC \
-                                 + model.get_surface_parameter_names(config.surface_option)
-    nsurf = len(model.get_surface_parameter_names(config.surface_option))
-    ndims = len(grid_params_MCMC_with_surf)
 
     # define priors:
     priors = Prior_list()
@@ -4561,7 +4588,7 @@ if __name__ == "__main__":
         pool.join()
 
     # write various text files:
-    if config.write_samples:
+    if True: #config.write_samples:
         write_samples(os.path.join(output_folder, "samples.txt"), labels, samples)
         write_samples(os.path.join(output_folder, "samples_big.txt"), labels_big, samples_big)
     write_statistics(os.path.join(output_folder, "results.txt"), names_big[1:], samples[:, 1:])
