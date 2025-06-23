@@ -10,3 +10,5 @@ tqdm
 meson
 ninja
 h5py
+diptest
+scikit-learn

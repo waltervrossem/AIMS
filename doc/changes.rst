@@ -4,6 +4,14 @@ List of changes
 +--------------+---------------------------------------------------------------------------+
 | **Version**  | **Changes**                                                               |
 +--------------+---------------------------------------------------------------------------+
+| 2.4.0        | * changed Delta nu determination to use weights using power envelope      |
+|              | * added option to output surface corrected Delta nu                       |
+|              | * implemented new output format which consolidates the various text files |
+|              |   and adds hartigan dip test and gaussian mixture models and outputs a    |
+|              |   json file                                                               |
+|              | * add option to plot non-constraining observations by prepending with '-' |
+|              |   in the input file                                                       |
++--------------+---------------------------------------------------------------------------+
 | 2.3.0        | * added BASTA format for grid                                             |
 |              | * moved solar_x, solar_y, and Yp to AIMS_configure.py as these are        |
 |              |   specific to the grid                                                    |

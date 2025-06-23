@@ -69,7 +69,7 @@ import time
 import math
 import matplotlib
 import shutil
-import yaml
+import json
 from functools import partial
 
 if (config.backend is not None):
@@ -77,7 +77,9 @@ if (config.backend is not None):
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-from scipy.stats import truncnorm
+from scipy.stats import truncnorm, moment
+import diptest
+from sklearn.mixture import GaussianMixture
 import emcee
 import corner
 
@@ -3407,6 +3409,129 @@ def write_model(my_model, my_params, my_result, model_name, extended=False):
                 math.sqrt(prob.likelihood.cov[i, i]), fvalues[i]))
 
 
+def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=False):
+
+    one_sigma = 0.682689492137
+    two_sigma = 0.954499736104
+    three_sigma = 0.997300203937
+    quantiles = 0.5 + np.array([-three_sigma/2, -two_sigma/2, -one_sigma/2, 0, one_sigma/2, two_sigma/2, three_sigma/2])
+
+
+    out = {'parameters': {},
+           'observations': {'constraints': {},
+                            'nonconstraints': {}},
+           'models': {'grid': {},
+                      'MCMC': {},
+                      'stat': {}},
+           'info': {}
+           }
+
+    for i, best_model in enumerate([best_grid_model, best_MCMC_model, statistical_model]):
+        key = list(out['models'].keys())[i]
+        if best_model is None:
+            out['models'][key] = {}
+            continue
+
+        if key == 'grid':
+            out['models'][key]['name'] = str(best_model.name)
+        out['models'][key]['mass'] = float(best_model.glb[model.imass])
+        out['models'][key]['freq_ref'] = float(best_model.glb[model.ifreq_ref])
+        out['models'][key]['temperature'] = float(best_model.glb[model.itemperature])
+        out['models'][key]['luminosity'] = float(best_model.glb[model.iluminosity])
+        out['models'][key]['age'] = float(best_model.glb[model.iage])
+        out['models'][key]['age_adim'] = float(best_model.glb[model.iage_adim])
+        out['models'][key]['z0'] = float(best_model.glb[model.iz0])
+        out['models'][key]['x0'] = float(best_model.glb[model.ix0])
+        for (name, latex_name) in config.user_params:
+            out['models'][key][name] = float(best_model.glb[model.user_params_index[name]])
+        out['models'][key]['modes'] = []
+        for mode in best_model.modes:
+            out['models'][key]['modes'].append([float(best_model.modes['n'][i]),
+                                                float(best_model.modes['l'][i]),
+                                                float(best_model.modes['freq'][i] * best_model.glb[model.ifreq_ref]),
+                                                float(best_model.modes['inertia'][i])])
+
+    for name in grid_params_MCMC_with_surf + config.output_params:
+        out['parameters'][str(name)] = {}
+
+    for name in out['parameters'].keys():
+        if name in grid_params_MCMC_with_surf:
+            i_samples = 1 + grid_params_MCMC_with_surf.index(name)
+            use_samples = samples[:, i_samples]
+            i_mode = np.argmax(samples[:,0])
+        else:
+            i_samples = 1 + len(grid_params_MCMC_with_surf) + config.output_params.index(name)
+            use_samples = samples_big[:, i_samples]
+            i_mode = np.argmax(samples_big[:, 0])
+
+        out['parameters'][name]['mean'] = float(np.mean(use_samples))
+        out['parameters'][name]['std'] = float(np.std(use_samples))
+
+        sigmas = np.quantile(use_samples, quantiles)
+        median = sigmas[3]
+        out['parameters'][name]['median'] = float(median)
+        out['parameters'][name]['sigmas'] = [float(_) for _ in (sigmas[sigmas != median] - median)]
+
+        out['parameters'][name]['mode'] = float(use_samples[i_mode])
+
+        # Hartigan's Dip statistic and Bimodality coefficient
+        # https://doi.org/10.1155/2019/4819475
+
+        n = len(use_samples)
+        m2, m3, m4 = moment(use_samples, (2, 3, 4), center=out['parameters'][name]['mean'])
+
+        skew = math.sqrt(n * (n - 1)) / (n - 2) * m3 / math.sqrt(m2 ** 3)
+        kurt = (n - 1) / ((n - 2) * (n - 3)) * ((n + 1) * m4 / m2 ** 2 - (n - 1) * 3)
+        bimod_coeff = (skew ** 2 + 1) / (kurt + 3 * ((n - 1) ** 2 / ((n - 2) * (n - 3))))
+
+        out['parameters'][name]['bimodality_coeff'] = float(bimod_coeff)
+
+        dip, pval, extra = diptest.diptest(use_samples, full_output=True)
+        out['parameters'][name]['hartigan_dip'] = dip
+        out['parameters'][name]['hartigan_dip_pval'] = pval
+
+        # extra['lo'] = int(extra['lo'])
+        # extra['hi'] = int(extra['hi'])
+        extra.pop('lo')
+        extra.pop('hi')
+        extra['xu'] = float(extra['xu'])
+        extra['xl'] = float(extra['xl'])
+        extra.pop('gcm')
+        extra.pop('lcm')
+        out['parameters'][name]['hartigan_dip_info'] = extra
+
+        alpha_L = 0.001
+        alpha_U = 0.32
+        alpha = np.sqrt((alpha_U - alpha_L) ** 2 * bimod_coeff) + alpha_L
+        out['parameters'][name]['is_multimodal'] = ['no', 'yes'][int(pval > alpha)]
+
+        if out['parameters'][name]['is_multimodal'] == 'yes':
+            gmms = [GaussianMixture(n_components=num) for num in range(1, 6)]
+            for gm in gmms:
+                gm.fit(use_samples.reshape(-1, 1))
+            bics = [gm.bic(use_samples.reshape(-1, 1)) for gm in gmms]
+
+            gmm_info = {}
+            for gm in gmms:
+                gmm_info[gm.n_components] = {'means': gm.means_.reshape(-1).tolist(),
+                                             'std': np.sqrt(gm.covariances_).reshape(-1).tolist(),
+                                             'weigths': gm.weights_.reshape(-1).tolist(),
+                                             'bic': gm.bic(use_samples.reshape(-1, 1)).reshape(-1).tolist()}
+            out['parameters'][name]['gaussian_mixtures'] = gmm_info
+
+    for name, dist in like.constraints:
+        out['observations']['constraints'][name] = [dist.type, *dist.values]
+    for name, dist in like.nonconstraints:
+        out['observations']['nonconstraints'][name] = [dist.type, *dist.values]
+
+    out['observations']['modes'] = [[int(m.l), int(m.n), float(m.freq), float(m.dfreq)] for m in like.modes]
+
+    with open(path, 'w') as handle:
+        json.dump(out, handle, indent=4)
+
+    if return_dict:
+        return out
+
 def string_to_title(string):
     """
     Create fancy title from string.
@@ -4488,6 +4613,9 @@ if __name__ == "__main__":
             plot_echelle_diagram(statistical_model, statistical_params, "statistical")
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=False)
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=True)
+
+    if config.write_new_output:
+        output = write_new_output(os.path.join(output_folder, "new_output.yml"), samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=True)
 
     # write OSM files:
     if (config.with_osm):
