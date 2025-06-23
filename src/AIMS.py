@@ -4115,11 +4115,21 @@ def plot_histograms(samples, names, fancy_names, truths=None):
     for i in range(len(names)):
         plt.figure()
         n, bins, patches = plt.hist(samples[:, i], 50, density=True, histtype='bar')
-        # n, bins, patches = plt.hist(samples[:,i],50,normed=True,histtype='bar')
-        if (truths is not None):
+        if np.isfinite(truths[i][0]):
             ylim = plt.ylim()
-            plt.plot([truths[i], truths[i]], ylim, 'g-')
-            plt.ylim(ylim)  # restore limits, just in case
+
+            mean = truths[i][0]
+            sigma = truths[i][1]
+            x = np.linspace(*plt.xlim(), 101)
+            if sigma > 0:
+                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2 * math.pi))
+                plt.fill_between(x, y, alpha=0.5, color='g')
+            else:
+                plt.axvline(mean, color='g', ls='-')
+
+            # restore limits
+            plt.xlim(x[0], x[-1])
+            plt.ylim(ylim)
         plt.xlabel(fancy_names[i])
         for ext in config.plot_extensions:
             plt.savefig(os.path.join(output_folder, "histogram_" + names[i] + "." + ext))
@@ -4466,7 +4476,7 @@ if __name__ == "__main__":
     #                     sys.argv[1][3:], names_big[1:], samples_big[:,1:])
 
     # make various plots:
-    obs_constraints = [None for _ in names_big]
+    obs_constraints = [[np.nan, np.nan] for _ in names_big]
     for i, name in enumerate(names_big):
         i_constraint = []
         i_nonconstraint = []
@@ -4476,45 +4486,61 @@ if __name__ == "__main__":
             i_nonconstraint = np.nonzero(np.asarray(like.nonconstraints)[:,0] == name)[0]
 
         if len(i_constraint) != 0:
-            obs_constraints[i] = like.constraints[i_constraint[0]][1].mean
+            obs_constraints[i] = [like.constraints[i_constraint[0]][1].mean, like.constraints[i_constraint[0]][1].error_bar]
         if len(i_nonconstraint) != 0:
-            obs_constraints[i] = like.nonconstraints[i_nonconstraint[0]][1].mean
+            obs_constraints[i] = [like.nonconstraints[i_nonconstraint[0]][1].mean, like.nonconstraints[i_nonconstraint[0]][1].error_bar]
     obs_constraints = np.asarray(obs_constraints)
 
     if (best_grid_model is None):
         plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"])
     else:
-        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[best_grid_result])
+        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[[best_grid_result, 0]])
 
     if (config.with_histograms):
         plot_histograms(samples_big[:, 1:], names_big[1:], labels_big[1:], truths=obs_constraints[1:])
 
     if (config.with_rejected):
         if (len(rejected_parameters) >= ndims - nsurf):
-            fig = corner.corner(np.array(rejected_parameters), labels=labels[1:ndims - nsurf + 1])
+            fig = corner.corner(np.array(rejected_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
                 fig.savefig(os.path.join(output_folder, "rejected." + ext))
                 plt.close('all')
         if (len(accepted_parameters) >= ndims - nsurf):
-            fig = corner.corner(np.array(accepted_parameters), labels=labels[1:ndims - nsurf + 1])
+            fig = corner.corner(np.array(accepted_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
                 fig.savefig(os.path.join(output_folder, "accepted." + ext))
                 plt.close('all')
 
     if (config.with_triangles):
-        fig = corner.corner(samples[:, 1:], truths=obs_constraints[1:ndims+1], labels=labels[1:])
+        fig = corner.corner(samples[:, 1:], labels=labels[1:], hist_kwargs={'density':True})
+        triangle_ind = [i for i, name in enumerate(labels_big) if name in labels[1:]]
+        truths = obs_constraints[triangle_ind]
+        for i, (mean, sigma) in enumerate(truths):
+            if np.isfinite(mean) and sigma > 0:
+                ax = fig.axes[(len(truths) + 1) * i]
+                x = np.linspace(*ax.get_xlim(), 101)
+                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                ax.fill_between(x, y, alpha=0.5, color='g', zorder=-1)
+                ax.set_xlim(x[0], x[-1])
+
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle." + ext))
             plt.close('all')
 
         triangle_ind = slice(1, samples_big.shape[1])
-        triangle_truths_ind = slice(samples_big.shape[1] - 1)
         if hasattr(config, 'triangle_params'):
             if config.triangle_params is not None:
                 triangle_ind = [i for i, name in enumerate(names_big) if name in config.triangle_params]
 
-        fig = corner.corner(samples_big[:, triangle_ind], truths=obs_constraints[triangle_ind],
-                            labels=np.asarray(labels_big)[triangle_ind])
+        fig = corner.corner(samples_big[:, triangle_ind], labels=np.asarray(labels_big)[triangle_ind], hist_kwargs={'density':True})
+        truths = obs_constraints[triangle_ind]
+        for i, (mean, sigma) in enumerate(truths):
+            if np.isfinite(mean) and sigma > 0:
+                ax = fig.axes[(len(truths) + 1) * i]
+                x = np.linspace(*ax.get_xlim(), 101)
+                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                ax.fill_between(x, y, alpha=0.5, color='g', zorder=-1)
+                ax.set_xlim(x[0], x[-1])
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
             plt.close('all')

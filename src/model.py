@@ -219,6 +219,8 @@ def string_to_latex(string, prefix="", postfix=""):
         return r'$%sT_{\mathrm{eff}}%s$ (in K)' % (prefix, postfix)
     if (string == "Dnu"):
         return r'Large separation (in $\mu$Hz), $%s\Delta \nu%s$' % (prefix, postfix)
+    if (string == "Dnu_c"):
+        return r'Corrected Large separation (in $\mu$Hz), $%s\Delta \nu%s$' % (prefix, postfix)
     if (string == "numax"):
         return r'$%s\nu_{\mathrm{max}}%s$ (in $\mu$Hz)' % (prefix, postfix)
     if (string == "Rho"):
