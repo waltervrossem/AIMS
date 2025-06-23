@@ -3409,6 +3409,9 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
            'info': {}
            }
 
+    out['info']['covariance'] = np.cov(samples, rowvar=False).tolist()
+    out['info']['covariance_big'] = np.cov(samples_big, rowvar=False).tolist()
+
     for i, best_model in enumerate([best_grid_model, best_MCMC_model, statistical_model]):
         key = list(out['models'].keys())[i]
         if best_model is None:
@@ -4463,7 +4466,7 @@ if __name__ == "__main__":
     nsurf = len(model.get_surface_parameter_names(config.surface_option))
     ndims = len(grid_params_MCMC_with_surf)
 
-    # Remove duplicates
+    # Remove duplicates in grid_params + output_params
     n_output_params = len(config.output_params)
     new_output = []
     duplicates = []
@@ -4588,15 +4591,10 @@ if __name__ == "__main__":
         pool.join()
 
     # write various text files:
-    if True: #config.write_samples:
+    if config.write_samples:
         write_samples(os.path.join(output_folder, "samples.txt"), labels, samples)
         write_samples(os.path.join(output_folder, "samples_big.txt"), labels_big, samples_big)
-    write_statistics(os.path.join(output_folder, "results.txt"), names_big[1:], samples[:, 1:])
-    write_statistics(os.path.join(output_folder, "results_big.txt"), names_big[1:], samples_big[:, 1:])
-    write_percentiles(os.path.join(output_folder, "percentiles.txt"), \
-                      names_big[1:], samples[:, 1:])
-    write_percentiles(os.path.join(output_folder, "percentiles_big.txt"), \
-                      names_big[1:], samples_big[:, 1:])
+
     if (config.with_combinations):
         write_combinations(os.path.join(output_folder, "combinations.txt"), samples[0::config.thin_comb, 1:])
 
@@ -4641,8 +4639,7 @@ if __name__ == "__main__":
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=False)
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=True)
 
-    if config.write_new_output:
-        output = write_new_output(os.path.join(output_folder, "new_output.yml"), samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=True)
+    output = write_new_output(os.path.join(output_folder, "output.json"), samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=True)
 
     # write OSM files:
     if (config.with_osm):
