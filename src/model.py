@@ -348,9 +348,6 @@ class Model:
                 a = 0.6622333205008432
                 b = 0.3377666794991567
             self.A_FeH = a * 10 ** aFe + b
-            # if isinstance(config.alpha_Fe_param, float):
-            #     self.A_FeH = a * 10 ** config.alpha_Fe_param + b
-            # else:
 
 
     def __del__(self):
