@@ -68,6 +68,7 @@ def test_Model():
     """
     Test functions in the Model class.
     """
+    model.init_user_param_dict()
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)

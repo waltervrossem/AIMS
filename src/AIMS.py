@@ -69,6 +69,7 @@ import time
 import math
 import matplotlib
 import shutil
+import yaml
 from functools import partial
 
 if (config.backend is not None):
