@@ -362,12 +362,15 @@ class Model:
         del self.glb
         del self.name
 
-    def string_to_param(self, string):
+    def string_to_param(self, string, a=[]):
         """
         Return a parameter for an input string.
 
         :param string: string that indicates which parameter we're seeking
         :type string: string
+
+        :param a: amplitude parameters which intervene in the surface correction
+        :type a: array-like
 
         :return: the value of the parameter
         :rtype: float
@@ -417,6 +420,8 @@ class Model:
             return self.glb[itemperature]
         if (string == "Dnu"):
             return self.find_large_separation() * self.glb[ifreq_ref]
+        if (string == "Dnu_c"):
+            return self.find_surface_corrected_large_separation(a) * self.glb[ifreq_ref]
         if (string == "numax"):
             return self.numax
         if (string == "Rho"):
@@ -965,7 +970,33 @@ class Model:
         if (len(np.unique(n)) < 2):
             return np.nan
         freq = self.modes['freq'].compress(ind)
-        coeff = np.polyfit(n, freq, 1)
+        numax = self.numax
+        sigma = 0.66 * numax ** 0.88
+        weights = np.exp(-((freq - numax) / sigma) ** 2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
+        return coeff[0]
+
+    def find_surface_corrected_large_separation(self, a=[]):
+        """
+        Find large frequency separation using only radial modes and surface corrections.
+
+        :param a: Surface correction parameters.
+
+        :return: the large frequency separation
+        :rtype: float
+        """
+
+        ind = (self.modes['l'] == 0).flat
+        n = self.modes['n'].compress(ind)
+        if (len(np.unique(n)) < 2):
+            return np.nan
+
+        # Weight large sep by envelope
+        freq = self.get_freq(config.surface_option, a).compress(ind)
+        numax = self.numax
+        sigma = 0.66 * numax ** 0.88
+        weights = np.exp(-((freq - numax)/sigma)**2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
 
     def find_epsilon(self, ltarget):

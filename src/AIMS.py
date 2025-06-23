@@ -69,6 +69,7 @@ import time
 import math
 import matplotlib
 import shutil
+from functools import partial
 
 if (config.backend is not None):
     matplotlib.use(config.backend)
@@ -995,6 +996,25 @@ class Likelihood:
                         add_constraint_func((columns[0],
                                              Distribution(columns[1],
                                                           utilities.my_map(utilities.to_float, columns[2:]))))
+        # If either Dnu or Dnu_c in constraint or nonconstraint, also add the other one to nonconstraint
+        constraint_names = [_[0] for _ in self.constraints]
+        nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu' in constraint_names) and ('Dnu_c' not in nonconstraint_names):
+            i_Dnu_constraint = constraint_names.index('Dnu')
+            self.add_nonconstraint(('Dnu_c', self.constraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu' in nonconstraint_names) and ('Dnu_c' not in constraint_names + nonconstraint_names):
+            i_Dnu_constraint = nonconstraint_names.index('Dnu')
+            self.add_nonconstraint(('Dnu_c', self.nonconstraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu_c' in constraint_names) and ('Dnu' not in nonconstraint_names):
+            i_Dnu_constraint = constraint_names.index('Dnu_c')
+            self.add_nonconstraint(('Dnu', self.constraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu_c' in nonconstraint_names) and ('Dnu' not in constraint_names + nonconstraint_names):
+            i_Dnu_constraint = nonconstraint_names.index('Dnu_c')
+            self.add_nonconstraint(('Dnu', self.nonconstraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
 
         # print number of modes:
         print("I found %d modes in %s." % (len(self.modes), filename))
@@ -2342,7 +2362,8 @@ class Probability:
             result2 = self.priors(utilities.my_map(my_model.string_to_param, grid_params_MCMC))
         else:
             result1, surf_amplitudes, reject_classic, reject_seismic = self.likelihood.evaluate(my_model)
-            result2 = self.priors(utilities.my_map(my_model.string_to_param, grid_params_MCMC) + list(surf_amplitudes))
+            result2 = self.priors(utilities.my_map(
+                partial(my_model.string_to_param, a=surf_amplitudes), grid_params_MCMC) + list(surf_amplitudes))
 
         reject_prior = 0
         if (result2 < threshold):
@@ -2650,8 +2671,10 @@ def find_best_model():
             print("An unexpected error occured.  Please contact the authors of AIMS.")
         optimal_amplitudes = prob.likelihood.get_optimal_surface_amplitudes(best_grid_model, mode_map)
         best_grid_params = best_grid_params + list(optimal_amplitudes)
+    else:
+        optimal_amplitudes = []
 
-    best_grid_params = best_grid_params + utilities.my_map(best_grid_model.string_to_param, config.output_params)
+    best_grid_params = best_grid_params + utilities.my_map(partial(best_grid_model.string_to_param, a=optimal_amplitudes), config.output_params)
 
     # print("Best model:  " + str(best_grid_result) + " " + str(best_grid_params))
     # best_grid_model.print_me()
@@ -2946,7 +2969,7 @@ def find_a_blob(params):
     """
 
     my_model = model.interpolate_model(grid, params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    return utilities.my_map(my_model.string_to_param, config.output_params)
+    return utilities.my_map(partial(my_model.string_to_param, a=params[-nsurf:]), config.output_params)
 
 
 def write_samples(filename, labels, samples):
@@ -4440,7 +4463,7 @@ if __name__ == "__main__":
     best_MCMC_params = samples[ndx_max, 1:]
     best_MCMC_params.reshape(ndims)
     best_MCMC_model = model.interpolate_model(grid, best_MCMC_params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    best_MCMC_params = list(best_MCMC_params) + utilities.my_map(best_MCMC_model.string_to_param, config.output_params)
+    best_MCMC_params = list(best_MCMC_params) + utilities.my_map(partial(best_MCMC_model.string_to_param, a=best_grid_params[ndims - nsurf:ndims]), config.output_params)
     write_model(best_MCMC_model, best_MCMC_params, best_MCMC_result, \
                 "best_MCMC", extended=config.extended_model)
     write_combinations(os.path.join(output_folder, "combinations_best_MCMC.txt"), [best_MCMC_params])
@@ -4455,7 +4478,7 @@ if __name__ == "__main__":
     statistical_result = prob(statistical_params)
     statistical_model = model.interpolate_model(grid, statistical_params[0:ndims - nsurf], grid.tessellation, grid.ndx)
     if (statistical_model is not None):
-        statistical_params = list(statistical_params) + utilities.my_map(statistical_model.string_to_param,
+        statistical_params = list(statistical_params) + utilities.my_map(partial(statistical_model.string_to_param, a=statistical_params[ndims - nsurf:ndims]),
                                                                          config.output_params)
         write_model(statistical_model, statistical_params, statistical_result, \
                     "statistical", extended=config.extended_model)
