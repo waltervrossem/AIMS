@@ -3446,8 +3446,8 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
             out['models'][key][name] = float(best_model.glb[model.user_params_index[name]])
         out['models'][key]['modes'] = []
         for mode in best_model.modes:
-            out['models'][key]['modes'].append([float(best_model.modes['n'][i]),
-                                                float(best_model.modes['l'][i]),
+            out['models'][key]['modes'].append([int(best_model.modes['n'][i]),
+                                                int(best_model.modes['l'][i]),
                                                 float(best_model.modes['freq'][i] * best_model.glb[model.ifreq_ref]),
                                                 float(best_model.modes['inertia'][i])])
 
