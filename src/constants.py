@@ -81,9 +81,3 @@ solar_cutoff = 5300.0  # Jimenez et al. (2011) (see Balmforth & Gough 1990, Foss
 
 G = 6.67428e-8  # CODATA 2006
 """ the gravitational constant in :math:`\\mathrm{cm^3.g^{-1}.s^{-2}}` """
-
-A_FeH = 1.0
-"""
-multiplicative constant which intervenes in the
-conversion from metal content to iron content
-"""
