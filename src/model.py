@@ -967,9 +967,10 @@ class Model:
         if (len(np.unique(n)) < 2):
             return np.nan
         freq = self.modes['freq'].compress(ind)
-        numax = self.numax
-        sigma = 0.66 * numax ** 0.88
-        weights = np.exp(-((freq - numax) / sigma) ** 2)
+        # Use numax in uHz to calculate sigma, then convert to dimless
+        numax_dimless = self.numax / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
         coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
 
@@ -990,9 +991,9 @@ class Model:
 
         # Weight large sep by envelope
         freq = self.get_freq(config.surface_option, a).compress(ind)
-        numax = self.numax
-        sigma = 0.66 * numax ** 0.88
-        weights = np.exp(-((freq - numax)/sigma)**2)
+        numax_dimless = self.numax / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless)**2)
         coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
 
@@ -1480,7 +1481,14 @@ class Track:
         if (len(n) < 2):
             return np.nan
         freq = self.modes['freq'][istart:istop].compress(ind)
-        coeff = np.polyfit(n, freq, 1)
+        numax = (constants.solar_numax * (self.glb[imodel, imass] / constants.solar_mass) /
+                 ((self.glb[imodel, iradius] / constants.solar_radius) ** 2 *
+                  np.sqrt(self.glb[imodel, itemperature] / constants.solar_temperature)))
+        numax_dimless = numax / self.glb[imodel, ifreq_ref]
+        sigma_dimless = 0.66 * numax ** 0.88 / self.glb[imodel, ifreq_ref] # Use numax in uHz, then convert to dimless
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
+
         return coeff[0]
 
     def duplicate_ages(self):
