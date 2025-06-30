@@ -25,30 +25,21 @@ A module which contains the following physical constants:
 +------------------------------+--------------------------------------+-------------------------------------+
 | **Name of variable**         | **Quantity it describes**            | **Units**                           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_radius`     | the solar radius                     | :math:`\\mathrm{cm}`                 |
+| :py:const:`solar_radius`     | the solar radius                     | :math:`\\mathrm{cm}`                |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_mass`       | the solar mass                       | :math:`\\mathrm{g}`                  |
+| :py:const:`solar_mass`       | the solar mass                       | :math:`\\mathrm{g}`                 |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_luminosity` | the solar luminosity                 | :math:`\\mathrm{g.cm^2.s^{-3}}`      |
+| :py:const:`solar_luminosity` | the solar luminosity                 | :math:`\\mathrm{g.cm^2.s^{-3}}`     |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_temperature`| the solar effective temperature      | :math:`\\mathrm{K}`                  |
+| :py:const:`solar_temperature`| the solar effective temperature      | :math:`\\mathrm{K}`                 |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_dnu`        | the solar large frequency separation | :math:`\\mathrm{\\mu Hz}`             |
+| :py:const:`solar_dnu`        | the solar large frequency separation | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_numax`      | the solar frequency at maximum power | :math:`\\mathrm{\\mu Hz}`             |
+| :py:const:`solar_numax`      | the solar frequency at maximum power | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_cutoff`     | the solar cutoff frequency           | :math:`\\mathrm{\\mu Hz}`             |
+| :py:const:`solar_cutoff`     | the solar cutoff frequency           | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`G`                | the gravitational constant           | :math:`\\mathrm{cm^3.g^{-1}.s^{-2}}` |
-+------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_x`          | the solar hydrogen content           | dimensionless                       |
-+------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_z`          | the solar metallicity content        | dimensionless                       |
-+------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`Yp`               | primordial helium                    | dimensionless                       |
-+------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`A_FeH`            | multiplicative constant in           | dimensionless                       |
-|                              | :math:`\\mathrm{[M/H]=A_{FeH}[Fe/H]}` |                                     |
+| :py:const:`G`                | the gravitational constant           | :math:`\\mathrm{cm^3.g^{-1}.s^{-2}}`|
 +------------------------------+--------------------------------------+-------------------------------------+
 
 .. note::
