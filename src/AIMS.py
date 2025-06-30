@@ -3406,7 +3406,8 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
            'models': {'grid': {},
                       'MCMC': {},
                       'stat': {}},
-           'info': {}
+           'info': {},
+           'constants': {}
            }
 
     out['info']['covariance'] = np.cov(samples, rowvar=False).tolist()
