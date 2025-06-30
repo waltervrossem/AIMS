@@ -3430,6 +3430,13 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
         out['models'][key]['x0'] = float(best_model.glb[model.ix0])
         for (name, latex_name) in config.user_params:
             out['models'][key][name] = float(best_model.glb[model.user_params_index[name]])
+
+        out['models'][key]['ln(P)'] = prob.evaluate(best_model)[0]
+        mode_map, nmissing = prob.likelihood.find_map(best_model, config.use_n)
+        out['models'][key]['ln(P_seismic)'] = prob.likelihood.compare_frequency_combinations(best_model, mode_map, a=best_model.glb[ndims - nsurf:ndims])
+        out['models'][key]['ln(P_classic)'] = prob.likelihood.apply_constraints(best_model)
+        out['models'][key]['ln(P_priors)'] = prob.priors(best_model.glb[:ndims])
+
         out['models'][key]['modes'] = []
         for mode in best_model.modes:
             out['models'][key]['modes'].append([int(best_model.modes['n'][i]),
@@ -3511,6 +3518,8 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
         out['observations']['nonconstraints'][name] = [dist.type, *dist.values]
 
     out['observations']['modes'] = [[int(m.l), int(m.n), float(m.freq), float(m.dfreq)] for m in like.modes]
+
+    out['constants'] = {k:constants.__dict__[k] for k in dir(constants) if not k.startswith('__')}
 
     with open(path, 'w') as handle:
         json.dump(out, handle, indent=4)
