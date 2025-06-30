@@ -4065,7 +4065,7 @@ def plot_echelle_diagram(my_model, my_params, model_name):
 
     # save plot
     for ext in config.plot_extensions:
-        plt.savefig(os.path.join(output_folder, "echelle_" + model_name.replace(" ", "_") + "." + ext))
+        plt.savefig(os.path.join(output_folder, 'figs', "echelle_" + model_name.replace(" ", "_") + "." + ext))
 
     plt.close()
 
@@ -4134,9 +4134,9 @@ def plot_frequency_diff(my_model, my_params, model_name, scaled=False):
     # save plot
     for ext in config.plot_extensions:
         if (scaled):
-            plt.savefig(os.path.join(output_folder, "diff_scaled_" + model_name.replace(" ", "_") + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "diff_scaled_" + model_name.replace(" ", "_") + "." + ext))
         else:
-            plt.savefig(os.path.join(output_folder, "diff_" + model_name.replace(" ", "_") + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "diff_" + model_name.replace(" ", "_") + "." + ext))
 
         plt.close()
 
@@ -4262,7 +4262,7 @@ def plot_distrib_iter(percentiles, labels, folder):
         plt.xlabel(r"Iteration, $n$")
         plt.ylabel(r"Walker distribution")
         for ext in config.plot_extensions:
-            plt.savefig(os.path.join(folder, "distrib_iter_" + grid_params_MCMC_with_surf[i] + "." + ext))
+            plt.savefig(os.path.join(folder, 'figs/',  "distrib_iter_" + grid_params_MCMC_with_surf[i] + "." + ext))
         plt.clf()
 
 
@@ -4304,7 +4304,7 @@ def plot_histograms(samples, names, fancy_names, truths=None):
             plt.ylim(ylim)
         plt.xlabel(fancy_names[i])
         for ext in config.plot_extensions:
-            plt.savefig(os.path.join(output_folder, "histogram_" + names[i] + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "histogram_" + names[i] + "." + ext))
 
     plt.close()
 
@@ -4448,6 +4448,7 @@ if __name__ == "__main__":
                 sys.exit(0)
             shutil.rmtree(output_folder)
             os.makedirs(output_folder, exist_ok=True)
+            os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)
     else:
         os.makedirs(output_folder)
 
@@ -4575,7 +4576,7 @@ if __name__ == "__main__":
 
     # Various diagnostic which must be done before reshaping the samples:
     if (config.with_walkers):
-        plot_walkers(samples, labels[1:], os.path.join(output_folder, "walkers."), nw=3)
+        plot_walkers(samples, labels[1:], os.path.join(output_folder, 'figs/', "walkers."), nw=3)
 
     if (config.with_distrib_iter):
         plot_distrib_iter(percentiles, labels[1:], output_folder)
@@ -4688,12 +4689,12 @@ if __name__ == "__main__":
         if (len(rejected_parameters) >= ndims - nsurf):
             fig = corner.corner(np.array(rejected_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
-                fig.savefig(os.path.join(output_folder, "rejected." + ext))
+                fig.savefig(os.path.join(output_folder, 'figs', "rejected." + ext))
                 plt.close('all')
         if (len(accepted_parameters) >= ndims - nsurf):
             fig = corner.corner(np.array(accepted_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
-                fig.savefig(os.path.join(output_folder, "accepted." + ext))
+                fig.savefig(os.path.join(output_folder, 'figs', "accepted." + ext))
                 plt.close('all')
 
     if (config.with_triangles):
@@ -4709,7 +4710,7 @@ if __name__ == "__main__":
                 ax.set_xlim(x[0], x[-1])
 
         for ext in config.tri_extensions:
-            fig.savefig(os.path.join(output_folder, "triangle." + ext))
+            fig.savefig(os.path.join(output_folder, 'figs', "triangle." + ext))
             plt.close('all')
 
         triangle_ind = slice(1, samples_big.shape[1])
@@ -4727,5 +4728,5 @@ if __name__ == "__main__":
                 ax.fill_between(x, y, alpha=0.5, color='g', zorder=-1)
                 ax.set_xlim(x[0], x[-1])
         for ext in config.tri_extensions:
-            fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
+            fig.savefig(os.path.join(output_folder, 'figs', "triangle_big." + ext))
             plt.close('all')
