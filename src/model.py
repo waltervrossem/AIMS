@@ -1521,6 +1521,10 @@ class Track:
         remove_models = [i for i in range(1, len(self.names)) \
                          if self.glb[i - 1, iage] == self.glb[i, iage]]
 
+        return self.remove_models(remove_models)
+
+
+    def remove_models(self, remove_models):
         if (len(remove_models) == 0):
             return False
         else:
