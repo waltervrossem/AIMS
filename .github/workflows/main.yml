@@ -11,16 +11,22 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-    
+        os: ["ubuntu-latest", "macos-latest"]
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Install system dependencies
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == "ubuntu-latest"
       run: |
         sudo apt-get update
         sudo apt-get -y install make gfortran
+
+    - name: Install system dependencies (MacOS)
+      if: matrix.os == "macos-latest"
+      run: |
+        brew install make gcc
         
     - name: Checkout code
       uses: actions/checkout@v4
@@ -47,7 +53,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: src/*.so
-        key: build-${{ github.sha }}
+        key: build-${{ matrix.os }}-${{ matrix.python-version}}-${{ github.sha }}
 
   test:
     runs-on: ubuntu-latest
