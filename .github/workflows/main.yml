@@ -18,13 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install system dependencies (Ubuntu)
-      if: matrix.os == ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get -y install make gfortran
 
     - name: Install system dependencies (MacOS)
-      if: matrix.os == macos-latest
+      if: matrix.os == 'macos-latest'
       run: |
         brew install make gcc
         
@@ -63,13 +63,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install system dependencies (Ubuntu)
-      if: matrix.os == ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get -y install make gfortran
 
     - name: Install system dependencies (MacOS)
-      if: matrix.os == macos-latest
+      if: matrix.os == 'macos-latest'
       run: |
         brew install make gcc
         
