@@ -19,7 +19,7 @@ jobs:
     steps:
     - name: Install system dependencies
       run: |
-        apt-get update && apt-get -y install make gfortran
+        sudo apt-get update && apt-get -y install make gfortran
         
     - name: Checkout code
       uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
     steps:
     - name: Install system dependencies
       run: |
-        apt-get update && apt-get -y install make gfortran
+        sudo apt-get update && apt-get -y install make gfortran
         
     - name: Checkout code
       uses: actions/checkout@v4
