@@ -1,0 +1,164 @@
+name: AIMS CI Pipeline
+
+on:
+  push:
+    branches: 
+    - master
+    - dev
+  pull_request:
+    branches:
+    - master
+  workflow_dispatch:
+  
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: 'macos-latest'
+            python-version: "3.13"
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install make gfortran
+
+    - name: Install system dependencies (MacOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install make gcc
+        
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Setup Python environment
+      run: |
+        python -V
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r etc/CI/requirements.txt
+    
+    - name: Compile AIMS
+      run: |
+        source venv/bin/activate
+        make --directory=src compile
+    
+    - name: Cache build artifacts
+      uses: actions/cache@v4
+      with:
+        path: src/*.so
+        key: build-${{ matrix.os }}-${{ matrix.python-version}}-${{ github.sha }}
+
+  test:
+    needs: build
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: ["ubuntu-latest"]
+        include:
+          - os: 'macos-latest'
+            python-version: "3.13"
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install make gfortran
+
+    - name: Install system dependencies (MacOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install make gcc
+        
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Setup Python environment
+      run: |
+        python -V
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r etc/CI/requirements.txt
+    
+    - name: Restore build artifacts
+      uses: actions/cache@v4
+      with:
+        path: src/*.so
+        key: build-${{ matrix.os }}-${{ matrix.python-version}}-${{ github.sha }}
+    
+    - name: Rebuild if needed
+      run: |
+        source venv/bin/activate
+        make --directory=src compile
+    
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        make --directory=src test
+
+  documentation:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: write
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: 'pip'
+    
+    - name: Setup Python environment
+      run: |
+        python -V
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r etc/CI/requirements.txt
+
+    - name: Restore build artifacts
+      uses: actions/cache@v4
+      with:
+        path: src/*.so
+        key: build-ubuntu-latest-3.13-${{ github.sha }}
+    
+    - name: Build documentation
+      run: |
+        source venv/bin/activate
+        export PATH="$(pwd)/src:$PATH"
+        cd doc
+        make html
+        mv _build/html/ ../public/
+    
+    - name: Upload documentation artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: documentation
+        path: public/
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
