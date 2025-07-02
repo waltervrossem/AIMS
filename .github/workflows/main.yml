@@ -122,7 +122,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.13"
@@ -134,11 +134,17 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install -r etc/CI/requirements.txt
+
+    - name: Restore build artifacts
+      uses: actions/cache@v4
+      with:
+        path: src/*.so
+        key: build-ubuntu-latest-3.13-${{ github.sha }}
     
     - name: Build documentation
       run: |
         source venv/bin/activate
-        export PYTHONPATH="./src:$PYTHONPATH"
+        export PATH="$(pwd)/src:$PATH"
         cd doc
         make html
         mv _build/html/ ../public/
