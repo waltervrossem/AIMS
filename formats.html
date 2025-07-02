@@ -136,7 +136,7 @@ age.</p></li>
 </ul>
 </dd>
 <dt>Example:</dt><dd><p>Here’s an example of a file read by AIMS (via the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model_grid.read_model_list()</span></code> method):</p>
+<a class="reference internal" href="model.html#model.Model_grid.read_model_list" title="model.Model_grid.read_model_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model_grid.read_model_list()</span></code></a> method):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dreese</span><span class="o">/</span><span class="n">models_inversions</span><span class="o">/</span><span class="n">Grid_mesa_MS</span><span class="o">/</span>  <span class="o">.</span><span class="n">freq</span>
 <span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n1</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>  <span class="mf">1.59136E+33</span>  <span class="mf">5.02248266E+10</span>  <span class="mf">2.33097993E+33</span>  <span class="mf">0.0028</span>  <span class="mf">0.7436</span>  <span class="mf">1.00000000E-04</span>  <span class="mf">6000.94326</span>  <span class="mf">0.00000</span>  <span class="mf">7.432106E-01</span>
 <span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n2</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>  <span class="mf">1.59136E+33</span>  <span class="mf">4.86716596E+10</span>  <span class="mf">1.94640636E+33</span>  <span class="mf">0.0028</span>  <span class="mf">0.7436</span>  <span class="mf">2.09332874E+02</span>  <span class="mf">5827.26021</span>  <span class="mf">0.01383</span>  <span class="mf">7.319698E-01</span>
@@ -187,7 +187,7 @@ the numerical and variational frequencies in that column.</p></li>
 </dd>
 <dt>Example:</dt><dd><p>Here’s an example of a file with theoretical pulsation
 frequencies which can be read by AIMS (via the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model.read_file()</span></code> method):</p>
+<a class="reference internal" href="model.html#model.Model.read_file" title="model.Model.read_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model.read_file()</span></code></a> method):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#l  n         nu_theo (muHz)  nu_var-nu_theo (muHz)                Inertia</span>
 <span class="mi">0</span>  <span class="mi">15</span>  <span class="mf">3.225852209451052e+03</span>  <span class="mf">1.312960435370769e-03</span>  <span class="mf">3.233628965187502e-09</span>
 <span class="mi">0</span>  <span class="mi">16</span>  <span class="mf">3.421699035498995e+03</span> <span class="o">-</span><span class="mf">2.482639610207116e-03</span>  <span class="mf">2.229252226305757e-09</span>
@@ -238,7 +238,7 @@ file).  For example:</p>
 </li>
 <li><p>a collection of lines with classical constraints.  These
 start with the name of the relevant parameter (see
-possible options in <code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code>)
+possible options in <a class="reference internal" href="model.html#model.Model.string_to_param" title="model.Model.string_to_param"><code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code></a>)
 followed by a description of its probability distribution
 function.  This probability distribution function is
 specified in two possible ways:</p>
@@ -251,7 +251,7 @@ one sigma error bar.  For example:</p>
 </div>
 </li>
 <li><p>it is explicitly specified (different options are given
-in <code class="xref py py-class docutils literal notranslate"><span class="pre">AIMS.Distribution</span></code>):</p>
+in <a class="reference internal" href="AIMS.html#AIMS.Distribution" title="AIMS.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">AIMS.Distribution</span></code></a>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Teff</span> <span class="n">Uniform</span> <span class="mi">6000</span> <span class="mi">6200</span>
 </pre></div>
 </div>
@@ -309,7 +309,7 @@ file)</p></li>
 <li><p>the treatment of non-seismic constraints is more flexible</p>
 <ul>
 <li><p>a larger variety of non-seismic constraints can be included
-(see possible options in <code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code>)</p></li>
+(see possible options in <a class="reference internal" href="model.html#model.Model.string_to_param" title="model.Model.string_to_param"><code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code></a>)</p></li>
 <li><p>full parameter names are allowed (and preferred); for compatibility
 with <a class="reference external" href="https://amp.phys.au.dk/">AMP</a>, the same one letter
 abbreviations are also allowed</p></li>

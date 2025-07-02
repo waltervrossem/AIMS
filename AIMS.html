@@ -16,6 +16,7 @@
       <script src="_static/documentation_options.js?v=b21de401"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -52,7 +53,182 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="formats.html">File formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">List of changes</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Combination"><code class="docutils literal notranslate"><span class="pre">Combination</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.add_coeff"><code class="docutils literal notranslate"><span class="pre">Combination.add_coeff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.coeff"><code class="docutils literal notranslate"><span class="pre">Combination.coeff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.find_values"><code class="docutils literal notranslate"><span class="pre">Combination.find_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.index"><code class="docutils literal notranslate"><span class="pre">Combination.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.print_me"><code class="docutils literal notranslate"><span class="pre">Combination.print_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination.value"><code class="docutils literal notranslate"><span class="pre">Combination.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Combination_function"><code class="docutils literal notranslate"><span class="pre">Combination_function</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.add_combination"><code class="docutils literal notranslate"><span class="pre">Combination_function.add_combination()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.combinations"><code class="docutils literal notranslate"><span class="pre">Combination_function.combinations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.find_values"><code class="docutils literal notranslate"><span class="pre">Combination_function.find_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.function"><code class="docutils literal notranslate"><span class="pre">Combination_function.function</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.gradient"><code class="docutils literal notranslate"><span class="pre">Combination_function.gradient</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.gradient_function"><code class="docutils literal notranslate"><span class="pre">Combination_function.gradient_function</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.name"><code class="docutils literal notranslate"><span class="pre">Combination_function.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.offset"><code class="docutils literal notranslate"><span class="pre">Combination_function.offset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.print_me"><code class="docutils literal notranslate"><span class="pre">Combination_function.print_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Combination_function.value"><code class="docutils literal notranslate"><span class="pre">Combination_function.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Distribution"><code class="docutils literal notranslate"><span class="pre">Distribution</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.error_bar"><code class="docutils literal notranslate"><span class="pre">Distribution.error_bar</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.mean"><code class="docutils literal notranslate"><span class="pre">Distribution.mean</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.nparams"><code class="docutils literal notranslate"><span class="pre">Distribution.nparams</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.print_me"><code class="docutils literal notranslate"><span class="pre">Distribution.print_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.re_centre"><code class="docutils literal notranslate"><span class="pre">Distribution.re_centre()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.re_normalise"><code class="docutils literal notranslate"><span class="pre">Distribution.re_normalise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.realisation"><code class="docutils literal notranslate"><span class="pre">Distribution.realisation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.to_string"><code class="docutils literal notranslate"><span class="pre">Distribution.to_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.type"><code class="docutils literal notranslate"><span class="pre">Distribution.type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Distribution.values"><code class="docutils literal notranslate"><span class="pre">Distribution.values</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Likelihood"><code class="docutils literal notranslate"><span class="pre">Likelihood</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.Rkkinv"><code class="docutils literal notranslate"><span class="pre">Likelihood.Rkkinv</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_combinations"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_combinations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_dnu_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_dnu_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_dnu_constraint_matrix"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_dnu_constraint_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_nonconstraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_nonconstraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_nu_min_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_nu_min_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_seismic_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_seismic_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_AHe_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_AHe_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_Abcz_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_Abcz_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_Delta_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_Delta_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_dnu_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_dnu_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_epsilon_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_epsilon_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.add_whosglad_ratio_constraint"><code class="docutils literal notranslate"><span class="pre">Likelihood.add_whosglad_ratio_constraint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.apply_constraints"><code class="docutils literal notranslate"><span class="pre">Likelihood.apply_constraints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.assign_n"><code class="docutils literal notranslate"><span class="pre">Likelihood.assign_n()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.classic_weight"><code class="docutils literal notranslate"><span class="pre">Likelihood.classic_weight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.clear_seismic_constraints"><code class="docutils literal notranslate"><span class="pre">Likelihood.clear_seismic_constraints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.coeff"><code class="docutils literal notranslate"><span class="pre">Likelihood.coeff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.combination_functions"><code class="docutils literal notranslate"><span class="pre">Likelihood.combination_functions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.compare_frequency_combinations"><code class="docutils literal notranslate"><span class="pre">Likelihood.compare_frequency_combinations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.constraints"><code class="docutils literal notranslate"><span class="pre">Likelihood.constraints</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.construct_whosglad_basis"><code class="docutils literal notranslate"><span class="pre">Likelihood.construct_whosglad_basis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.cov"><code class="docutils literal notranslate"><span class="pre">Likelihood.cov</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.create_combination_arrays"><code class="docutils literal notranslate"><span class="pre">Likelihood.create_combination_arrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.create_mode_arrays"><code class="docutils literal notranslate"><span class="pre">Likelihood.create_mode_arrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.dot_product_whosglad"><code class="docutils literal notranslate"><span class="pre">Likelihood.dot_product_whosglad()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.evaluate"><code class="docutils literal notranslate"><span class="pre">Likelihood.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_covariance"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_covariance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_l_list"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_l_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_map"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_vec"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_weights"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_weights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.find_weights_new"><code class="docutils literal notranslate"><span class="pre">Likelihood.find_weights_new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.fvalues"><code class="docutils literal notranslate"><span class="pre">Likelihood.fvalues</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.get_optimal_surface_amplitudes"><code class="docutils literal notranslate"><span class="pre">Likelihood.get_optimal_surface_amplitudes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.guess_dnu"><code class="docutils literal notranslate"><span class="pre">Likelihood.guess_dnu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.guess_n"><code class="docutils literal notranslate"><span class="pre">Likelihood.guess_n()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.indices"><code class="docutils literal notranslate"><span class="pre">Likelihood.indices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.invcov"><code class="docutils literal notranslate"><span class="pre">Likelihood.invcov</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.lvalues"><code class="docutils literal notranslate"><span class="pre">Likelihood.lvalues</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.modes"><code class="docutils literal notranslate"><span class="pre">Likelihood.modes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.ncoeff"><code class="docutils literal notranslate"><span class="pre">Likelihood.ncoeff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.ncomb"><code class="docutils literal notranslate"><span class="pre">Likelihood.ncomb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.nonconstraints"><code class="docutils literal notranslate"><span class="pre">Likelihood.nonconstraints</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.nvalues"><code class="docutils literal notranslate"><span class="pre">Likelihood.nvalues</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.qk"><code class="docutils literal notranslate"><span class="pre">Likelihood.qk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.read_constraints"><code class="docutils literal notranslate"><span class="pre">Likelihood.read_constraints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.seismic_weight"><code class="docutils literal notranslate"><span class="pre">Likelihood.seismic_weight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Likelihood.sort_modes"><code class="docutils literal notranslate"><span class="pre">Likelihood.sort_modes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Mode"><code class="docutils literal notranslate"><span class="pre">Mode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.dfreq"><code class="docutils literal notranslate"><span class="pre">Mode.dfreq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.freq"><code class="docutils literal notranslate"><span class="pre">Mode.freq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.l"><code class="docutils literal notranslate"><span class="pre">Mode.l</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.match"><code class="docutils literal notranslate"><span class="pre">Mode.match()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.n"><code class="docutils literal notranslate"><span class="pre">Mode.n</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Mode.print_me"><code class="docutils literal notranslate"><span class="pre">Mode.print_me()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Prior_list"><code class="docutils literal notranslate"><span class="pre">Prior_list</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Prior_list.add_prior"><code class="docutils literal notranslate"><span class="pre">Prior_list.add_prior()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Prior_list.priors"><code class="docutils literal notranslate"><span class="pre">Prior_list.priors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Prior_list.realisation"><code class="docutils literal notranslate"><span class="pre">Prior_list.realisation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.Probability"><code class="docutils literal notranslate"><span class="pre">Probability</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Probability.evaluate"><code class="docutils literal notranslate"><span class="pre">Probability.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Probability.is_outside"><code class="docutils literal notranslate"><span class="pre">Probability.is_outside()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Probability.likelihood"><code class="docutils literal notranslate"><span class="pre">Probability.likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AIMS.Probability.priors"><code class="docutils literal notranslate"><span class="pre">Probability.priors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.accepted_parameters"><code class="docutils literal notranslate"><span class="pre">accepted_parameters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.append_osm_parameter"><code class="docutils literal notranslate"><span class="pre">append_osm_parameter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.append_osm_surface_effects"><code class="docutils literal notranslate"><span class="pre">append_osm_surface_effects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.autocorr_time"><code class="docutils literal notranslate"><span class="pre">autocorr_time</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_MCMC_model"><code class="docutils literal notranslate"><span class="pre">best_MCMC_model</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_MCMC_params"><code class="docutils literal notranslate"><span class="pre">best_MCMC_params</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_MCMC_result"><code class="docutils literal notranslate"><span class="pre">best_MCMC_result</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_age_range"><code class="docutils literal notranslate"><span class="pre">best_age_range</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_grid_model"><code class="docutils literal notranslate"><span class="pre">best_grid_model</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_grid_params"><code class="docutils literal notranslate"><span class="pre">best_grid_params</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.best_grid_result"><code class="docutils literal notranslate"><span class="pre">best_grid_result</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.check_configuration"><code class="docutils literal notranslate"><span class="pre">check_configuration()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.find_a_blob"><code class="docutils literal notranslate"><span class="pre">find_a_blob()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.find_best_model"><code class="docutils literal notranslate"><span class="pre">find_best_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.find_best_model_in_track"><code class="docutils literal notranslate"><span class="pre">find_best_model_in_track()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.find_blobs"><code class="docutils literal notranslate"><span class="pre">find_blobs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.grid"><code class="docutils literal notranslate"><span class="pre">grid</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.grid_params_MCMC"><code class="docutils literal notranslate"><span class="pre">grid_params_MCMC</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.grid_params_MCMC_with_surf"><code class="docutils literal notranslate"><span class="pre">grid_params_MCMC_with_surf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.init_walkers"><code class="docutils literal notranslate"><span class="pre">init_walkers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.interpolation_tests"><code class="docutils literal notranslate"><span class="pre">interpolation_tests()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.load_binary_data"><code class="docutils literal notranslate"><span class="pre">load_binary_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.log0"><code class="docutils literal notranslate"><span class="pre">log0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.mc2"><code class="docutils literal notranslate"><span class="pre">mc2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.my_map"><code class="docutils literal notranslate"><span class="pre">my_map</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.ndims"><code class="docutils literal notranslate"><span class="pre">ndims</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.nreject_classic"><code class="docutils literal notranslate"><span class="pre">nreject_classic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.nreject_prior"><code class="docutils literal notranslate"><span class="pre">nreject_prior</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.nreject_seismic"><code class="docutils literal notranslate"><span class="pre">nreject_seismic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.nsurf"><code class="docutils literal notranslate"><span class="pre">nsurf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.output_folder"><code class="docutils literal notranslate"><span class="pre">output_folder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_distrib_iter"><code class="docutils literal notranslate"><span class="pre">plot_distrib_iter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_distrib_iter_old"><code class="docutils literal notranslate"><span class="pre">plot_distrib_iter_old()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_echelle_diagram"><code class="docutils literal notranslate"><span class="pre">plot_echelle_diagram()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_frequencies"><code class="docutils literal notranslate"><span class="pre">plot_frequencies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_frequency_diff"><code class="docutils literal notranslate"><span class="pre">plot_frequency_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_histograms"><code class="docutils literal notranslate"><span class="pre">plot_histograms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.plot_walkers"><code class="docutils literal notranslate"><span class="pre">plot_walkers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.pool"><code class="docutils literal notranslate"><span class="pre">pool</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.prob"><code class="docutils literal notranslate"><span class="pre">prob</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.rejected_parameters"><code class="docutils literal notranslate"><span class="pre">rejected_parameters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.run_emcee"><code class="docutils literal notranslate"><span class="pre">run_emcee()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.statistical_model"><code class="docutils literal notranslate"><span class="pre">statistical_model</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.statistical_params"><code class="docutils literal notranslate"><span class="pre">statistical_params</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.statistical_result"><code class="docutils literal notranslate"><span class="pre">statistical_result</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.string_to_title"><code class="docutils literal notranslate"><span class="pre">string_to_title()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.swap_dimensions"><code class="docutils literal notranslate"><span class="pre">swap_dimensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.threshold"><code class="docutils literal notranslate"><span class="pre">threshold</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.tight_ball_distributions"><code class="docutils literal notranslate"><span class="pre">tight_ball_distributions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_LEGACY_summary"><code class="docutils literal notranslate"><span class="pre">write_LEGACY_summary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_SPInS_file_cgs"><code class="docutils literal notranslate"><span class="pre">write_SPInS_file_cgs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_SPInS_file_solar"><code class="docutils literal notranslate"><span class="pre">write_SPInS_file_solar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_binary_data"><code class="docutils literal notranslate"><span class="pre">write_binary_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_combinations"><code class="docutils literal notranslate"><span class="pre">write_combinations()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_list_file"><code class="docutils literal notranslate"><span class="pre">write_list_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_model"><code class="docutils literal notranslate"><span class="pre">write_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_osm_don"><code class="docutils literal notranslate"><span class="pre">write_osm_don()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_osm_frequencies"><code class="docutils literal notranslate"><span class="pre">write_osm_frequencies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_osm_xml"><code class="docutils literal notranslate"><span class="pre">write_osm_xml()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_percentiles"><code class="docutils literal notranslate"><span class="pre">write_percentiles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_readme"><code class="docutils literal notranslate"><span class="pre">write_readme()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_samples"><code class="docutils literal notranslate"><span class="pre">write_samples()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIMS.write_statistics"><code class="docutils literal notranslate"><span class="pre">write_statistics()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="model.html">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">The <code class="docutils literal notranslate"><span class="pre">functions</span></code> module</a></li>
@@ -84,8 +260,1952 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="the-aims-program">
-<h1>The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program<a class="headerlink" href="#the-aims-program" title="Link to this heading"></a></h1>
+  <section id="module-AIMS">
+<span id="the-aims-program"></span><h1>The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program<a class="headerlink" href="#module-AIMS" title="Link to this heading"></a></h1>
+<p>A module which contains the main program for AIMS as well as various classes
+which intervene when calculating the priors and likelihood function:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#AIMS.Distribution" title="AIMS.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a>: a class which represents a probability distribution</p></li>
+<li><p><a class="reference internal" href="#AIMS.Prior_list" title="AIMS.Prior_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior_list</span></code></a>: a class with a list of priors</p></li>
+<li><p><a class="reference internal" href="#AIMS.Mode" title="AIMS.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code></a>: a class used to represent observed modes</p></li>
+<li><p><a class="reference internal" href="#AIMS.Combination" title="AIMS.Combination"><code class="xref py py-class docutils literal notranslate"><span class="pre">Combination</span></code></a>: a class used to represent a linear frequency combination</p></li>
+<li><p><a class="reference internal" href="#AIMS.Combination_function" title="AIMS.Combination_function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Combination_function</span></code></a>: a class used to represent functions of frequency combinations</p></li>
+<li><p><a class="reference internal" href="#AIMS.Likelihood" title="AIMS.Likelihood"><code class="xref py py-class docutils literal notranslate"><span class="pre">Likelihood</span></code></a>: a class used to represent the likelihood function</p></li>
+<li><p><a class="reference internal" href="#AIMS.Probability" title="AIMS.Probability"><code class="xref py py-class docutils literal notranslate"><span class="pre">Probability</span></code></a>: a class which groups the priors and likelihood function together</p></li>
+</ul>
+<p>This module relies on the <a class="reference external" href="http://dan.iel.fm/emcee/current/">emcee</a> package to apply
+an MCMC algorithm which will return a representative sample of models for a given set
+of seismic an classic constraints.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In various places in this module, for instance in the <a class="reference internal" href="#AIMS.Prior_list" title="AIMS.Prior_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior_list</span></code></a>
+and <a class="reference internal" href="#AIMS.Likelihood" title="AIMS.Likelihood"><code class="xref py py-class docutils literal notranslate"><span class="pre">Likelihood</span></code></a> classes, various methods return what is described
+as a <span class="math notranslate nohighlight">\(\chi^2\)</span> value.  Technically, these are not <span class="math notranslate nohighlight">\(\chi^2\)</span> values,
+but rather <span class="math notranslate nohighlight">\(-\chi^2/2\)</span>, i.e. the argument of the exponential function
+which intervenes in the Gaussian probability distribution.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Combination">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Combination</span></span><a class="reference internal" href="_modules/AIMS.html#Combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination" title="Link to this definition"></a></dt>
+<dd><p>A class which contains indices and coefficients which represent
+a linear combination of frequencies.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination.add_coeff">
+<span class="sig-name descname"><span class="pre">add_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination.add_coeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination.add_coeff" title="Link to this definition"></a></dt>
+<dd><p>Append the given index and coefficient to the list of indices and
+coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>j</strong> (<em>int</em>) – index of the mode</p></li>
+<li><p><strong>coeff</strong> (<em>float</em>) – coefficient used in the frequency combination</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination.coeff">
+<span class="sig-name descname"><span class="pre">coeff</span></span><a class="headerlink" href="#AIMS.Combination.coeff" title="Link to this definition"></a></dt>
+<dd><p>Coefficients of the linear combination of frequencies.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination.find_values">
+<span class="sig-name descname"><span class="pre">find_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination.find_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination.find_values" title="Link to this definition"></a></dt>
+<dd><p>Find the value associated with this frequency combination
+using the input frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float array like</em>) – list of frequencies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination.index">
+<span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#AIMS.Combination.index" title="Link to this definition"></a></dt>
+<dd><p>Indices in of the linear combination of frequencies.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination.print_me">
+<span class="sig-name descname"><span class="pre">print_me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination.print_me"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination.print_me" title="Link to this definition"></a></dt>
+<dd><p>Print frequency combination.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#AIMS.Combination.value" title="Link to this definition"></a></dt>
+<dd><p>Value of the linear combination of frequencies.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Combination_function">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Combination_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_gradient_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination_function" title="Link to this definition"></a></dt>
+<dd><p>A class which applies functions to linear frequency combinations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination_function.add_combination">
+<span class="sig-name descname"><span class="pre">add_combination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination_function.add_combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination_function.add_combination" title="Link to this definition"></a></dt>
+<dd><p>Append a frequency combination to this combination function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>combination</strong> (<a class="reference internal" href="#AIMS.Combination" title="AIMS.Combination"><code class="xref py py-class docutils literal notranslate"><span class="pre">Combination</span></code></a>) – a linear frequency combination</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.combinations">
+<span class="sig-name descname"><span class="pre">combinations</span></span><a class="headerlink" href="#AIMS.Combination_function.combinations" title="Link to this definition"></a></dt>
+<dd><p>The frequency combinations which intervene in the function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination_function.find_values">
+<span class="sig-name descname"><span class="pre">find_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination_function.find_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination_function.find_values" title="Link to this definition"></a></dt>
+<dd><p>Find the value and gradient of this frequency combination function for
+the input set of frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float array like</em>) – list of frequencies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.function">
+<span class="sig-name descname"><span class="pre">function</span></span><a class="headerlink" href="#AIMS.Combination_function.function" title="Link to this definition"></a></dt>
+<dd><p>The function which is applied to the frequency combinations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.gradient">
+<span class="sig-name descname"><span class="pre">gradient</span></span><a class="headerlink" href="#AIMS.Combination_function.gradient" title="Link to this definition"></a></dt>
+<dd><p>The gradient of the frequency combination function at the observed frequencies.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.gradient_function">
+<span class="sig-name descname"><span class="pre">gradient_function</span></span><a class="headerlink" href="#AIMS.Combination_function.gradient_function" title="Link to this definition"></a></dt>
+<dd><p>The gradient of the function which is applied to the frequency combinations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#AIMS.Combination_function.name" title="Link to this definition"></a></dt>
+<dd><p>Human-readable name of the frequency combination function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.offset">
+<span class="sig-name descname"><span class="pre">offset</span></span><a class="headerlink" href="#AIMS.Combination_function.offset" title="Link to this definition"></a></dt>
+<dd><p>Additive offset for the frequency combination function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Combination_function.print_me">
+<span class="sig-name descname"><span class="pre">print_me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Combination_function.print_me"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Combination_function.print_me" title="Link to this definition"></a></dt>
+<dd><p>Print frequency combination function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Combination_function.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#AIMS.Combination_function.value" title="Link to this definition"></a></dt>
+<dd><p>Value of the frequency combination function at the observed frequencies.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Distribution">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution" title="Link to this definition"></a></dt>
+<dd><p>A class which represents a probability distribution, and can yield
+its value for a given input parameter, or provide a random realisation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Derived from a class originally written by G. Davies.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_type</strong> (<em>string</em>) – type of probability function (current options include
+“Gaussian”, “Truncated_gaussian”, “Uniform”, “IMF1”,
+“IMF2”, “Uninformative”, “Above”, “Below”)</p></li>
+<li><p><strong>_values</strong> (<em>list</em><em> of </em><em>floats</em>) – list of parameters relevant to the probability function</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="AIMS.Distribution.error_bar">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error_bar</span></span><a class="headerlink" href="#AIMS.Distribution.error_bar" title="Link to this definition"></a></dt>
+<dd><p>Returns an error bar based on the distribution.  This
+does not necessarily correspond to the one-sigma value
+but rather to what is the most convenient value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the error bar</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="AIMS.Distribution.mean">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#AIMS.Distribution.mean" title="Link to this definition"></a></dt>
+<dd><p>Returns the mean value of the probability distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the mean value of the probability distribution</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="AIMS.Distribution.nparams">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nparams</span></span><a class="headerlink" href="#AIMS.Distribution.nparams" title="Link to this definition"></a></dt>
+<dd><p>Return the number of relevant parameters for a given distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the number of relevant parameters</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Distribution.print_me">
+<span class="sig-name descname"><span class="pre">print_me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution.print_me"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution.print_me" title="Link to this definition"></a></dt>
+<dd><p>Print type and parameters of probability distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Distribution.re_centre">
+<span class="sig-name descname"><span class="pre">re_centre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution.re_centre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution.re_centre" title="Link to this definition"></a></dt>
+<dd><p>Re-centre the probability distribution around the input value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – new value around which to centre the distribution</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Distribution.re_normalise">
+<span class="sig-name descname"><span class="pre">re_normalise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution.re_normalise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution.re_normalise" title="Link to this definition"></a></dt>
+<dd><p>Re-normalise the probability distribution so that its characteristic
+width corresponds to the input value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – new value around for the chacteristic width</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Distribution.realisation">
+<span class="sig-name descname"><span class="pre">realisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution.realisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution.realisation" title="Link to this definition"></a></dt>
+<dd><p>Return random values which statistically follow the probability distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints</em>) – shape of random variates</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a set of random realisations</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Distribution.to_string">
+<span class="sig-name descname"><span class="pre">to_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Distribution.to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Distribution.to_string" title="Link to this definition"></a></dt>
+<dd><p>Produce nice string representation of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nice string representation of the distribution</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Distribution.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#AIMS.Distribution.type" title="Link to this definition"></a></dt>
+<dd><p>Type of probability function (“Uniform”, “Gaussian”, “Truncated_gaussian”,
+“IMF1”, “IMF2”, “Uninformative”, “Above”, or “Below”)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Distribution.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#AIMS.Distribution.values" title="Link to this definition"></a></dt>
+<dd><p>List of parameters relevant to probability function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Likelihood">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Likelihood</span></span><a class="reference internal" href="_modules/AIMS.html#Likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood" title="Link to this definition"></a></dt>
+<dd><p>A class which described the likelihood function and allows users to evaluate it.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.Rkkinv">
+<span class="sig-name descname"><span class="pre">Rkkinv</span></span><a class="headerlink" href="#AIMS.Likelihood.Rkkinv" title="Link to this definition"></a></dt>
+<dd><p>Inverse of R matrix from the WhoSGlAd method (see Eqs. (D.5) and (D.10)
+from Farnir et al. (2019))</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The first index corresponds to the p vector whereas the second index
+corresponds to the normalised q vector.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_combinations">
+<span class="sig-name descname"><span class="pre">add_combinations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_ell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_combinations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_combinations" title="Link to this definition"></a></dt>
+<dd><p>This finds the indices of modes which intervene in a frequency combination or
+ratio, as specified by the mandatory and optional arguments.  These indices,
+the relevant coefficients, the numerator, the denominator, and the resultant
+value of the combination are stored in the <a class="reference internal" href="#AIMS.Likelihood.combination_functions" title="AIMS.Likelihood.combination_functions"><code class="xref py py-data docutils literal notranslate"><span class="pre">combination_functions</span></code></a>
+variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of the frequency combination</p></li>
+<li><p><strong>num_list</strong> (<em>list</em><em> of </em><em>(</em><em>int</em><em>,</em><em>int</em><em>,</em><em>float</em><em>)</em>) – list of relative mode identifications and coefficients used
+to define a frequency combination or the numerator of a frequency ratio.
+This list contains tuples of the form (delta n, delta l, coeff).</p></li>
+<li><p><strong>den_list</strong> (<em>list</em><em> of </em><em>(</em><em>int</em><em>,</em><em>int</em><em>,</em><em>float</em><em>)</em>) – list of relative mode identifications and coefficients used
+to define the denominator of a frequency ratio.  If absent, then, it is
+assumed that a linear combination of frequencies is represented.  The form
+is the same as for <code class="docutils literal notranslate"><span class="pre">num_list</span></code>.</p></li>
+<li><p><strong>target_ell</strong> (<em>int</em>) – this is used to impose a specific l value on the first
+selected mode.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_constraint">
+<span class="sig-name descname"><span class="pre">add_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add a supplementary constraint to the list of constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraint</strong> ((string, <a class="reference internal" href="#AIMS.Distribution" title="AIMS.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a>)) – supplementary constraint</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_dnu_constraint">
+<span class="sig-name descname"><span class="pre">add_dnu_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_dnu_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_dnu_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add the large frequency separation as a contraint.  The coefficients
+are obtained via a least-squares approach.  The approach taken here
+has two advantages:</p>
+<ol class="arabic simple">
+<li><p>Correlations between the large frequency separation and other
+seismic constraints will be taken into account.</p></li>
+<li><p>The same modes will be used in the same way, both for the
+observations and the models.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_targets</strong> (<em>list</em><em> of </em><em>int</em>) – specifies for which l values the large frequency
+separation is to be calculated.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is supplied, all
+modes will be used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This uses an analytical approach and is therefore the
+prefered method.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_dnu_constraint_matrix">
+<span class="sig-name descname"><span class="pre">add_dnu_constraint_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_dnu_constraint_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_dnu_constraint_matrix" title="Link to this definition"></a></dt>
+<dd><p>Add the large frequency separation as a contraint.  The coefficients
+are obtained via a least-squares approach.  The approach taken here
+has two advantages:</p>
+<ol class="arabic simple">
+<li><p>Correlations between the large frequency separation and other
+seismic constraints will be taken into account.</p></li>
+<li><p>The same modes will be used in the same way, both for the
+observations and the models.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_targets</strong> (<em>list</em><em> of </em><em>int</em>) – specifies for which l values the large frequency
+separation is to be calculated.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is supplied, all
+modes will be used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This uses a matrix approach and is therefore <em>not</em> the
+prefered method.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_nonconstraint">
+<span class="sig-name descname"><span class="pre">add_nonconstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nonconstraint</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_nonconstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_nonconstraint" title="Link to this definition"></a></dt>
+<dd><p>Add a supplementary constraint to the list of non-constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraint</strong> ((string, <a class="reference internal" href="#AIMS.Distribution" title="AIMS.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a>)) – supplementary constraint</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_nu_min_constraint">
+<span class="sig-name descname"><span class="pre">add_nu_min_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_ell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_nu_min_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_nu_min_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add the minimun frequencies/modes of a specific ell value as a seismic
+constraint.  Typically, such constraints are used as an “anchor”
+when combined with constraints based on frequency ratios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of the seismic constraint</p></li>
+<li><p><strong>target_ell</strong> (<em>int</em>) – ell value of the minimum frequency/mode</p></li>
+<li><p><strong>pos</strong> (<em>int</em>) – position of desired frequency (0 = lowest, 1 = second lowest …)</p></li>
+<li><p><strong>min_n</strong> (<em>boolean</em>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code>, look for minimum observational
+frequency.  If <code class="docutils literal notranslate"><span class="pre">True</span></code>, look for minimum radial order.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_seismic_constraint">
+<span class="sig-name descname"><span class="pre">add_seismic_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_seismic_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_seismic_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add seismic contraints based on the keyword given in <code class="docutils literal notranslate"><span class="pre">string</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>string</em>) – <p>keyword which specifies the type of constraint to be added.
+Current options include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nu</span></code>: individual frequencies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu0</span></code>: individual frequencies (radial modes only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_min0</span></code>: radial mode with minimum frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_min1</span></code>: radial mode with second lowest frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_min2</span></code>: radial mode with third lowest frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r02</span></code>: <span class="math notranslate nohighlight">\(r_{02}\)</span> frequency ratios</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r01</span></code>: <span class="math notranslate nohighlight">\(r_{01}\)</span> frequency ratios</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r10</span></code>: <span class="math notranslate nohighlight">\(r_{10}\)</span> frequency ratios</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dnu</span></code>: individual large frequency separations (using all modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dnu0</span></code>: individual large frequency separations (using radial modes only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">d2nu</span></code>: second differences (using all modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">avg_dnu</span></code>: average large frequency separation (using all modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">avg_dnu0</span></code>: average large frequency separation (using radial modes only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_dnu</span></code>: WhoSGlAd version of average large frequency separation (all modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_dnu0</span></code>: WhoSGlAd version of average large frequency separation (l=0 modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_dnu1</span></code>: WhoSGlAd version of average large frequency separation (l=1 modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_r01</span></code>: WhoSGlAd version of average r01 frequency ratio</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_r02</span></code>: WhoSGlAd version of average r02 frequency ratio</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_Delta01</span></code>: WhoSGlAd Delta01 seismic constraint</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_Delta02</span></code>: WhoSGlAd Delta02 seismic constraint</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_eps0</span></code>:  WhoSGlAd average frequency offset (l=0 modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_eps1</span></code>:  WhoSGlAd average frequency offset (l=1 modes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_AHe</span></code>:  WhoSGlAd amplitude indicator for helium content</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whosglad_Abcz</span></code>:  WhoSGlAd amplitude indicator for the base of the convection zone</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_AHe_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_AHe_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_AHe_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_AHe_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add a seismic constraint which provides a normalised He glitch amplitude
+using the WhoSGlAd method (Farnir et al. 2019).  This approach has the
+advantage of leading to (near) orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_Abcz_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_Abcz_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_Abcz_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_Abcz_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add a seismic constraint which provides a normalised glitch amplitude
+for the base of the convection zone using the WhoSGlAd method (Farnir
+et al. 2019).  This approach has the advantage of leading to (near)
+orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_Delta_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_Delta_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_Delta_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_Delta_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add a ratio of large frequency separations as a contraint using
+the WhoSGlAd method (Farnir et al. 2019).  This approach has the
+advantage of leading to (near) orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_target</strong> (<em>int</em>) – specifies for which l to calculate the average
+Delta constraint.</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_dnu_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_dnu_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_dnu_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_dnu_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add an average large frequency separation as a contraint using the WhoSGlAd
+method (Farnir et al. 2019).  This approach has the advantage of leading to
+(near) orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_targets</strong> (<em>list</em><em> of </em><em>int</em>) – specifies for which l values the large frequency
+separation is to be calculated.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is supplied, all
+modes will be used.</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_epsilon_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_epsilon_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_epsilon_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_epsilon_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add an average frequency offset as a contraint using the WhoSGlAd
+method (Farnir et al. 2019).  This approach has the advantage of
+leading to (near) orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_target</strong> (<em>int</em>) – specifies for which l to calculate the average
+epsilon offset.</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.add_whosglad_ratio_constraint">
+<span class="sig-name descname"><span class="pre">add_whosglad_ratio_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.add_whosglad_ratio_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.add_whosglad_ratio_constraint" title="Link to this definition"></a></dt>
+<dd><p>Add an average frequency ratio as a contraint using the WhoSGlAd
+method (Farnir et al. 2019).  This approach has the advantage of
+leading to (near) orthogonal seismic indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – name of this seismic constraint</p></li>
+<li><p><strong>l_target</strong> (<em>int</em>) – specifies for which l to calculate the average
+frequency ratio.</p></li>
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.apply_constraints">
+<span class="sig-name descname"><span class="pre">apply_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.apply_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.apply_constraints" title="Link to this definition"></a></dt>
+<dd><p>Calculate a <span class="math notranslate nohighlight">\(\chi^2\)</span> value for the set of constraints (excluding
+seismic constraints based on mode frequencies).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which the <span class="math notranslate nohighlight">\(\chi^2\)</span> value is being calculated</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <span class="math notranslate nohighlight">\(\chi^2\)</span> value deduced from classic constraints</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.assign_n">
+<span class="sig-name descname"><span class="pre">assign_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.assign_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.assign_n" title="Link to this definition"></a></dt>
+<dd><p>Assign the radial orders based on proximity to theoretical frequencies
+from an input model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – input model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.classic_weight">
+<span class="sig-name descname"><span class="pre">classic_weight</span></span><a class="headerlink" href="#AIMS.Likelihood.classic_weight" title="Link to this definition"></a></dt>
+<dd><p>Absolute weight to be applied to classic constraints (incl. nu_max constraint).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.clear_seismic_constraints">
+<span class="sig-name descname"><span class="pre">clear_seismic_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.clear_seismic_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.clear_seismic_constraints" title="Link to this definition"></a></dt>
+<dd><p>This clears the seismic constraints.  Specifically, the list of seismic
+combinations, and associated covariance matrix and its inverse are
+reinitialised.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.coeff">
+<span class="sig-name descname"><span class="pre">coeff</span></span><a class="headerlink" href="#AIMS.Likelihood.coeff" title="Link to this definition"></a></dt>
+<dd><p>2D float array with the coefficients for each frequency
+combination. The indices are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The index of the term</p></li>
+<li><p>The cumulative index of the frequency combination</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.combination_functions">
+<span class="sig-name descname"><span class="pre">combination_functions</span></span><a class="headerlink" href="#AIMS.Likelihood.combination_functions" title="Link to this definition"></a></dt>
+<dd><p>This contains functions of frequency combinations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.compare_frequency_combinations">
+<span class="sig-name descname"><span class="pre">compare_frequency_combinations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.compare_frequency_combinations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.compare_frequency_combinations" title="Link to this definition"></a></dt>
+<dd><p>This finds a <span class="math notranslate nohighlight">\(\chi^2\)</span> value based on a comparison of frequency
+combination functions, as defined in the <code class="xref py py-data docutils literal notranslate"><span class="pre">combination_function</span></code>
+variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which the <span class="math notranslate nohighlight">\(\chi^2\)</span> value is being calculated</p></li>
+<li><p><strong>mode_map</strong> (<em>list</em><em> of </em><em>int</em>) – a mapping which relates observed modes to theoretical ones</p></li>
+<li><p><strong>a</strong> (<em>array-like</em>) – parameters of surface correction terms</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <span class="math notranslate nohighlight">\(\chi^2\)</span> value for the seismic constraints</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I’m assuming none of the modes are missing (i.e. that mode_map doesn’t
+contain the value -1)</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.constraints">
+<span class="sig-name descname"><span class="pre">constraints</span></span><a class="headerlink" href="#AIMS.Likelihood.constraints" title="Link to this definition"></a></dt>
+<dd><p>List of constraints which intervene in the likelihood function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.construct_whosglad_basis">
+<span class="sig-name descname"><span class="pre">construct_whosglad_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">glitchpower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.construct_whosglad_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.construct_whosglad_basis" title="Link to this definition"></a></dt>
+<dd><p>Construct orthogonal basis for the smooth component of a pulsation spectrum
+using the Gram-Schmidt orthonormalisation method as described in the WhoSGlAd
+method (Farnir et al. 2019).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxpower</strong> (<em>int</em>) – maximum power in Pj(n)=n^j polynomial</p></li>
+<li><p><strong>glitchpower</strong> (<em>int</em>) – lower power used in Helium glitch component</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.cov">
+<span class="sig-name descname"><span class="pre">cov</span></span><a class="headerlink" href="#AIMS.Likelihood.cov" title="Link to this definition"></a></dt>
+<dd><p>Covariance matrix which intervenes when calculating frequency combinations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.create_combination_arrays">
+<span class="sig-name descname"><span class="pre">create_combination_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.create_combination_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.create_combination_arrays" title="Link to this definition"></a></dt>
+<dd><p>Create array form of frequency combination functions to be used with
+a fortran based routine for calculating the seismic chi^2 value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.create_mode_arrays">
+<span class="sig-name descname"><span class="pre">create_mode_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.create_mode_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.create_mode_arrays" title="Link to this definition"></a></dt>
+<dd><p>Create arrays with mode parameters (n, l, freq), which can
+be interfaced with fortran methods more easily.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.dot_product_whosglad">
+<span class="sig-name descname"><span class="pre">dot_product_whosglad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.dot_product_whosglad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.dot_product_whosglad" title="Link to this definition"></a></dt>
+<dd><p>Dot product used for constructing an orthonormal set of seismic indicators
+using the WhoSGlAd method (Farnir et al. 2019).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v1</strong> (<em>float np.array</em>) – a vector of frequencies (or some polynomial of the radial order)</p></li>
+<li><p><strong>v2</strong> (<em>float np.array</em>) – a vector of frequencies (or some polynomial of the radial order)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the dot product between v1 and v2</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Calculate ln of likelihood function (i.e. a <span class="math notranslate nohighlight">\(\chi^2\)</span> value) for a given
+model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which the <span class="math notranslate nohighlight">\(\chi^2\)</span> value is being calculated</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <span class="math notranslate nohighlight">\(\chi^2\)</span> value, optionally the optimal surface amplitudes
+(depending on the value of <code class="xref py py-data docutils literal notranslate"><span class="pre">AIMS_configure.surface_option</span></code>),
+integers to indicate whether the model was rejected due to classic
+or seismic contraints</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, np.array (optional), int, int</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This avoids model interpolation and can be used to gain time.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_covariance">
+<span class="sig-name descname"><span class="pre">find_covariance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_covariance" title="Link to this definition"></a></dt>
+<dd><p>This prepares the covariance matrix and its inverse based on the frequency
+combinations in <a class="reference internal" href="#AIMS.Likelihood.combination_functions" title="AIMS.Likelihood.combination_functions"><code class="xref py py-data docutils literal notranslate"><span class="pre">combination_functions</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should be called <em>after</em> all of the methods which
+add to the list of frequency combinations.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_l_list">
+<span class="sig-name descname"><span class="pre">find_l_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l_targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npowers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_l_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_l_list" title="Link to this definition"></a></dt>
+<dd><p>Find a list of l values with the following properties:</p>
+<ul class="simple">
+<li><p>each l value only occurs once</p></li>
+<li><p>each l value given in the parameter <code class="docutils literal notranslate"><span class="pre">l_targets</span></code> is
+in the result l list, except if there is less than npowers
+modes with this l value</p></li>
+<li><p>if the parameter <code class="docutils literal notranslate"><span class="pre">l_targets</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, look for
+all l values with npowers or more modes associated with
+them</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l_targets</strong> (<em>list</em><em> of </em><em>int</em>) – input list of l values</p></li>
+<li><p><strong>npowers</strong> (<em>int</em>) – the number of powers in the fit</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new list of l values with the above properties</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_map">
+<span class="sig-name descname"><span class="pre">find_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_map" title="Link to this definition"></a></dt>
+<dd><p>This finds a map which indicates the correspondance between observed
+modes and theoretical modes from <code class="docutils literal notranslate"><span class="pre">my_model</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> – model for which the <span class="math notranslate nohighlight">\(\chi^2\)</span> value is being calculated</p></li>
+<li><p><strong>use_n</strong> (<em>boolean</em>) – specify whether to use the radial order when finding the map
+from observed modes to theoretical modes.  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the map
+is based on frequency proximity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the correspondance between observed and theoretical modes from the
+above model, and the number of observed modes which weren’t mapped onto
+theoretical modes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of int, int</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>a value of -1 is used to indicate that no theoretical mode corresponds to
+a particular observed mode.</p></li>
+<li><p>only zero or one observed mode is allowed to correspond to a theoretical
+mode</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_vec">
+<span class="sig-name descname"><span class="pre">find_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_combination_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_vec" title="Link to this definition"></a></dt>
+<dd><p>This finds a set of coefficients which intervene when constructing the
+coviance matrix for frequency combination functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a_combination_function</strong> (<a class="reference internal" href="#AIMS.Combination_function" title="AIMS.Combination_function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Combination_function</span></code></a>) – variable which specifies the frequency
+combination function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the above set of coefficients</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_weights">
+<span class="sig-name descname"><span class="pre">find_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_weights" title="Link to this definition"></a></dt>
+<dd><p>Find absolute weights for seismic and classic constraints based on options
+in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.find_weights_new">
+<span class="sig-name descname"><span class="pre">find_weights_new</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.find_weights_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.find_weights_new" title="Link to this definition"></a></dt>
+<dd><p>Find absolute weights for seismic and classic constraints based on options
+in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.fvalues">
+<span class="sig-name descname"><span class="pre">fvalues</span></span><a class="headerlink" href="#AIMS.Likelihood.fvalues" title="Link to this definition"></a></dt>
+<dd><p>Array with the observed frequencies</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.get_optimal_surface_amplitudes">
+<span class="sig-name descname"><span class="pre">get_optimal_surface_amplitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.get_optimal_surface_amplitudes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.get_optimal_surface_amplitudes" title="Link to this definition"></a></dt>
+<dd><p>Find optimal surface correction amplitude, for the surface correction
+specified by <code class="docutils literal notranslate"><span class="pre">surface_option</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – the model for which we’re finding the surface correction amplitude</p></li>
+<li><p><strong>mode_map</strong> (<em>list</em><em> of </em><em>int</em>) – a mapping which relates observed modes to theoretical ones</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>optimal surface correction amplitudes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.guess_dnu">
+<span class="sig-name descname"><span class="pre">guess_dnu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.guess_dnu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.guess_dnu" title="Link to this definition"></a></dt>
+<dd><p>Guess the large frequency separation based on the radial modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>with_n</strong> (<em>boolean</em>) – specifies whether to use the n values
+already stored with each mode, when calculating the
+large frequency separation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the large frequency separation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.guess_n">
+<span class="sig-name descname"><span class="pre">guess_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.guess_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.guess_n" title="Link to this definition"></a></dt>
+<dd><p>Guess the radial order of the observed pulsations modes.</p>
+<p>This method uses the large frequency separation, as calculated with
+<a class="reference internal" href="#AIMS.Likelihood.guess_dnu" title="AIMS.Likelihood.guess_dnu"><code class="xref py py-meth docutils literal notranslate"><span class="pre">guess_dnu()</span></code></a>, to estimate the radial orders.  These orders are
+subsequently adjusted to avoid multiple modes with the same
+identification.  The resultant radial orders could be off by a constant
+offset, but this is not too problematic when computing frequency
+combinations or ratios.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.indices">
+<span class="sig-name descname"><span class="pre">indices</span></span><a class="headerlink" href="#AIMS.Likelihood.indices" title="Link to this definition"></a></dt>
+<dd><p>2D int array with the mode indices for each frequency combination.
+The indices are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The index of the term</p></li>
+<li><p>The cumulative index of the frequency combination</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.invcov">
+<span class="sig-name descname"><span class="pre">invcov</span></span><a class="headerlink" href="#AIMS.Likelihood.invcov" title="Link to this definition"></a></dt>
+<dd><p>Inverse of covariance matrix, <a class="reference internal" href="#AIMS.Likelihood.cov" title="AIMS.Likelihood.cov"><code class="xref py py-data docutils literal notranslate"><span class="pre">Likelihood.cov</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.lvalues">
+<span class="sig-name descname"><span class="pre">lvalues</span></span><a class="headerlink" href="#AIMS.Likelihood.lvalues" title="Link to this definition"></a></dt>
+<dd><p>Array with the l values of the observed modes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.modes">
+<span class="sig-name descname"><span class="pre">modes</span></span><a class="headerlink" href="#AIMS.Likelihood.modes" title="Link to this definition"></a></dt>
+<dd><p>List of pulsation modes (of type <a class="reference internal" href="#AIMS.Mode" title="AIMS.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.ncoeff">
+<span class="sig-name descname"><span class="pre">ncoeff</span></span><a class="headerlink" href="#AIMS.Likelihood.ncoeff" title="Link to this definition"></a></dt>
+<dd><p>The number of terms in each frequency combination.  The index is a
+cumulative index that uniquely designates one of the frequency combinations
+from one of the frequency combination functions. It is also the same as
+the second index in the <a class="reference internal" href="#AIMS.Likelihood.coeff" title="AIMS.Likelihood.coeff"><code class="xref py py-data docutils literal notranslate"><span class="pre">coeff</span></code></a> and <a class="reference internal" href="#AIMS.Likelihood.indices" title="AIMS.Likelihood.indices"><code class="xref py py-data docutils literal notranslate"><span class="pre">indices</span></code></a> variables.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.ncomb">
+<span class="sig-name descname"><span class="pre">ncomb</span></span><a class="headerlink" href="#AIMS.Likelihood.ncomb" title="Link to this definition"></a></dt>
+<dd><p>1D int array which specifies the number of frequency combinations within
+each frequency combination function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.nonconstraints">
+<span class="sig-name descname"><span class="pre">nonconstraints</span></span><a class="headerlink" href="#AIMS.Likelihood.nonconstraints" title="Link to this definition"></a></dt>
+<dd><p>List of constraints which are only used during plotting and not used in the likelihood function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.nvalues">
+<span class="sig-name descname"><span class="pre">nvalues</span></span><a class="headerlink" href="#AIMS.Likelihood.nvalues" title="Link to this definition"></a></dt>
+<dd><p>Array with the n values of the observed modes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.qk">
+<span class="sig-name descname"><span class="pre">qk</span></span><a class="headerlink" href="#AIMS.Likelihood.qk" title="Link to this definition"></a></dt>
+<dd><p>Normalised q vectors from the WhoSGlAd method (Farnir et al. 2019).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.read_constraints">
+<span class="sig-name descname"><span class="pre">read_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.read_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.read_constraints" title="Link to this definition"></a></dt>
+<dd><p>Read a file with pulsation data and constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file with pulsation data.</p></li>
+<li><p><strong>factor</strong> (<em>float</em>) – multiplicative factor for pulsation frequencies.  Can
+be used for conversions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Likelihood.seismic_weight">
+<span class="sig-name descname"><span class="pre">seismic_weight</span></span><a class="headerlink" href="#AIMS.Likelihood.seismic_weight" title="Link to this definition"></a></dt>
+<dd><p>Absolute weight to be applied to seismic constraints</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Likelihood.sort_modes">
+<span class="sig-name descname"><span class="pre">sort_modes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Likelihood.sort_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Likelihood.sort_modes" title="Link to this definition"></a></dt>
+<dd><p>Sort the modes.  The ordering will depend on the value of <code class="docutils literal notranslate"><span class="pre">use_n</span></code> from the
+<code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code> file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Mode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_dfreq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Mode" title="Link to this definition"></a></dt>
+<dd><p>A class which describes an <em>observed</em> pulsation mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_n</strong> (<em>int</em>) – radial order of observed mode</p></li>
+<li><p><strong>_l</strong> (<em>int</em>) – harmonic degree of observed mode.</p></li>
+<li><p><strong>_freq</strong> (<em>float</em>) – pulsation frequency (in <span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span>).</p></li>
+<li><p><strong>_dfreq</strong> (<em>float</em>) – error bar on pulsation frequency (in <span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span>).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Negative values are not accepted for <code class="docutils literal notranslate"><span class="pre">_l</span></code>, <code class="docutils literal notranslate"><span class="pre">_freq</span></code>, or <code class="docutils literal notranslate"><span class="pre">_dfreq</span></code>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Mode.dfreq">
+<span class="sig-name descname"><span class="pre">dfreq</span></span><a class="headerlink" href="#AIMS.Mode.dfreq" title="Link to this definition"></a></dt>
+<dd><p>Error bar on pulsation frequency (in <span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Mode.freq">
+<span class="sig-name descname"><span class="pre">freq</span></span><a class="headerlink" href="#AIMS.Mode.freq" title="Link to this definition"></a></dt>
+<dd><p>Pulsation frequency (in <span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Mode.l">
+<span class="sig-name descname"><span class="pre">l</span></span><a class="headerlink" href="#AIMS.Mode.l" title="Link to this definition"></a></dt>
+<dd><p>Harmonic degree of observed mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Mode.match">
+<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Mode.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Mode.match" title="Link to this definition"></a></dt>
+<dd><p>Check to see if input mode has the same (n,l) values as the current mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a_mode</strong> (<a class="reference internal" href="#AIMS.Mode" title="AIMS.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code></a>) – input mode which is being compared with current mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the input mode has the same (n,l) values as the
+current mode.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Mode.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#AIMS.Mode.n" title="Link to this definition"></a></dt>
+<dd><p>Radial order of observed mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Mode.print_me">
+<span class="sig-name descname"><span class="pre">print_me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Mode.print_me"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Mode.print_me" title="Link to this definition"></a></dt>
+<dd><p>Print the mode in a human readable form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Prior_list">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Prior_list</span></span><a class="reference internal" href="_modules/AIMS.html#Prior_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Prior_list" title="Link to this definition"></a></dt>
+<dd><p>A class which contains a list of priors as well as convenient methods for
+adding priors and for evaluating them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Prior_list.add_prior">
+<span class="sig-name descname"><span class="pre">add_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aPrior</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Prior_list.add_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Prior_list.add_prior" title="Link to this definition"></a></dt>
+<dd><p>Add a prior to the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aPrior</strong> (<a class="reference internal" href="#AIMS.Distribution" title="AIMS.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a>) – prior which is to be added to the list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Prior_list.priors">
+<span class="sig-name descname"><span class="pre">priors</span></span><a class="headerlink" href="#AIMS.Prior_list.priors" title="Link to this definition"></a></dt>
+<dd><p>A list of probability distributions which correspond to priors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Prior_list.realisation">
+<span class="sig-name descname"><span class="pre">realisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Prior_list.realisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Prior_list.realisation" title="Link to this definition"></a></dt>
+<dd><p>Return an array with realisations for each prior.  The last dimension
+will correspond to the different priors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints</em>) – shape of random variates (for each prior)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a set of realisations</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy float array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="AIMS.Probability">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">Probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_priors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_likelihood</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Probability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Probability" title="Link to this definition"></a></dt>
+<dd><p>A class which combines the priors and likelihood function, and allows the
+the user to evalute ln of the product of these.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_priors</strong> (<a class="reference internal" href="#AIMS.Prior_list" title="AIMS.Prior_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior_list</span></code></a>) – input set of priors</p></li>
+<li><p><strong>_likelihood</strong> (<a class="reference internal" href="#AIMS.Likelihood" title="AIMS.Likelihood"><code class="xref py py-class docutils literal notranslate"><span class="pre">Likelihood</span></code></a>) – input likelihood function</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Probability.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Probability.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Probability.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Evalulate the ln of the product of the priors and likelihood function,
+i.e. the probability, for a given model, to within an additive
+constant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – input model</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the ln of the probability, integers indicating if the model has bee
+rejected based on classic constraints, seismic constraints, and/or priors</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, int, int, int</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This avoids model interpolation and can be used to gain time.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AIMS.Probability.is_outside">
+<span class="sig-name descname"><span class="pre">is_outside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#Probability.is_outside"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.Probability.is_outside" title="Link to this definition"></a></dt>
+<dd><p>Test to see if the given set of parameters lies outside the grid of
+models.  This is done by evaluate the probability and seeing if
+the result indicates this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>array-like</em>) – input set of parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the set of parameters corresponds to a point
+outside the grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Probability.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><a class="headerlink" href="#AIMS.Probability.likelihood" title="Link to this definition"></a></dt>
+<dd><p>The likelihood function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AIMS.Probability.priors">
+<span class="sig-name descname"><span class="pre">priors</span></span><a class="headerlink" href="#AIMS.Probability.priors" title="Link to this definition"></a></dt>
+<dd><p>The set of priors.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.accepted_parameters">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">accepted_parameters</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#AIMS.accepted_parameters" title="Link to this definition"></a></dt>
+<dd><p>list of parameters associated with accepted models</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.append_osm_parameter">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">append_osm_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_osm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#append_osm_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.append_osm_parameter" title="Link to this definition"></a></dt>
+<dd><p>Add a parameter in xlm format in the file with the classic
+constraints for OSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_osm</strong> (<em>lxml.etree._Element</em>) – XLM etree element to which to add the parameter</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – name of the parameter</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – value of the parameter</p></li>
+<li><p><strong>step</strong> (<em>float</em>) – parameter step (this intervenes when numerically calculating
+derivatives with respect to this parameter)</p></li>
+<li><p><strong>rate</strong> (<em>float</em>) – parameter rate (this corresponds to a tolerance on this
+parameter)</p></li>
+<li><p><strong>bounds</strong> (<em>float tuple</em>) – bounds on the parameter</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.append_osm_surface_effects">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">append_osm_surface_effects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes_osm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#append_osm_surface_effects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.append_osm_surface_effects" title="Link to this definition"></a></dt>
+<dd><p>Add a method with which to calculate surface effects to the
+OSM contraint file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>modes_osm</strong> (<em>lxml.etree._Element</em>) – XML element to which to add the surface effects method</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – name of the method</p></li>
+<li><p><strong>numax</strong> (<em>float</em>) – value of numax</p></li>
+<li><p><strong>values</strong> (<em>float tuple</em>) – values which intervene in the method</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.autocorr_time">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">autocorr_time</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#AIMS.autocorr_time" title="Link to this definition"></a></dt>
+<dd><p>integrated autocorrelelation time (this is useful for testing convergence)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_MCMC_model">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_MCMC_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.best_MCMC_model" title="Link to this definition"></a></dt>
+<dd><p>best model from the MCMC run</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_MCMC_params">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_MCMC_params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.best_MCMC_params" title="Link to this definition"></a></dt>
+<dd><p>parameters for the model <a class="reference internal" href="#AIMS.best_MCMC_model" title="AIMS.best_MCMC_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">best_MCMC_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_MCMC_result">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_MCMC_result</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+300</span></em><a class="headerlink" href="#AIMS.best_MCMC_result" title="Link to this definition"></a></dt>
+<dd><p>ln(probability) result for the model <a class="reference internal" href="#AIMS.best_MCMC_model" title="AIMS.best_MCMC_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">best_MCMC_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_age_range">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_age_range</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#AIMS.best_age_range" title="Link to this definition"></a></dt>
+<dd><p>Age range on track with <code class="xref py py-data docutils literal notranslate"><span class="pre">best_model_model</span></code></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_grid_model">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_grid_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.best_grid_model" title="Link to this definition"></a></dt>
+<dd><p>best model from a scan of the entire grid</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_grid_params">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_grid_params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.best_grid_params" title="Link to this definition"></a></dt>
+<dd><p>parameters for the model <a class="reference internal" href="#AIMS.best_grid_model" title="AIMS.best_grid_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">best_grid_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.best_grid_result">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">best_grid_result</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+300</span></em><a class="headerlink" href="#AIMS.best_grid_result" title="Link to this definition"></a></dt>
+<dd><p>ln(probability) result for the model <a class="reference internal" href="#AIMS.best_grid_model" title="AIMS.best_grid_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">best_grid_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.check_configuration">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">check_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#check_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.check_configuration" title="Link to this definition"></a></dt>
+<dd><p>Test the version of the EMCEE package and set the mc2 variable accordingly.</p>
+<p>Test the values of the variables in check_configuration to make
+sure they’re acceptable.  If an unacceptable value is found, then
+this will stop AIMS and explain what variable has an erroneous
+value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.find_a_blob">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">find_a_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#find_a_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.find_a_blob" title="Link to this definition"></a></dt>
+<dd><p>Find a blob (i.e. supplementary output parameters) for a given set of parameters
+(for one model).  The blob also includes the log(P) value as a first entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>array-like</em>) – input set of parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of supplementary output parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.find_best_model">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">find_best_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#find_best_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.find_best_model" title="Link to this definition"></a></dt>
+<dd><p>Scan through grid of models to find “best” model for a given probability
+function (i.e. the product of priors and a likelihood function).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.find_best_model_in_track">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">find_best_model_in_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntrack</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#find_best_model_in_track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.find_best_model_in_track" title="Link to this definition"></a></dt>
+<dd><p>Scan through an evolutionary track to find “best” model for <a class="reference internal" href="#AIMS.prob" title="AIMS.prob"><code class="xref py py-data docutils literal notranslate"><span class="pre">prob</span></code></a>,
+the probability function (i.e. the product of priors and a likelihood function).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ntrack</strong> (<em>int</em>) – number of the evolutionary track</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the ln(probability) value, the “best” model, the parameters of accepted models,
+the parameters of rejected models, the age range of the track, and the numbers
+of models rejected due to classic constraints, seismic contraints, and priors</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(float, <a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>, 2D float list, 2D float list, float, int, int, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.find_blobs">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">find_blobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#find_blobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.find_blobs" title="Link to this definition"></a></dt>
+<dd><p>Find blobs (i.e. supplementary output parameters) from a set of samples
+(i.e. for multiple models).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>samples</strong> (<em>list/array</em><em> of </em><em>array-like</em>) – input set of samples</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>set of supplementary output parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.grid">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">grid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.grid" title="Link to this definition"></a></dt>
+<dd><p>grid of models</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.grid_params_MCMC">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">grid_params_MCMC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#AIMS.grid_params_MCMC" title="Link to this definition"></a></dt>
+<dd><p>parameters used in the MCMC run (excluding surface correction parameters)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.grid_params_MCMC_with_surf">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">grid_params_MCMC_with_surf</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#AIMS.grid_params_MCMC_with_surf" title="Link to this definition"></a></dt>
+<dd><p>parameters used in the MCMC run (including surface correction parameters)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.init_walkers">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">init_walkers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#init_walkers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.init_walkers" title="Link to this definition"></a></dt>
+<dd><p>Initialise the walkers used in emcee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array of starting parameters</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.interpolation_tests">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">interpolation_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#interpolation_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.interpolation_tests" title="Link to this definition"></a></dt>
+<dd><p>Carry out various interpolation tests and write results in
+binary format to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of file in which to write test results.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of this file may be plotted using methods from
+<code class="docutils literal notranslate"><span class="pre">plot_interpolation_test.py</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.load_binary_data">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">load_binary_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#load_binary_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.load_binary_data" title="Link to this definition"></a></dt>
+<dd><p>Read a binary file with a grid of models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of file with grid in binary format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the grid of models</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#model.Model_grid" title="model.Model_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model_grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.log0">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">log0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+300</span></em><a class="headerlink" href="#AIMS.log0" title="Link to this definition"></a></dt>
+<dd><p>a large negative value used to represent ln(0)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.mc2">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">mc2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.mc2" title="Link to this definition"></a></dt>
+<dd><p>True if emcee’s version is 2 or prior</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.my_map">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">my_map</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.my_map" title="Link to this definition"></a></dt>
+<dd><p>pointer to the map function (either the parallel or sequential versions)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.ndims">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">ndims</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#AIMS.ndims" title="Link to this definition"></a></dt>
+<dd><p>number of dimensions for MCMC parameters (includes <a class="reference internal" href="#AIMS.nsurf" title="AIMS.nsurf"><code class="xref py py-data docutils literal notranslate"><span class="pre">nsurf</span></code></a>)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.nreject_classic">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">nreject_classic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#AIMS.nreject_classic" title="Link to this definition"></a></dt>
+<dd><p>Number of models rejected because of classic constraints</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.nreject_prior">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">nreject_prior</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#AIMS.nreject_prior" title="Link to this definition"></a></dt>
+<dd><p>Number of models rejected based on priors</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.nreject_seismic">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">nreject_seismic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#AIMS.nreject_seismic" title="Link to this definition"></a></dt>
+<dd><p>Number of models rejected because of seismic constraints</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.nsurf">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">nsurf</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#AIMS.nsurf" title="Link to this definition"></a></dt>
+<dd><p>number of surface term parameters</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.output_folder">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">output_folder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.output_folder" title="Link to this definition"></a></dt>
+<dd><p>folder in which to write the results</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_distrib_iter">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_distrib_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percentiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_distrib_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_distrib_iter" title="Link to this definition"></a></dt>
+<dd><p>Plot individual distribution of walkers as a function of iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percentiles</strong> (<em>np.array</em>) – array with percentiles from emcee run</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – labels for the different dimensions in parameters space</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – specify name of file in which to save plots of walkers.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method must be applied before the samples are reshaped,
+and information on individual walkers lost.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_distrib_iter_old">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_distrib_iter_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_distrib_iter_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_distrib_iter_old" title="Link to this definition"></a></dt>
+<dd><p>Plot individual distribution of walkers as a function of iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples from the emcee run</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – labels for the different dimensions in parameters space</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – specify name of file in which to save plots of walkers.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method must be applied before the samples are reshaped,
+and information on individual walkers lost.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_echelle_diagram">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_echelle_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_echelle_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_echelle_diagram" title="Link to this definition"></a></dt>
+<dd><p>Produce an echelle diagram for input model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which we’re making an echelle diagram</p></li>
+<li><p><strong>my_params</strong> (<em>array-like</em>) – parameters of the model</p></li>
+<li><p><strong>model_name</strong> (<em>string</em>) – name used to describe this model.  This is also used
+when naming the file with the echelle diagram.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_frequencies">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_frequencies" title="Link to this definition"></a></dt>
+<dd><p>Plot frequencies along an evolutionary track.  For debugging purposes only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Model_grid</span></code>) – grid of models</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_frequency_diff">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_frequency_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_frequency_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_frequency_diff" title="Link to this definition"></a></dt>
+<dd><p>Make a diagram with frequency differences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which we’re plotting frequencie differences</p></li>
+<li><p><strong>my_params</strong> (<em>array-like</em>) – parameters of the model</p></li>
+<li><p><strong>model_name</strong> (<em>string</em>) – name used to describe this model.  This is also used
+when naming the file with the plot.</p></li>
+<li><p><strong>scaled</strong> (<em>boolean</em>) – if True, scale frequency differences by frequency error bars</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_histograms">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_histograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fancy_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_histograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_histograms" title="Link to this definition"></a></dt>
+<dd><p>Plot a histogram based on a set of samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples form the emcee run</p></li>
+<li><p><strong>names</strong> (<em>list</em><em> of </em><em>strings</em>) – names of the quantities represented by the samples.  This will
+be used when naming the file with the histogram</p></li>
+<li><p><strong>fancy_names</strong> (<em>list</em><em> of </em><em>strings</em>) – name of the quantities represented by the samples. This
+will be used as the x-axis label in the histogram.</p></li>
+<li><p><strong>truths</strong> (<em>list</em><em> of </em><em>floats</em>) – reference values (typically the true values or some other
+important values) to be added to the histograms as a vertical line</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.plot_walkers">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">plot_walkers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#plot_walkers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.plot_walkers" title="Link to this definition"></a></dt>
+<dd><p>Plot individual walkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples from the emcee run</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – labels for the different dimensions in parameters space</p></li>
+<li><p><strong>filename</strong> (<em>string</em>) – specify name of file in which to save plots of walkers.</p></li>
+<li><p><strong>nw</strong> (<em>int</em>) – number of walkers to be plotted</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method must be applied before the samples are reshaped,
+and information on individual walkers lost.</p>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.pool">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.pool" title="Link to this definition"></a></dt>
+<dd><p>pool from which to carry out parallel computations</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.prob">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">prob</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.prob" title="Link to this definition"></a></dt>
+<dd><p><a class="reference internal" href="#AIMS.Probability" title="AIMS.Probability"><code class="xref py py-class docutils literal notranslate"><span class="pre">Probability</span></code></a> type object that represents the probability function
+which includes the likelihood and priors</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.rejected_parameters">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">rejected_parameters</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#AIMS.rejected_parameters" title="Link to this definition"></a></dt>
+<dd><p>list of parameters associated with rejected models</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.run_emcee">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">run_emcee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#run_emcee"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.run_emcee" title="Link to this definition"></a></dt>
+<dd><p>Run the emcee program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p0</strong> (<em>np.array</em>) – the initial set of walkers</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <code class="docutils literal notranslate"><span class="pre">emcee</span></code> sampler for the MCMC run, array with walker percentiles
+as a function of iteration number</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>emcee sampler object, np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.statistical_model">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">statistical_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.statistical_model" title="Link to this definition"></a></dt>
+<dd><p>model corresponding to statistical parameters</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.statistical_params">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">statistical_params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.statistical_params" title="Link to this definition"></a></dt>
+<dd><p>parameters for the model <a class="reference internal" href="#AIMS.statistical_model" title="AIMS.statistical_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">statistical_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.statistical_result">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">statistical_result</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+300</span></em><a class="headerlink" href="#AIMS.statistical_result" title="Link to this definition"></a></dt>
+<dd><p>ln(probability) result for the model <a class="reference internal" href="#AIMS.statistical_model" title="AIMS.statistical_model"><code class="xref py py-data docutils literal notranslate"><span class="pre">statistical_model</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.string_to_title">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">string_to_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#string_to_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.string_to_title" title="Link to this definition"></a></dt>
+<dd><p>Create fancy title from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>string</em>) – string from which the title is created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the fancy string title</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.swap_dimensions">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">swap_dimensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#swap_dimensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.swap_dimensions" title="Link to this definition"></a></dt>
+<dd><p>Swaps the two first dimensions of an array.
+This is useful for handling the different conventions used to store
+the samples in emcee3 and ptemcee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>np.array</em>) – input array</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>array with swapped dimensions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.threshold">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">threshold</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+290</span></em><a class="headerlink" href="#AIMS.threshold" title="Link to this definition"></a></dt>
+<dd><p>threshold for “accepted” models.  Needs to be greater than <a class="reference internal" href="#AIMS.log0" title="AIMS.log0"><code class="xref py py-const docutils literal notranslate"><span class="pre">log0</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="AIMS.tight_ball_distributions">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">tight_ball_distributions</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#AIMS.tight_ball_distributions" title="Link to this definition"></a></dt>
+<dd><p><a class="reference internal" href="#AIMS.Prior_list" title="AIMS.Prior_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior_list</span></code></a> type object with the distributions for the initial tight ball</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_LEGACY_summary">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_LEGACY_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">KIC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_LEGACY_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_LEGACY_summary" title="Link to this definition"></a></dt>
+<dd><p>Write a one line summary of the statistical properties based on a
+sequence of realisations to a file.  The format matches that of the
+LEGACY project.</p>
+<p>The results include:</p>
+<ul class="simple">
+<li><p>average values for each variable (statistical mean)</p></li>
+<li><p>error bars for each variable (standard mean deviation)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file in which to write the statistical properties</p></li>
+<li><p><strong>KIC</strong> (<em>string</em>) – KIC number of the star</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – names of relevant variables</p></li>
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples for which statistical properties are calculated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_SPInS_file_cgs">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_SPInS_file_cgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_SPInS_file_cgs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_SPInS_file_cgs" title="Link to this definition"></a></dt>
+<dd><p>Write list file compatible with SPInS.  The quantities mass, luminosity, and radius
+are provided in cgs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The header in the output file might need to be edited by hand.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_SPInS_file_solar">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_SPInS_file_solar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_SPInS_file_solar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_SPInS_file_solar" title="Link to this definition"></a></dt>
+<dd><p>Write list file compatible with SPInS.  The quantities mass, luminosity, and radius
+are provided solar units.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The header in the output file might need to be edited by hand.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_binary_data">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_binary_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_binary_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_binary_data" title="Link to this definition"></a></dt>
+<dd><p>Read an ascii file with a grid of models, and write corresponding binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infile</strong> (<em>string</em>) – input ascii file name</p></li>
+<li><p><strong>outfile</strong> (<em>string</em>) – output binary file name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_combinations">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_combinations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_combinations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_combinations" title="Link to this definition"></a></dt>
+<dd><p>Produce a list of linear combinations of grid models (based on interpolation) corresponding
+to the provided model parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of the file to which to write the model combinations</p></li>
+<li><p><strong>samples</strong> (<em>np.array</em>) – set of model parameters for which we would like to obtain the grid models
+and interpolation coefficients</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_list_file">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_list_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_list_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_list_file" title="Link to this definition"></a></dt>
+<dd><p>Write list file from which to generate binary grid.  Various filters
+can be included to reduce the number of models.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This code is intended for developpers, not first time users.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_model">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_model" title="Link to this definition"></a></dt>
+<dd><p>Write text file with caracteristics of input model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model for which we’re writing a text file</p></li>
+<li><p><strong>my_params</strong> (<em>array-like</em>) – parameters of the model</p></li>
+<li><p><strong>my_result</strong> (<em>float</em>) – ln(P) value obtained for the model</p></li>
+<li><p><strong>model_name</strong> (<em>string</em>) – name used to describe this model.  This is also used
+when naming the text file.</p></li>
+<li><p><strong>extended</strong> – if set to True, all of the theoretical modes are
+saved in the text file, including those not matched
+to observations</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_osm_don">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_osm_don</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_osm_don"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_osm_don" title="Link to this definition"></a></dt>
+<dd><p>Write file with choice of physical ingredients to be used by CESAM or CESTAM
+and OSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file which will contain the physical ingredients</p></li>
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model from which which is derived various physical constraints/settings</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Written by B. Herbert.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_osm_frequencies">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_osm_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_osm_frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_osm_frequencies" title="Link to this definition"></a></dt>
+<dd><p>Write file with frequencies for Optimal Stellar Model (OSM), written
+by R. Samadi.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file which will contain the frequencies</p></li>
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model from which are derived the radial orders</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Written by B. Herbert.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_osm_xml">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_osm_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_osm_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_osm_xml" title="Link to this definition"></a></dt>
+<dd><p>Write file with classic constraints for OSM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file with classic constraints</p></li>
+<li><p><strong>my_model</strong> (<a class="reference internal" href="model.html#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Model</span></code></a>) – model used in deriving some of the constraints</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Originally written by B. Herbert.  Includes some modifications.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_percentiles">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_percentiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_percentiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_percentiles" title="Link to this definition"></a></dt>
+<dd><p>Write percentiles based on a sequence of realisations to a file.
+The results include:</p>
+<blockquote>
+<div><p>+/- 2 sigma error bars (using the 2.5th and 97.5th percentiles)
++/- 1 sigma error bars (using the 16th and 84th percentiles)
+the median value (i.e. the 50th percentile)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file in which to write the percentiles</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – names of relevant variables</p></li>
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples for which statistical properties are calculated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_readme">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_readme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_readme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_readme" title="Link to this definition"></a></dt>
+<dd><p>Write parameters relevant to this MCMC run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of file in which to write the statistical properties</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_samples">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_samples" title="Link to this definition"></a></dt>
+<dd><p>Write raw samples to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file in which to write the samples</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – names of relevant variables (used to write a header)</p></li>
+<li><p><strong>samples</strong> (<em>array-like</em>) – samples for which statistical properties are calculated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="AIMS.write_statistics">
+<span class="sig-prename descclassname"><span class="pre">AIMS.</span></span><span class="sig-name descname"><span class="pre">write_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/AIMS.html#write_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#AIMS.write_statistics" title="Link to this definition"></a></dt>
+<dd><p>Write statistical properties based on a sequence of realisations to a file.
+The results include:</p>
+<ul class="simple">
+<li><p>average values for each variable (statistical mean)</p></li>
+<li><p>error bars for each variable (standard mean deviation)</p></li>
+<li><p>correlation matrix between the different variables</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file in which to write the statistical properties</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em>) – names of relevant variables</p></li>
+<li><p><strong>samples</strong> (<em>np.array</em>) – samples for which statistical properties are calculated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

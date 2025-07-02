@@ -16,6 +16,7 @@
       <script src="_static/documentation_options.js?v=b21de401"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,7 +54,140 @@
 <li class="toctree-l1"><a class="reference internal" href="formats.html">File formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">List of changes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AIMS.html">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.FeH"><code class="docutils literal notranslate"><span class="pre">Model.FeH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.FeH0"><code class="docutils literal notranslate"><span class="pre">Model.FeH0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.MH"><code class="docutils literal notranslate"><span class="pre">Model.MH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.MH0"><code class="docutils literal notranslate"><span class="pre">Model.MH0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.append_modes"><code class="docutils literal notranslate"><span class="pre">Model.append_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.b_Kjeldsen2008"><code class="docutils literal notranslate"><span class="pre">Model.b_Kjeldsen2008</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.beta_Sonoi2015"><code class="docutils literal notranslate"><span class="pre">Model.beta_Sonoi2015</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.cutoff"><code class="docutils literal notranslate"><span class="pre">Model.cutoff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.find_epsilon"><code class="docutils literal notranslate"><span class="pre">Model.find_epsilon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.find_large_separation"><code class="docutils literal notranslate"><span class="pre">Model.find_large_separation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.find_mode"><code class="docutils literal notranslate"><span class="pre">Model.find_mode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.find_mode_range"><code class="docutils literal notranslate"><span class="pre">Model.find_mode_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.freq_sorted"><code class="docutils literal notranslate"><span class="pre">Model.freq_sorted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.get_age"><code class="docutils literal notranslate"><span class="pre">Model.get_age()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.get_freq"><code class="docutils literal notranslate"><span class="pre">Model.get_freq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.get_surface_correction"><code class="docutils literal notranslate"><span class="pre">Model.get_surface_correction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.glb"><code class="docutils literal notranslate"><span class="pre">Model.glb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.multiply_modes"><code class="docutils literal notranslate"><span class="pre">Model.multiply_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.name"><code class="docutils literal notranslate"><span class="pre">Model.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.numax"><code class="docutils literal notranslate"><span class="pre">Model.numax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.print_me"><code class="docutils literal notranslate"><span class="pre">Model.print_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file"><code class="docutils literal notranslate"><span class="pre">Model.read_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_CLES"><code class="docutils literal notranslate"><span class="pre">Model.read_file_CLES()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_CLES_Mod"><code class="docutils literal notranslate"><span class="pre">Model.read_file_CLES_Mod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_MESA"><code class="docutils literal notranslate"><span class="pre">Model.read_file_MESA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_PLATO"><code class="docutils literal notranslate"><span class="pre">Model.read_file_PLATO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_agsm"><code class="docutils literal notranslate"><span class="pre">Model.read_file_agsm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.read_modes_Aldo"><code class="docutils literal notranslate"><span class="pre">Model.read_modes_Aldo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.remove_duplicate_modes"><code class="docutils literal notranslate"><span class="pre">Model.remove_duplicate_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.sort_modes"><code class="docutils literal notranslate"><span class="pre">Model.sort_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.string_to_param"><code class="docutils literal notranslate"><span class="pre">Model.string_to_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.write_file_simple"><code class="docutils literal notranslate"><span class="pre">Model.write_file_simple()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.zsx_0"><code class="docutils literal notranslate"><span class="pre">Model.zsx_0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.zsx_s"><code class="docutils literal notranslate"><span class="pre">Model.zsx_s</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#model.Model_grid"><code class="docutils literal notranslate"><span class="pre">Model_grid</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.check_age_adim"><code class="docutils literal notranslate"><span class="pre">Model_grid.check_age_adim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.distort_grid"><code class="docutils literal notranslate"><span class="pre">Model_grid.distort_grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.distort_mat"><code class="docutils literal notranslate"><span class="pre">Model_grid.distort_mat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.find_epsilons"><code class="docutils literal notranslate"><span class="pre">Model_grid.find_epsilons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.find_partition"><code class="docutils literal notranslate"><span class="pre">Model_grid.find_partition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.grid"><code class="docutils literal notranslate"><span class="pre">Model_grid.grid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.grid_params"><code class="docutils literal notranslate"><span class="pre">Model_grid.grid_params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.ndim"><code class="docutils literal notranslate"><span class="pre">Model_grid.ndim</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.ndx"><code class="docutils literal notranslate"><span class="pre">Model_grid.ndx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.plot_tessellation"><code class="docutils literal notranslate"><span class="pre">Model_grid.plot_tessellation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.postfix"><code class="docutils literal notranslate"><span class="pre">Model_grid.postfix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.prefix"><code class="docutils literal notranslate"><span class="pre">Model_grid.prefix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.range"><code class="docutils literal notranslate"><span class="pre">Model_grid.range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list_Aldo"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list_Aldo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list_standard"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list_standard()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.remove_tracks"><code class="docutils literal notranslate"><span class="pre">Model_grid.remove_tracks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.replace_age_adim"><code class="docutils literal notranslate"><span class="pre">Model_grid.replace_age_adim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.tessellate"><code class="docutils literal notranslate"><span class="pre">Model_grid.tessellate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.tessellation"><code class="docutils literal notranslate"><span class="pre">Model_grid.tessellation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.test_freq"><code class="docutils literal notranslate"><span class="pre">Model_grid.test_freq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.test_interpolation"><code class="docutils literal notranslate"><span class="pre">Model_grid.test_interpolation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.tracks"><code class="docutils literal notranslate"><span class="pre">Model_grid.tracks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.user_params"><code class="docutils literal notranslate"><span class="pre">Model_grid.user_params</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#model.Track"><code class="docutils literal notranslate"><span class="pre">Track</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_adim_to_age"><code class="docutils literal notranslate"><span class="pre">Track.age_adim_to_age()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_adim_to_scale_Xc"><code class="docutils literal notranslate"><span class="pre">Track.age_adim_to_scale_Xc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_adim_to_scale_age"><code class="docutils literal notranslate"><span class="pre">Track.age_adim_to_scale_age()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_lower"><code class="docutils literal notranslate"><span class="pre">Track.age_lower</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_range"><code class="docutils literal notranslate"><span class="pre">Track.age_range</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.age_upper"><code class="docutils literal notranslate"><span class="pre">Track.age_upper</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.append"><code class="docutils literal notranslate"><span class="pre">Track.append()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.append_track"><code class="docutils literal notranslate"><span class="pre">Track.append_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.duplicate_ages"><code class="docutils literal notranslate"><span class="pre">Track.duplicate_ages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_combination"><code class="docutils literal notranslate"><span class="pre">Track.find_combination()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_epsilon"><code class="docutils literal notranslate"><span class="pre">Track.find_epsilon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_large_separation"><code class="docutils literal notranslate"><span class="pre">Track.find_large_separation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_mode_range"><code class="docutils literal notranslate"><span class="pre">Track.find_mode_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_modes"><code class="docutils literal notranslate"><span class="pre">Track.find_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.find_modes_dim"><code class="docutils literal notranslate"><span class="pre">Track.find_modes_dim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.freq_sorted"><code class="docutils literal notranslate"><span class="pre">Track.freq_sorted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.glb"><code class="docutils literal notranslate"><span class="pre">Track.glb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.grid_params"><code class="docutils literal notranslate"><span class="pre">Track.grid_params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.interpolate_model"><code class="docutils literal notranslate"><span class="pre">Track.interpolate_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.is_sorted"><code class="docutils literal notranslate"><span class="pre">Track.is_sorted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.is_sorted_adim"><code class="docutils literal notranslate"><span class="pre">Track.is_sorted_adim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.matches"><code class="docutils literal notranslate"><span class="pre">Track.matches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.mode_indices"><code class="docutils literal notranslate"><span class="pre">Track.mode_indices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.modes"><code class="docutils literal notranslate"><span class="pre">Track.modes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.names"><code class="docutils literal notranslate"><span class="pre">Track.names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.nmodes"><code class="docutils literal notranslate"><span class="pre">Track.nmodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.params"><code class="docutils literal notranslate"><span class="pre">Track.params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.remove_duplicate_ages"><code class="docutils literal notranslate"><span class="pre">Track.remove_duplicate_ages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.sort"><code class="docutils literal notranslate"><span class="pre">Track.sort()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Track.test_interpolation"><code class="docutils literal notranslate"><span class="pre">Track.test_interpolation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#model.age_adim_str"><code class="docutils literal notranslate"><span class="pre">age_adim_str</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.age_str"><code class="docutils literal notranslate"><span class="pre">age_str</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.combine_models"><code class="docutils literal notranslate"><span class="pre">combine_models()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.compare_models"><code class="docutils literal notranslate"><span class="pre">compare_models()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.eps"><code class="docutils literal notranslate"><span class="pre">eps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.find_ages"><code class="docutils literal notranslate"><span class="pre">find_ages()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.find_combination"><code class="docutils literal notranslate"><span class="pre">find_combination()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.find_interpolation_coefficients"><code class="docutils literal notranslate"><span class="pre">find_interpolation_coefficients()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.ftype"><code class="docutils literal notranslate"><span class="pre">ftype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.get_surface_parameter_names"><code class="docutils literal notranslate"><span class="pre">get_surface_parameter_names()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.gtype"><code class="docutils literal notranslate"><span class="pre">gtype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.iage"><code class="docutils literal notranslate"><span class="pre">iage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.iage_adim"><code class="docutils literal notranslate"><span class="pre">iage_adim</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.ifreq_ref"><code class="docutils literal notranslate"><span class="pre">ifreq_ref</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.iluminosity"><code class="docutils literal notranslate"><span class="pre">iluminosity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.imass"><code class="docutils literal notranslate"><span class="pre">imass</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.init_user_param_dict"><code class="docutils literal notranslate"><span class="pre">init_user_param_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.interpolate_model"><code class="docutils literal notranslate"><span class="pre">interpolate_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.iradius"><code class="docutils literal notranslate"><span class="pre">iradius</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.itemperature"><code class="docutils literal notranslate"><span class="pre">itemperature</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.ix0"><code class="docutils literal notranslate"><span class="pre">ix0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.iz0"><code class="docutils literal notranslate"><span class="pre">iz0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.log0"><code class="docutils literal notranslate"><span class="pre">log0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.ltype"><code class="docutils literal notranslate"><span class="pre">ltype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.make_distort_matrix"><code class="docutils literal notranslate"><span class="pre">make_distort_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.make_scale_matrix"><code class="docutils literal notranslate"><span class="pre">make_scale_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.modetype"><code class="docutils literal notranslate"><span class="pre">modetype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.nglb"><code class="docutils literal notranslate"><span class="pre">nglb</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.nlin"><code class="docutils literal notranslate"><span class="pre">nlin</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.ntype"><code class="docutils literal notranslate"><span class="pre">ntype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.string_to_latex"><code class="docutils literal notranslate"><span class="pre">string_to_latex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.tol"><code class="docutils literal notranslate"><span class="pre">tol</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.user_params_index"><code class="docutils literal notranslate"><span class="pre">user_params_index</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.user_params_latex"><code class="docutils literal notranslate"><span class="pre">user_params_latex</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">The <code class="docutils literal notranslate"><span class="pre">functions</span></code> module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">The <code class="docutils literal notranslate"><span class="pre">utilities</span></code> module</a></li>
@@ -84,8 +218,1907 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="the-model-module">
-<h1>The <code class="docutils literal notranslate"><span class="pre">model</span></code> module<a class="headerlink" href="#the-model-module" title="Link to this heading"></a></h1>
+  <section id="module-model">
+<span id="the-model-module"></span><h1>The <code class="docutils literal notranslate"><span class="pre">model</span></code> module<a class="headerlink" href="#module-model" title="Link to this heading"></a></h1>
+<p>A module which contains various classes relevant to the grid of models:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>: a model</p></li>
+<li><p><a class="reference internal" href="#model.Track" title="model.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">Track</span></code></a>: an evolutionary track</p></li>
+<li><p><a class="reference internal" href="#model.Model_grid" title="model.Model_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model_grid</span></code></a>: a grid of models</p></li>
+</ul>
+<p>These different classes allow the program to store a grid of models and perform
+a number of operations, such as:</p>
+<ul class="simple">
+<li><p>retrieving model properties</p></li>
+<li><p>interpolate within the grid models</p></li>
+<li><p>sort the models within a given evolutionary track</p></li>
+<li><p>…</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="model.Model">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_glb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model" title="Link to this definition"></a></dt>
+<dd><p>A class which contains a stellar model, including classical and seismic information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_glb</strong> (<em>np.array</em>) – 1D array of global parameters for this model.  Its dimension should
+be greater or equal to <a class="reference internal" href="#model.nglb" title="model.nglb"><code class="xref py py-data docutils literal notranslate"><span class="pre">nglb</span></code></a></p></li>
+<li><p><strong>_name</strong> (<em>string</em>) – name of the model (typically the second part of its path)</p></li>
+<li><p><strong>_modes</strong> (<em>list</em><em> of </em><em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em>) – list of modes in the form of tuples
+(n,l,freq,inertia) which will be appended to the set of modes in the model.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.FeH">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FeH</span></span><a class="headerlink" href="#model.Model.FeH" title="Link to this definition"></a></dt>
+<dd><p>Find [Fe/H] value for model.</p>
+<p>The conversion from (Xs,Zs) to [Fe/H] is performed using the
+following formula:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\mathrm{[Fe/H] = \frac{[M/H]}{A_{FeH}}                                     = \frac{1}{A_{FeH}} \log_{10}                                      \left(\frac{z/x}{z_{\odot}/x_{\odot}} \right)}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the <span class="math notranslate nohighlight">\(\mathrm{[Fe/H]}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.FeH0">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FeH0</span></span><a class="headerlink" href="#model.Model.FeH0" title="Link to this definition"></a></dt>
+<dd><p>Find initial [Fe/H] value for model.</p>
+<p>The conversion from (X,Z) to [Fe/H] is performed using the
+following formula:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\mathrm{[Fe/H] = \frac{[M/H]}{A_{FeH}}                                     = \frac{1}{A_{FeH}} \log_{10}                                      \left(\frac{z/x}{z_{\odot}/x_{\odot}} \right)}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the initial <span class="math notranslate nohighlight">\(\mathrm{[Fe/H]}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.MH">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MH</span></span><a class="headerlink" href="#model.Model.MH" title="Link to this definition"></a></dt>
+<dd><p>Find [M/H] value for model.</p>
+<p>The conversion from (Xs,Zs) to [M/H] is performed using the
+following formula:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\mathrm{[M/H] = \log_{10} \left(\frac{z/x}{z_{\odot}/x_{\odot}} \right)}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the <span class="math notranslate nohighlight">\(\mathrm{[M/H]}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.MH0">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MH0</span></span><a class="headerlink" href="#model.Model.MH0" title="Link to this definition"></a></dt>
+<dd><p>Find initial [M/H] value for model.</p>
+<p>The conversion from (X,Z) to [M/H] is performed using the
+following formula:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\mathrm{[M/H] = \log_{10} \left(\frac{z/x}{z_{\odot}/x_{\odot}} \right)}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the initial <span class="math notranslate nohighlight">\(\mathrm{[M/H]}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.append_modes">
+<span class="sig-name descname"><span class="pre">append_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.append_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.append_modes" title="Link to this definition"></a></dt>
+<dd><p>Append a list of modes to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>modes</strong> (<em>list</em><em> of </em><em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em>) – list of modes which are in the form of tuples: (n,l,freq,inertia).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.b_Kjeldsen2008">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">b_Kjeldsen2008</span></span><a class="headerlink" href="#model.Model.b_Kjeldsen2008" title="Link to this definition"></a></dt>
+<dd><p>Return the exponent for the Kjeldsen et al. (2008) surface correction
+recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the Kjeldsen et al. exponent</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.beta_Sonoi2015">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_Sonoi2015</span></span><a class="headerlink" href="#model.Model.beta_Sonoi2015" title="Link to this definition"></a></dt>
+<dd><p>Return the exponent for the Sonoi et al. (2015) surface correction
+recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the Kjeldsen et al. exponent</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#model.Model.cutoff" title="Link to this definition"></a></dt>
+<dd><p>Find <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> for model.</p>
+<p>The <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> value is obtained from the
+following scaling relation:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\frac{\nu_{\mathrm{cut-off}}}{\nu_{\mathrm{cut-off},\odot}}                       = \left(\frac{M}{M_{\odot}}\right)                                                \left(\frac{R}{R_{\odot}}\right)^2                                              \left(\frac{T_{\mathrm{eff}}}{T_{\mathrm{eff},\odot}}\right)^{-1/2}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.find_epsilon">
+<span class="sig-name descname"><span class="pre">find_epsilon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.find_epsilon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.find_epsilon" title="Link to this definition"></a></dt>
+<dd><p>Find epsilon, the constant offset in a simplified version of Tassoul’s
+asymptotic formula:</p>
+<p><span class="math notranslate nohighlight">\(\nu_n = \Delta \nu (n + \varepsilon)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ltarget</strong> (<em>int</em>) – target l value.  Only modes with this l value will be
+used in obtaining epsilon.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the constant offset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.find_large_separation">
+<span class="sig-name descname"><span class="pre">find_large_separation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.find_large_separation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.find_large_separation" title="Link to this definition"></a></dt>
+<dd><p>Find large frequency separation using only radial modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the large frequency separation</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.find_mode">
+<span class="sig-name descname"><span class="pre">find_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.find_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.find_mode" title="Link to this definition"></a></dt>
+<dd><p>Find a mode with specific n and l values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ntarget</strong> (<em>int</em>) – target n value</p></li>
+<li><p><strong>ltarget</strong> (<em>int</em>) – target l value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the frequency of the mode</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.find_mode_range">
+<span class="sig-name descname"><span class="pre">find_mode_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.find_mode_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.find_mode_range" title="Link to this definition"></a></dt>
+<dd><p>Find n and l ranges of the modes in the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the n and l ranges of the modes</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int, int, int, int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.freq_sorted">
+<span class="sig-name descname"><span class="pre">freq_sorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.freq_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.freq_sorted" title="Link to this definition"></a></dt>
+<dd><p>Check to see if the frequencies are in ascending order for each l value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the frequencies are in ascending order.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.get_age">
+<span class="sig-name descname"><span class="pre">get_age</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.get_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.get_age" title="Link to this definition"></a></dt>
+<dd><p>Return age of stellar model.</p>
+<p>This is useful for sorting purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the age of the model</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.get_freq">
+<span class="sig-name descname"><span class="pre">get_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.get_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.get_freq" title="Link to this definition"></a></dt>
+<dd><p>Obtain model frequencies, with optional frequency corrections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_option</strong> (<em>string</em>) – <p>specifies the type of surface correction.  Options include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: no corrections are applied</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_scaling&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008).</dt><dd><p>The exponent is based on a scaling relation from
+Sonoi et al. (2015).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_2&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008).</dt><dd><p>The exponent is a free parameter.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014&quot;</span></code>:     apply a one-term correction based on Ball and Gizon (2014)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014_2&quot;</span></code>:   apply a two-term correction based on Ball and Gizon (2014)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_scaling&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</dt><dd><p>The exponent is based on a scaling relation from
+Sonoi et al. (2015).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_2&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</dt><dd><p>The exponent is a free parameter.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>a</strong> (<em>array-like</em>) – amplitude parameters which intervene in the surface correction</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>models frequencies (including surface corrections)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If surface_option==None or a==[], the original frequencies are
+returned (hence modifying them modifies the <a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> object).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.get_surface_correction">
+<span class="sig-name descname"><span class="pre">get_surface_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface_option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.get_surface_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.get_surface_correction" title="Link to this definition"></a></dt>
+<dd><p>Obtain corrections on model frequencies (these corrections should be
+<em>added</em> to the <em>theorectical</em> frequencies).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_option</strong> (<em>string</em>) – <p>specifies the type of surface correction.
+Options include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: no corrections are applied</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_scaling&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008).</dt><dd><p>The exponent is based on a scaling relation from
+Sonoi et al. (2015).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_2&quot;</span></code>: apply a correction based on Kjeldsen et al. (2008).</dt><dd><p>The exponent is a free parameter.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014&quot;</span></code>:     apply a one-term correction based on Ball and Gizon (2014)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014_2&quot;</span></code>:   apply a two-term correction based on Ball and Gizon (2014)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_scaling&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</dt><dd><p>The exponent is based on a scaling relation from
+Sonoi et al. (2015).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_2&quot;</span></code>: apply a correction based on Sonoi et al. (2015)</dt><dd><p>The exponent is a free parameter.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>a</strong> (<em>array-like</em>) – <p>parameters which intervene in the surface correction.  According to
+the correction they take on the following meanings:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008&quot;</span></code>:         a[0]*freq**b_Kjeldsen2008</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_scaling&quot;</span></code>: a[0]*freq**b_scaling</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Kjeldsen2008_2&quot;</span></code>:       a[0]*freq**a[1]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014&quot;</span></code>:             a[0]*freq**3/I</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Ball2014_2&quot;</span></code>:           a[0]*freq**3/I + a[1]/(freq*I)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015&quot;</span></code>:            a[0]*[1 - 1/(1 + (nu/numax)**beta_Sonoi2015)]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_scaling&quot;</span></code>:    a[0]*[1 - 1/(1 + (nu/numax)**beta_scaling)]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Sonoi2015_2&quot;</span></code>:          a[0]*[1 - 1/(1 + (nu/numax)**a[1])]</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>surface corrections on the model frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The array operations lead to the creation of a new array with the
+result, which avoids modifications of the original frequencies and inertias.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model.glb">
+<span class="sig-name descname"><span class="pre">glb</span></span><a class="headerlink" href="#model.Model.glb" title="Link to this definition"></a></dt>
+<dd><p>Array which will contain various global quantities</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.multiply_modes">
+<span class="sig-name descname"><span class="pre">multiply_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.multiply_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.multiply_modes" title="Link to this definition"></a></dt>
+<dd><p>Multiply the frequencies by constant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constant</strong> (<em>float</em>) – constant by which the mode frequencies are multiplied</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#model.Model.name" title="Link to this definition"></a></dt>
+<dd><p>Name of the model, typically the second part of its path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.numax">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">numax</span></span><a class="headerlink" href="#model.Model.numax" title="Link to this definition"></a></dt>
+<dd><p>Find <span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span> for model.</p>
+<p>The <span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span> value is obtained from the
+following scaling relation:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\frac{\nu_{\mathrm{max}}}{\nu_{\mathrm{max},\odot}}                       = \left(\frac{M}{M_{\odot}}\right)                                        \left(\frac{R}{R_{\odot}}\right)^{-2}                                   \left(\frac{T_{\mathrm{eff}}}{T_{\mathrm{eff},\odot}}\right)^{-1/2}\)</span></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the <span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span> value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.print_me">
+<span class="sig-name descname"><span class="pre">print_me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.print_me"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.print_me" title="Link to this definition"></a></dt>
+<dd><p>Print classical and seismic characteristics of the model to standard output.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file">
+<span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This method will either call
+<a class="reference internal" href="#model.Model.read_file_CLES" title="model.Model.read_file_CLES"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_file_CLES()</span></code></a>, <a class="reference internal" href="#model.Model.read_file_MESA" title="model.Model.read_file_MESA"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_file_MESA()</span></code></a>, or
+<a class="reference internal" href="#model.Model.read_file_agsm" title="model.Model.read_file_agsm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_file_agsm()</span></code></a> according to the value of the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code>
+variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes. The format of this file
+is decided by the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in
+<code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At this stage the frequencies should be expressed in <span class="math notranslate nohighlight">\(\mu\mathrm{Hz}\)</span>.
+They will be non-dimensionalised in <code class="xref py py-func docutils literal notranslate"><span class="pre">read_model_list_standard()</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file_CLES">
+<span class="sig-name descname"><span class="pre">read_file_CLES</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file_CLES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file_CLES" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This uses the “simple” or “CLES”
+format as specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes.
+The file should contain a one-line header followed by five
+columns which correspond to l, n, frequency, unused, inertia.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The fourth column is discarded.</p></li>
+<li><p>Frequencies above <cite>config.cutoff</cite> * <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> are discarded.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file_CLES_Mod">
+<span class="sig-name descname"><span class="pre">read_file_CLES_Mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file_CLES_Mod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file_CLES_Mod" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This uses the “CLES_Mod” format as
+specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes.
+The file may contain a header (the header lines start with “#”)
+followed by four columns which correspond to l, n, unused, frequency.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The third column is discarded.</p></li>
+<li><p>Frequencies above <cite>config.cutoff</cite> * <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> are discarded.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file_MESA">
+<span class="sig-name descname"><span class="pre">read_file_MESA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file_MESA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file_MESA" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This uses the GYRE (i.e. MESA) format as
+specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes.
+The file should contain a seven-line header followed by various
+columns which contain l, n, frequency, and inertia for each pulsation
+mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Frequencies above <cite>config.cutoff</cite> * <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> are discarded.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file_PLATO">
+<span class="sig-name descname"><span class="pre">read_file_PLATO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file_PLATO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file_PLATO" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This uses the “PLATO” format as
+specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes.
+The file may contain a header (the header lines start with “#”)
+followed by four columns which correspond to l, n, frequency, inertia.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>No mode selection is carried out, hence the return value</p></li>
+<li><p>np.loadtxt is used to gain speed (the grid is quite large)</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_file_agsm">
+<span class="sig-name descname"><span class="pre">read_file_agsm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_file_agsm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_file_agsm" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a file.  This uses the “agsm” format as
+specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the modes. This file is a
+binary fortran “agsm” file produced by the ADIPLS code.  See
+instructions to the ADIPLS code for a description of this
+format.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Frequencies above <cite>config.cutoff</cite> * <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> are discarded.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.read_modes_Aldo">
+<span class="sig-name descname"><span class="pre">read_modes_Aldo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">farray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.read_modes_Aldo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.read_modes_Aldo" title="Link to this definition"></a></dt>
+<dd><p>Read in a set of modes from a table.  This uses the Aldo format as
+specified in the <code class="docutils literal notranslate"><span class="pre">mode_format</span></code> variable in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>norder</strong> (<em>2D numpy int array</em>) – table which gives the starting n values and number of modes
+per l value</p></li>
+<li><p><strong>farray</strong> (<em>1D numpy float array</em>) – table with mode frequencies and inertias as follows:
+frequency1, inertia1, frequency2, inertia2 …</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one frequency has been discarded (see note below).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Frequencies above <cite>config.cutoff</cite> * <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> are discarded.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.remove_duplicate_modes">
+<span class="sig-name descname"><span class="pre">remove_duplicate_modes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.remove_duplicate_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.remove_duplicate_modes" title="Link to this definition"></a></dt>
+<dd><p>Remove duplicate modes.</p>
+<p>Modes are considered to be duplicate if they have the same l
+and n values (regardless of frequency).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one mode has been removed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method assumes the modes are sorted.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.sort_modes">
+<span class="sig-name descname"><span class="pre">sort_modes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.sort_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.sort_modes" title="Link to this definition"></a></dt>
+<dd><p>Sort the modes by l, then n, then freq.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.string_to_param">
+<span class="sig-name descname"><span class="pre">string_to_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.string_to_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.string_to_param" title="Link to this definition"></a></dt>
+<dd><p>Return a parameter for an input string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>string</em>) – string that indicates which parameter we’re seeking</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.write_file_simple">
+<span class="sig-name descname"><span class="pre">write_file_simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.write_file_simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.write_file_simple" title="Link to this definition"></a></dt>
+<dd><p>Write a set of modes into a file using the “simple” format as
+described in <code class="xref py py-meth docutils literal notranslate"><span class="pre">read_file_simple()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file where the modes should
+be written.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The output frequencies are expressed in <span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.zsx_0">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zsx_0</span></span><a class="headerlink" href="#model.Model.zsx_0" title="Link to this definition"></a></dt>
+<dd><p>Find the Z0/X0 value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the Z0/X0 value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Model.zsx_s">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zsx_s</span></span><a class="headerlink" href="#model.Model.zsx_s" title="Link to this definition"></a></dt>
+<dd><p>Find the Zs/Xs value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the Zs/Xs value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="model.Model_grid">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model_grid</span></span><a class="reference internal" href="_modules/model.html#Model_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid" title="Link to this definition"></a></dt>
+<dd><p>A grid of models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.check_age_adim">
+<span class="sig-name descname"><span class="pre">check_age_adim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.check_age_adim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.check_age_adim" title="Link to this definition"></a></dt>
+<dd><p>This checks that all of the tracks are sorted according to dimensionless age
+parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.distort_grid">
+<span class="sig-name descname"><span class="pre">distort_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.distort_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.distort_grid" title="Link to this definition"></a></dt>
+<dd><p>Define distortion matrix with which to distort grid to break its Cartesian
+character prior to tessellation.  This can cause find_simplex to run much
+faster.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.distort_mat">
+<span class="sig-name descname"><span class="pre">distort_mat</span></span><a class="headerlink" href="#model.Model_grid.distort_mat" title="Link to this definition"></a></dt>
+<dd><p>Transformation matrix used to break the Cartesian character of the grid and reduce
+computation time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.find_epsilons">
+<span class="sig-name descname"><span class="pre">find_epsilons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.find_epsilons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.find_epsilons" title="Link to this definition"></a></dt>
+<dd><p>Find epsilon values in models from the grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ltarget</strong> (<em>int</em>) – target l value for which epsilons are being obtained</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the epsilon values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.find_partition">
+<span class="sig-name descname"><span class="pre">find_partition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.find_partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.find_partition" title="Link to this definition"></a></dt>
+<dd><p>Find a partition of the grid for use with <a class="reference internal" href="#model.Model_grid.test_interpolation" title="model.Model_grid.test_interpolation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model_grid.test_interpolation()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a random partition of [0 … n-1] into two equal halves, where n is
+the number of tracks in the grid</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>two lists of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.grid">
+<span class="sig-name descname"><span class="pre">grid</span></span><a class="headerlink" href="#model.Model_grid.grid" title="Link to this definition"></a></dt>
+<dd><p>Array containing the grid parameters for each evolutionary track (excluding age).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.grid_params">
+<span class="sig-name descname"><span class="pre">grid_params</span></span><a class="headerlink" href="#model.Model_grid.grid_params" title="Link to this definition"></a></dt>
+<dd><p>Set of parameters (excluding age) used to construct the grid and do interpolations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For best interpolation results, these parameters should be comparable.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.ndim">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#model.Model_grid.ndim" title="Link to this definition"></a></dt>
+<dd><p>Number of dimensions for the grid (excluding age), as based on the
+<a class="reference internal" href="#model.Model_grid.grid_params" title="model.Model_grid.grid_params"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model_grid.grid_params</span></code></a> variable</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.ndx">
+<span class="sig-name descname"><span class="pre">ndx</span></span><a class="headerlink" href="#model.Model_grid.ndx" title="Link to this definition"></a></dt>
+<dd><p>List containing track indices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.plot_tessellation">
+<span class="sig-name descname"><span class="pre">plot_tessellation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.plot_tessellation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.plot_tessellation" title="Link to this definition"></a></dt>
+<dd><p>Plot the grid tessellation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This only works for two-dimensional tessellations.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.postfix">
+<span class="sig-name descname"><span class="pre">postfix</span></span><a class="headerlink" href="#model.Model_grid.postfix" title="Link to this definition"></a></dt>
+<dd><p>Last part of the filenames which contain the model frequencies (default = “.freq”).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><a class="headerlink" href="#model.Model_grid.prefix" title="Link to this definition"></a></dt>
+<dd><p>Root folder with grid of models (including final slash).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.range">
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aParam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.range" title="Link to this definition"></a></dt>
+<dd><p>Find range of values for the input parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aParam</strong> (<em>str</em>) – name of the parameter for which to find the range</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The input parameter can only be one of the grid parameters or an
+age/mHe parameter.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.read_model_list">
+<span class="sig-name descname"><span class="pre">read_model_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.read_model_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.read_model_list" title="Link to this definition"></a></dt>
+<dd><p>Read list of models from a file and construct a grid.  If
+the mode format is Aldo, an entirely different strategy
+must be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.read_model_list_Aldo">
+<span class="sig-name descname"><span class="pre">read_model_list_Aldo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.read_model_list_Aldo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.read_model_list_Aldo" title="Link to this definition"></a></dt>
+<dd><p>Read list of models in Aldo format from a file and construct a grid.</p>
+<p>A track in Aldo format contains 3 parts:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>A three line header which is discarded.</p></li>
+<li><p>A set of four lines, for l=0 to 3, which describe the mode structure.  The
+first columns gives the start value of n, whereas the second column gives
+the number of modes for that particular l value.</p></li>
+<li><p>A table where each line corresponds to a model and the different columns
+correspond to the model ID, global quantities, and pulsation frequencies
+and inertias.</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the list of track files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.read_model_list_standard">
+<span class="sig-name descname"><span class="pre">read_model_list_standard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.read_model_list_standard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.read_model_list_standard" title="Link to this definition"></a></dt>
+<dd><p>Read list of models from a file and construct a grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – <p>name of the file with the list.  The first line
+of this file should contain a prefix which is typically the root
+folder of the grid of models.  This followed by a file with multiple
+columns.  The first 9 contain the following information for each model:</p>
+<ol class="arabic simple">
+<li><p>the second part of the path.  When concatenated with the prefix
+on the first line, this should give the full path to the model.</p></li>
+<li><p>The stellar mass in <span class="math notranslate nohighlight">\(\mathrm{g}\)</span></p></li>
+<li><p>The stellar radius in <span class="math notranslate nohighlight">\(\mathrm{cm}\)</span></p></li>
+<li><p>The stellar luminosity in <span class="math notranslate nohighlight">\(\mathrm{g.cm^2.s^{-3}}\)</span></p></li>
+<li><p>The metallicity</p></li>
+<li><p>The hydrogen content</p></li>
+<li><p>The stellar age in <span class="math notranslate nohighlight">\(\mathrm{Myrs}\)</span></p></li>
+<li><p>The effective temperature in <span class="math notranslate nohighlight">\(\mathrm{K}\)</span></p></li>
+<li><p>A dimensionless age parameter</p></li>
+</ol>
+<p>The following columns contain the parameters specified in the
+<code class="xref py py-data docutils literal notranslate"><span class="pre">AIMS_configure.user_params</span></code> variable.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.remove_tracks">
+<span class="sig-name descname"><span class="pre">remove_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nthreshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.remove_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.remove_tracks" title="Link to this definition"></a></dt>
+<dd><p>Removes stellar evolution tracks with fewer than nthreshold models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nthreshold</strong> (<em>int</em>) – lower limit on number of models in a stellar
+evolutionary track</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if tracks have been removed and the grid needs to be
+retessellated</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.replace_age_adim">
+<span class="sig-name descname"><span class="pre">replace_age_adim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.replace_age_adim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.replace_age_adim" title="Link to this definition"></a></dt>
+<dd><p>This replaces the dimensionless ages in the tracks according to the
+<a class="reference internal" href="#model.Model_grid.replace_age_adim" title="model.Model_grid.replace_age_adim"><code class="xref py py-data docutils literal notranslate"><span class="pre">replace_age_adim</span></code></a> option chosen in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.tessellate">
+<span class="sig-name descname"><span class="pre">tessellate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.tessellate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.tessellate" title="Link to this definition"></a></dt>
+<dd><p>Apply Delauny triangulation to obtain the grid tessellation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.tessellation">
+<span class="sig-name descname"><span class="pre">tessellation</span></span><a class="headerlink" href="#model.Model_grid.tessellation" title="Link to this definition"></a></dt>
+<dd><p>Object containing the tessellation of the grid used for interpolation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.test_freq">
+<span class="sig-name descname"><span class="pre">test_freq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.test_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.test_freq" title="Link to this definition"></a></dt>
+<dd><p>Test to see if frequencies in all of the models of the grid
+are in ascending order for each l value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>The following items are returned</p>
+<ul class="simple">
+<li><p>the effective temperatures of the models with frequencies out of order</p></li>
+<li><p>the luminosities of the models with frequencies out of order</p></li>
+<li><p>the effective temperatures of the models with sorted frequencies</p></li>
+<li><p>the luminosities of the models with sorted frequencies</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>four lists of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.test_interpolation">
+<span class="sig-name descname"><span class="pre">test_interpolation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.test_interpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.test_interpolation" title="Link to this definition"></a></dt>
+<dd><p>Test interpolation between different evolutionary tracks in a given grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>The following four items are returned:</p>
+<ul class="simple">
+<li><p>the interpolation errors</p></li>
+<li><p>the first half of the partition (where the interpolation is tested)</p></li>
+<li><p>the second half of the partition (used to carry out the interpolation)</p></li>
+<li><p>the tessellation associated with the second half of the partition</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array, list, list, tessellation object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.tracks">
+<span class="sig-name descname"><span class="pre">tracks</span></span><a class="headerlink" href="#model.Model_grid.tracks" title="Link to this definition"></a></dt>
+<dd><p>List of evolutionary tracks contained in the grid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Model_grid.user_params">
+<span class="sig-name descname"><span class="pre">user_params</span></span><a class="headerlink" href="#model.Model_grid.user_params" title="Link to this definition"></a></dt>
+<dd><p>The set of user parameters involved in the grid.  This is to avoid having a different
+set of user parameters in <cite>AIMS_configure.py</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="model.Track">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track" title="Link to this definition"></a></dt>
+<dd><p>An evolutionary track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aModel</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – first model to be added to evolutionary track (it does
+not need to be the youngest model in an evolutionary sequence).  This
+Model is used to obtain the relevant parameters for the evolutionary
+track (as given by the <a class="reference internal" href="#model.Track.grid_params" title="model.Track.grid_params"><code class="xref py py-data docutils literal notranslate"><span class="pre">grid_params</span></code></a> variable).</p></li>
+<li><p><strong>grid_params</strong> (<em>list</em><em> of </em><em>strings</em>) – list of strings which are the names of the
+parameters which describe the evolutionary track.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.age_adim_to_age">
+<span class="sig-name descname"><span class="pre">age_adim_to_age</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.age_adim_to_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.age_adim_to_age" title="Link to this definition"></a></dt>
+<dd><p>Replace dimensionless age parameter by the physical age.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should only be applied after the track has been
+sorted (according to age).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.age_adim_to_scale_Xc">
+<span class="sig-name descname"><span class="pre">age_adim_to_scale_Xc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.age_adim_to_scale_Xc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.age_adim_to_scale_Xc" title="Link to this definition"></a></dt>
+<dd><p>Replace dimensionless age parameter by the central hydrogen abundance, Xc,
+scaled from 0 to 1.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should only be applied after the track has been
+sorted (according to age).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.age_adim_to_scale_age">
+<span class="sig-name descname"><span class="pre">age_adim_to_scale_age</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.age_adim_to_scale_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.age_adim_to_scale_age" title="Link to this definition"></a></dt>
+<dd><p>Replace dimensionless age parameter by the physical age scaled from 0 to 1.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should only be applied after the track has been
+sorted (according to age).</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Track.age_lower">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_lower</span></span><a class="headerlink" href="#model.Track.age_lower" title="Link to this definition"></a></dt>
+<dd><p>Provides the lowest age an evolutionary track.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Track.age_range">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_range</span></span><a class="headerlink" href="#model.Track.age_range" title="Link to this definition"></a></dt>
+<dd><p>Provides the age range for an evolutionary track.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="model.Track.age_upper">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_upper</span></span><a class="headerlink" href="#model.Track.age_upper" title="Link to this definition"></a></dt>
+<dd><p>Provides the highest age for an evolutionary track.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aModel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.append" title="Link to this definition"></a></dt>
+<dd><p>Append a model to the evolutionary track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aModel</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – model which is being appended to the track</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.append_track">
+<span class="sig-name descname"><span class="pre">append_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aTrack</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.append_track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.append_track" title="Link to this definition"></a></dt>
+<dd><p>Append a track to the current evolutionary track (i.e. combine the two tracks),
+and remove the track which has been appended.  The resultant track is then
+sorted according to age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aModel</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – model which is being appended to the track</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.duplicate_ages">
+<span class="sig-name descname"><span class="pre">duplicate_ages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.duplicate_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.duplicate_ages" title="Link to this definition"></a></dt>
+<dd><p>Check to see if the evolutionary track contains models with duplicate ages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if there are duplicate age(s)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should only be applied after the track has been
+sorted.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_combination">
+<span class="sig-name descname"><span class="pre">find_combination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_combination" title="Link to this definition"></a></dt>
+<dd><p>Return a model combination at a given age which is obtained using linear interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age</strong> (<em>float</em>) – age of desired model in <span class="math notranslate nohighlight">\(\mathrm{Myrs}\)</span></p></li>
+<li><p><strong>coef</strong> (<em>float</em>) – coefficient which multiplies this combination</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pairs composed of an interpolation coefficient and a model name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (float, string)</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method assumes the track is sorted, since it applies
+a binary search algorithm for increased efficiency.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_epsilon">
+<span class="sig-name descname"><span class="pre">find_epsilon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_epsilon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_epsilon" title="Link to this definition"></a></dt>
+<dd><p>Find epsilon, the constant offset in a simplified version of Tassoul’s
+asymptotic formula:</p>
+<p><span class="math notranslate nohighlight">\(\nu_n = \Delta \nu (n + \varepsilon)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imodel</strong> (<em>ltarget</em>) – model number</p></li>
+<li><p><strong>ltarget</strong> (<em>int</em>) – target l value.  Only modes with this l value will be
+used in obtaining epsilon.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the constant offset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_large_separation">
+<span class="sig-name descname"><span class="pre">find_large_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imodel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_large_separation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_large_separation" title="Link to this definition"></a></dt>
+<dd><p>Find large frequency separation using only radial modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>imodel</strong> (<em>ltarget</em>) – model number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the large frequency separation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_mode_range">
+<span class="sig-name descname"><span class="pre">find_mode_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_mode_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_mode_range" title="Link to this definition"></a></dt>
+<dd><p>Find n and l ranges of modes in models</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the n and l ranges</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int, int, int, int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_modes">
+<span class="sig-name descname"><span class="pre">find_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_modes" title="Link to this definition"></a></dt>
+<dd><p>Return two lists, one with the ages of the models and the other
+with the mode non-dimensional frequencies corresponding to target n and l values.</p>
+<p>This function is useful for seeing how the frequency of a particular
+mode changes with stellar age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ntarget</strong> (<em>int</em>) – target n value</p></li>
+<li><p><strong>ltarget</strong> (<em>int</em>) – target l value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lists of ages and frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list, list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.find_modes_dim">
+<span class="sig-name descname"><span class="pre">find_modes_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.find_modes_dim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.find_modes_dim" title="Link to this definition"></a></dt>
+<dd><p>Return two lists, one with the ages of the models and the other
+with the mode dimensional frequencies corresponding to target n and l values.</p>
+<p>This function is useful for seeing how the frequency of a particular
+mode changes with stellar age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ntarget</strong> (<em>int</em>) – target n value</p></li>
+<li><p><strong>ltarget</strong> (<em>int</em>) – target l value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lists of ages and frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list, list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.freq_sorted">
+<span class="sig-name descname"><span class="pre">freq_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imodel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.freq_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.freq_sorted" title="Link to this definition"></a></dt>
+<dd><p>Check to see if the frequencies of model i are in ascending order
+for each l value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>imodel</strong> (<em>int</em>) – the number of the model to be checked</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the frequencies are in ascending order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.glb">
+<span class="sig-name descname"><span class="pre">glb</span></span><a class="headerlink" href="#model.Track.glb" title="Link to this definition"></a></dt>
+<dd><p>Global properties of the models</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.grid_params">
+<span class="sig-name descname"><span class="pre">grid_params</span></span><a class="headerlink" href="#model.Track.grid_params" title="Link to this definition"></a></dt>
+<dd><p>Names of the parameters used to construct the grid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.interpolate_model">
+<span class="sig-name descname"><span class="pre">interpolate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.interpolate_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.interpolate_model" title="Link to this definition"></a></dt>
+<dd><p>Return a model at a given age which is obtained using linear interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>age</strong> (<em>float</em>) – age of desired model in <span class="math notranslate nohighlight">\(\mathrm{Myrs}\)</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the interpolated model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method assumes the track is sorted, since it applies
+a binary search algorithm for increased efficiency.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.is_sorted">
+<span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.is_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.is_sorted" title="Link to this definition"></a></dt>
+<dd><p>Check to see of models are in ascending order according to age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the models ar in order of increasing age</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.is_sorted_adim">
+<span class="sig-name descname"><span class="pre">is_sorted_adim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.is_sorted_adim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.is_sorted_adim" title="Link to this definition"></a></dt>
+<dd><p>Check to see of models are in ascending order according to age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the models ar in order of increasing age</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.matches">
+<span class="sig-name descname"><span class="pre">matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.matches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.matches" title="Link to this definition"></a></dt>
+<dd><p>Check to see if a model matches the evolutionary track and can therefore
+be included in the track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aModel</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – input model being tested</p></li>
+<li><p><strong>params_tol</strong> (<em>float np.array</em>) – the tolerance on each parameter. <code class="docutils literal notranslate"><span class="pre">None</span></code> means no
+tolerance (i.e. the parameters have to be exactly the same).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> only if all of the parameters of the input model match
+those of the evolutionary track within the provided tolerances</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.mode_indices">
+<span class="sig-name descname"><span class="pre">mode_indices</span></span><a class="headerlink" href="#model.Track.mode_indices" title="Link to this definition"></a></dt>
+<dd><p>starting indices in <a class="reference internal" href="#model.Track.modes" title="model.Track.modes"><code class="xref py py-data docutils literal notranslate"><span class="pre">Track.modes</span></code></a> array corresponding to a given model</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.modes">
+<span class="sig-name descname"><span class="pre">modes</span></span><a class="headerlink" href="#model.Track.modes" title="Link to this definition"></a></dt>
+<dd><p>array containing the modes (n, l, freq, inertia) of all of the models</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.names">
+<span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#model.Track.names" title="Link to this definition"></a></dt>
+<dd><p>List of model names</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.nmodes">
+<span class="sig-name descname"><span class="pre">nmodes</span></span><a class="headerlink" href="#model.Track.nmodes" title="Link to this definition"></a></dt>
+<dd><p>Total number pulsation modes from all of the models in this evolutionary track</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Track.params">
+<span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#model.Track.params" title="Link to this definition"></a></dt>
+<dd><p>Parameters which characterise this evolutionary track</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.remove_duplicate_ages">
+<span class="sig-name descname"><span class="pre">remove_duplicate_ages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.remove_duplicate_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.remove_duplicate_ages" title="Link to this definition"></a></dt>
+<dd><p>Removes models with duplicate ages from the evolutionary track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if models with duplicate age(s) have been removed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should only be applied after the track has been
+sorted.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.sort" title="Link to this definition"></a></dt>
+<dd><p>Sort models within evolutionary track according to age.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Track.test_interpolation">
+<span class="sig-name descname"><span class="pre">test_interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nincr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track.test_interpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track.test_interpolation" title="Link to this definition"></a></dt>
+<dd><p>Test accuracy of interpolation along evolutionary track.</p>
+<p>This method removes every other model and retrieves its frequencies
+by interpolation from neighbouring models.  The accuracy of the
+interpolated frequencies and global parameters are tested by carrying
+out comparisons with the original models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nincr</strong> (<em>int</em>) – increment with which to carry out the interpolation.
+By comparing results for different values of <code class="docutils literal notranslate"><span class="pre">nincr</span></code>, one can
+evaluate how the interpolation error depends on the size of the
+interval over which the interpolation is carried out.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the interpolation errors</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.age_adim_str">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_adim_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age_adim'</span></em><a class="headerlink" href="#model.age_adim_str" title="Link to this definition"></a></dt>
+<dd><p>Name of the non-dimensional age parameter used in the interpolation</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.age_str">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age'</span></em><a class="headerlink" href="#model.age_str" title="Link to this definition"></a></dt>
+<dd><p>Name of the physical age parameter used in the interpolation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.combine_models">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">combine_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#combine_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.combine_models" title="Link to this definition"></a></dt>
+<dd><p>Do linear combination of this model with another.</p>
+<p>This method returns a new model which is the weighted sum
+of two models for the purposes of model interpolation.
+The classical parameters are combined in a self-consistent
+way as are the frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model1</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – first model</p></li>
+<li><p><strong>coef1</strong> (<em>float</em>) – weighting coefficient applied to first model</p></li>
+<li><p><strong>model2</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – second model</p></li>
+<li><p><strong>coef2</strong> (<em>float</em>) – weighting coefficient applied to second model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the combined model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>One should avoid negative or zero coefficients as
+these could lead to undefined results.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.compare_models">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">compare_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#compare_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.compare_models" title="Link to this definition"></a></dt>
+<dd><p>Compare two models and find the largest frequency different for
+radial and non-radial modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model1</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – first model</p></li>
+<li><p><strong>model2</strong> (<a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>) – second model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>a 1D array to be used in <code class="docutils literal notranslate"><span class="pre">plot_test_interpolation.py</span></code>
+with the following measurements of the differences between the two models:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">result[0]</span></code> = maximum error on the radial modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[1]</span></code> = RMS error on the radial modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[2]</span></code> = RMS error on the radial modes near
+<span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[3]</span></code> = maximum error on the non radial modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[4]</span></code> = RMS error on the non radial modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[5]</span></code> = RMS error on the non radial modes near
+<span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result[6+[0:nglb]]</span></code> = errors on the global parameters</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.eps">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">eps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#model.eps" title="Link to this definition"></a></dt>
+<dd><p>relative tolerance on parameters used for setting up evolutionary tracks</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.find_ages">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">find_ages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#find_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.find_ages" title="Link to this definition"></a></dt>
+<dd><p>Find ages to which each track needs to be interpolated for a specified
+age.  The variable <code class="xref py py-data docutils literal notranslate"><span class="pre">age_interpolation</span></code> in AIMS_configure.py
+decides between the following options:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">age_interpolation</span></code> = <code class="docutils literal notranslate"><span class="pre">age</span></code>: each track is simply interpolated
+to <code class="docutils literal notranslate"><span class="pre">age</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">age_interpolation</span></code> = <code class="docutils literal notranslate"><span class="pre">scale_age</span></code>: the age of each model along
+each evolutionary track, including the interpolated track, is
+linearly mapped onto the interval [0,1].  A dimensionless parameter
+<code class="docutils literal notranslate"><span class="pre">eta</span></code> is obtained by interpolating <code class="docutils literal notranslate"><span class="pre">age</span></code> onto the interval
+[0,1], using the linear transformation associated with the
+interpolated track.  Using the parameter eta, a corresponding age
+is obtained along each track.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">age_interpolation</span></code> = <code class="docutils literal notranslate"><span class="pre">age_adim</span></code>: each track is interpolated
+to the appropriate dimensionless age so that the interpolated
+physical age reproduces the input age.  This dimensionless age
+parameter is calculated via a fortran subroutine.</p></li>
+</ol>
+<figure class="align-center align-default" id="id1">
+<img alt="_images/age_interpolation.svg" src="_images/age_interpolation.svg" />
+<figcaption>
+<p><span class="caption-text">This diagram illustrates age interpolation for the two
+first options, namely <code class="docutils literal notranslate"><span class="pre">age</span></code> and <code class="docutils literal notranslate"><span class="pre">scale_age</span></code>, and shows
+the advantages of selecting the latter.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coefs</strong> (<em>list</em><em> of </em><em>floats</em>) – interpolation coefficients used to weight each track.</p></li>
+<li><p><strong>tracks</strong> (list of <a class="reference internal" href="#model.Track" title="model.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">Track</span></code></a>) – evolutionary tracks involved in the interpolation.</p></li>
+<li><p><strong>age</strong> (<em>float</em>) – target age for the output interpolated model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the relevant age for each track</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>the interpolation coefficients should add up to 1.0</p></li>
+<li><p>there should be as many tracks as interpolation coefficients.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.find_combination">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">find_combination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#find_combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.find_combination" title="Link to this definition"></a></dt>
+<dd><p>Find linear combination of models which corresponds to interpolating
+the model based on the provided parameters.</p>
+<p>The interpolation is carried out using the same procedure as in
+<a class="reference internal" href="#model.interpolate_model" title="model.interpolate_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate_model()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="#model.Model_grid" title="model.Model_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model_grid</span></code></a>) – grid of models in which we’re carrying out the
+interpolation</p></li>
+<li><p><strong>pt</strong> (<em>array-like</em>) – set of parameters used for the interpolation.
+The first part contains the grid parameters, whereas
+the last element is the age.  If the provided set
+of parameters lies outside the grid, then <code class="docutils literal notranslate"><span class="pre">None</span></code>
+is returned instead of an interpolated model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pairs of coefficients and model names</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (float,string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.find_interpolation_coefficients">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">find_interpolation_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tessellation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#find_interpolation_coefficients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.find_interpolation_coefficients" title="Link to this definition"></a></dt>
+<dd><p>Find interpolation weights from the corresponding simplex.</p>
+<p>Linear interpolation weights are obtained with the simplex
+by finding the barycentric coordinates of the point given
+by <code class="docutils literal notranslate"><span class="pre">pt</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="#model.Model_grid" title="model.Model_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model_grid</span></code></a>) – grid of models in which we’re carrying out the
+interpolation</p></li>
+<li><p><strong>pt</strong> (<em>array-like</em>) – set of parameters used for finding the
+interpolation weights.  The first part contains the grid
+parameters (relevant to this interpolation), whereas
+the last element is the age (not used here).  If the
+provided set of parameters lies outside the grid, then
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is returned instead of an interpolated model.</p></li>
+<li><p><strong>tessellation</strong> (<em>Delaunay tessellation object</em>) – tessellation with which to carry out the
+interpolation.</p></li>
+<li><p><strong>ndx</strong> (<em>list</em><em> of </em><em>int</em>) – indices of the grid points associated with the
+tessellation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lists of interpolation coefficients and tracks</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of floats, list of <a class="reference internal" href="#model.Track" title="model.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">Track</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.ftype">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ftype</span></span><a class="headerlink" href="#model.ftype" title="Link to this definition"></a></dt>
+<dd><p>type used for the frequencies</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.get_surface_parameter_names">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">get_surface_parameter_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface_option</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#get_surface_parameter_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.get_surface_parameter_names" title="Link to this definition"></a></dt>
+<dd><p>Return the relevant parameter names for a given surface correction option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>surface_option</strong> (<em>string</em>) – specifies the type of surface correction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>names for the surface parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.gtype">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">gtype</span></span><a class="headerlink" href="#model.gtype" title="Link to this definition"></a></dt>
+<dd><p>type used for grid data</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.iage">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#model.iage" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to age in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.iage_adim">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage_adim</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#model.iage_adim" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to dimensionless age in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.ifreq_ref">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ifreq_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#model.ifreq_ref" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to the reference frequency
+(used to non-dimensionalise the pulsation frequencies of the model)
+in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.iluminosity">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iluminosity</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#model.iluminosity" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to luminosity in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.imass">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">imass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#model.imass" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to mass in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.init_user_param_dict">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">init_user_param_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#init_user_param_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.init_user_param_dict" title="Link to this definition"></a></dt>
+<dd><p>Initialise the dictionaries which are related to user-defined parameters.  For
+a given parameter, these dictionaries provide the appropriate index for for
+the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array as well as the appropriate latex name.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.interpolate_model">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">interpolate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tessellation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#interpolate_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.interpolate_model" title="Link to this definition"></a></dt>
+<dd><p>Interpolate model in grid using provided parameters.</p>
+<p>The interpolation is carried out in two steps.  First, linear
+interpolation according to age is carried out on each node of
+the simplex containing the set of parameters.  This interpolation
+is done using the <a class="reference internal" href="#model.Track.interpolate_model" title="model.Track.interpolate_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Track.interpolate_model</span></code></a> method.
+Then, linear interpolation is carried out within the simplex.
+This achieved by finding the barycentric coordinates of the
+model (i.e. the weights), before combining the age-interpolated
+models form the nodes using the <a class="reference internal" href="#model.combine_models" title="model.combine_models"><code class="xref py py-class docutils literal notranslate"><span class="pre">combine_models</span></code></a> method.
+In this manner, the weights are only calculated once, thereby
+increasing computational efficiency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="#model.Model_grid" title="model.Model_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model_grid</span></code></a>) – grid of models in which we’re carrying out the
+interpolation</p></li>
+<li><p><strong>pt</strong> (<em>array-like</em>) – set of parameters used for the interpolation.
+The first part contains the grid parameters, whereas
+the last element is the age.  If the provided set
+of parameters lies outside the grid, then <code class="docutils literal notranslate"><span class="pre">None</span></code>
+is returned instead of an interpolated model.</p></li>
+<li><p><strong>tessellation</strong> (<em>Delaunay tessellation object</em>) – tessellation with which to carry out the
+interpolation.</p></li>
+<li><p><strong>ndx</strong> (<em>list</em><em> of </em><em>int</em>) – indices of the grid points associated with the
+tessellation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the interpolated model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Model" title="model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.iradius">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iradius</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#model.iradius" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to radius in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.itemperature">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">itemperature</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#model.itemperature" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to temperature in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.ix0">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ix0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#model.ix0" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to the initial hydrogen content
+in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.iz0">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iz0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#model.iz0" title="Link to this definition"></a></dt>
+<dd><p>index of the parameter corresponding to the initial metallicity
+the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.log0">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">log0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+150</span></em><a class="headerlink" href="#model.log0" title="Link to this definition"></a></dt>
+<dd><p>value which is returned when log(0) is calculated (rather than causing an error)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.ltype">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ltype</span></span><a class="headerlink" href="#model.ltype" title="Link to this definition"></a></dt>
+<dd><p>type used for the l values</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.make_distort_matrix">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">make_distort_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.157</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#make_distort_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.make_distort_matrix" title="Link to this definition"></a></dt>
+<dd><p>Create a distortion matrix which can be used to make the grid more
+“tessellation-friendly”, i.e. which leads to much shorter computation
+times for finding simplices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>int</em>) – number of dimensions</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – a small angle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a distortion matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2D float array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.make_scale_matrix">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">make_scale_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#make_scale_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.make_scale_matrix" title="Link to this definition"></a></dt>
+<dd><p>Create a distortion matrix which can be used to make the grid more
+“tessellation-friendly”, i.e. which leads to much shorter computation
+times for finding simplices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> – set of points used in the construction of the tessellation</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a distortion matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2D float array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.modetype">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">modetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('n',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int16'&gt;),</span> <span class="pre">('l',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int8'&gt;),</span> <span class="pre">('freq',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;),</span> <span class="pre">('inertia',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;)]</span></em><a class="headerlink" href="#model.modetype" title="Link to this definition"></a></dt>
+<dd><p>structure for modes</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.nglb">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nglb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#model.nglb" title="Link to this definition"></a></dt>
+<dd><p>total number of global quantities in a model (see <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.nlin">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nlin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#model.nlin" title="Link to this definition"></a></dt>
+<dd><p>total number of global quantities which are interpolated in a linear way (see
+<a class="reference internal" href="#model.combine_models" title="model.combine_models"><code class="xref py py-func docutils literal notranslate"><span class="pre">combine_models()</span></code></a>).  These quantities are numbered 0:nlin-1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.ntype">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ntype</span></span><a class="headerlink" href="#model.ntype" title="Link to this definition"></a></dt>
+<dd><p>type used for the n values</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.string_to_latex">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">string_to_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postfix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#string_to_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.string_to_latex" title="Link to this definition"></a></dt>
+<dd><p>Return a fancy latex name for an input string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – string that indicates for which parameter we’re seeking a latex name</p></li>
+<li><p><strong>prefix</strong> (<em>string</em>) – optional prefix to add to the string</p></li>
+<li><p><strong>postfix</strong> (<em>string</em>) – optional postfix to add to the string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a fancy latex name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This also works for the names of the amplitude parameters for surface corrections.</p>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.tol">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#model.tol" title="Link to this definition"></a></dt>
+<dd><p>tolerance level for points slightly outside the grid</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.user_params_index">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_index</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.user_params_index" title="Link to this definition"></a></dt>
+<dd><p>dictionary which will supply the appropriate index for the user-defined parameters</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="model.user_params_latex">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_latex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.user_params_latex" title="Link to this definition"></a></dt>
+<dd><p>dictionary which will supply the appropriate latex name for the user-defined parameters</p>
+</dd></dl>
+
 </section>
 
 
