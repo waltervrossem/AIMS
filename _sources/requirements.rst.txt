@@ -9,7 +9,7 @@ The following python packages are needed for AIMS:
 
     - this is only needed if you decide to do parallel tempering
     - note: This is a different version than the one available on PyPI as this version contains a bugfix for newer versions of python. It can be installed with
-    ``pip install ptemcee@git+https://github.com/waltervrossem/ptemcee@f6e91e7``
+      ``pip install ptemcee@git+https://github.com/waltervrossem/ptemcee@f6e91e7``
 
   * `corner <https://corner.readthedocs.io/en/latest/>`_
 
