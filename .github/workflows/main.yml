@@ -138,6 +138,7 @@ jobs:
     - name: Build documentation
       run: |
         source venv/bin/activate
+        export PYTHONPATH="./src:$PYTHONPATH"
         cd doc
         make html
         mv _build/html/ ../public/
