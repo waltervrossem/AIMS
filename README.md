@@ -1,8 +1,7 @@
 # Asteroseismic Inference on a Massive Scale
 
-[![pipeline status](https://gitlab.com/sasp/aims/badges/dev/pipeline.svg)](https://gitlab.com/sasp/aims/commits/dev)
-[![coverage report](https://gitlab.com/sasp/aims/badges/dev/coverage.svg)](https://gitlab.com/sasp/aims/commits/dev)
+[![pipeline status](https://img.shields.io/github/actions/workflow/status/waltervrossem/AIMS/main.yml)](https://github.com/waltervrossem/AIMS/actions/workflows/main.yml)
 
 # Documentation
 
-AIMS documention is published [here](https://sasp.gitlab.io/aims/).
+AIMS documention is published [here](https://waltervrossem.github.io/AIMS/).
