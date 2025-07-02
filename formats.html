@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File formats &mdash; AIMS 2.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=b21de401"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="List of changes" href="changes.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            AIMS
+              <img src="_static/AIMS_logo_small.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="project.html">Project Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Download <code class="docutils literal notranslate"><span class="pre">AIMS</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">File formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#format-of-a-file-with-a-list-of-models-and-properties">Format of a file with a list of models and properties:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#format-of-a-file-with-theoretical-frequencies">Format of a file with theoretical frequencies:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#format-of-a-file-with-observational-constraints">Format of a file with observational constraints:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">List of changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AIMS.html">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">The <code class="docutils literal notranslate"><span class="pre">functions</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">The <code class="docutils literal notranslate"><span class="pre">utilities</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_interpolation_test.html">The <code class="docutils literal notranslate"><span class="pre">plot_interpolation_test</span></code> tool</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AIMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File formats</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/formats.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-formats">
+<h1>File formats<a class="headerlink" href="#file-formats" title="Link to this heading"></a></h1>
+<section id="format-of-a-file-with-a-list-of-models-and-properties">
+<h2>Format of a file with a list of models and properties:<a class="headerlink" href="#format-of-a-file-with-a-list-of-models-and-properties" title="Link to this heading"></a></h2>
+<blockquote>
+<div><dl>
+<dt>Description:</dt><dd><ul>
+<li><p>The first line is a header.   It contains the root folder
+(including the final slash) with the grid of models and
+optionally, a suffix for the names of the files with the
+theoretical pulsation frequencies.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dreese</span><span class="o">/</span><span class="n">models_inversions</span><span class="o">/</span><span class="n">Grid_mesa_MS</span><span class="o">/</span>  <span class="o">.</span><span class="n">freq</span>
+</pre></div>
+</div>
+</li>
+<li><p>Each of the following lines correspond to one model in
+the grid.  They are composed of 9 or more columns with the
+following information:</p>
+<ol class="arabic simple">
+<li><p>The second part of the path for the given model.
+When concatenated with the prefix on the first line,
+this should give the full path to the model.  If,
+furthermore, the suffix from the first line is
+appended to it, it gives the name of the file
+with the frequencies.</p></li>
+<li><p>The stellar mass in <span class="math notranslate nohighlight">\(\mathrm{g}\)</span></p></li>
+<li><p>The stellar radius in <span class="math notranslate nohighlight">\(\mathrm{cm}\)</span></p></li>
+<li><p>The stellar luminosity in <span class="math notranslate nohighlight">\(\mathrm{g.cm^2.s^{-3}}\)</span></p></li>
+<li><p>The metallicity</p></li>
+<li><p>The hydrogen content</p></li>
+<li><p>The stellar age in <span class="math notranslate nohighlight">\(\mathrm{Myrs}\)</span></p></li>
+<li><p>The effective temperature in <span class="math notranslate nohighlight">\(\mathrm{K}\)</span></p></li>
+<li><p>A dimensionless age parameter</p></li>
+<li><p>(user-defined) This and the following columns correspond
+to the parameters specified in the <code class="docutils literal notranslate"><span class="pre">user_params</span></code>
+variable given in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>.</p></li>
+</ol>
+</li>
+<li><p>Except for the first line, the order of the lines does
+not matter.  AIMS will construct evolutionary tracks based
+on the parameters selected in the <code class="docutils literal notranslate"><span class="pre">grid_params</span></code> variable
+given in <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>, and sort them according to
+age.</p></li>
+</ul>
+</dd>
+<dt>Example:</dt><dd><p>Here’s an example of a file read by AIMS (via the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model_grid.read_model_list()</span></code> method):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dreese</span><span class="o">/</span><span class="n">models_inversions</span><span class="o">/</span><span class="n">Grid_mesa_MS</span><span class="o">/</span>  <span class="o">.</span><span class="n">freq</span>
+<span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n1</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>  <span class="mf">1.59136E+33</span>  <span class="mf">5.02248266E+10</span>  <span class="mf">2.33097993E+33</span>  <span class="mf">0.0028</span>  <span class="mf">0.7436</span>  <span class="mf">1.00000000E-04</span>  <span class="mf">6000.94326</span>  <span class="mf">0.00000</span>  <span class="mf">7.432106E-01</span>
+<span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n2</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>  <span class="mf">1.59136E+33</span>  <span class="mf">4.86716596E+10</span>  <span class="mf">1.94640636E+33</span>  <span class="mf">0.0028</span>  <span class="mf">0.7436</span>  <span class="mf">2.09332874E+02</span>  <span class="mf">5827.26021</span>  <span class="mf">0.01383</span>  <span class="mf">7.319698E-01</span>
+<span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n3</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>  <span class="mf">1.59136E+33</span>  <span class="mf">4.89176532E+10</span>  <span class="mf">1.97545563E+33</span>  <span class="mf">0.0028</span>  <span class="mf">0.7436</span>  <span class="mf">4.34073185E+02</span>  <span class="mf">5834.15715</span>  <span class="mf">0.02868</span>  <span class="mf">7.188704E-01</span>
+</pre></div>
+</div>
+<p>It contains three models.  The structure of the first model can
+be found in the following file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dreese</span><span class="o">/</span><span class="n">models_inversions</span><span class="o">/</span><span class="n">Grid_mesa_MS</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n1</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span>
+</pre></div>
+</div>
+<p>and its frequencies in this file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dreese</span><span class="o">/</span><span class="n">models_inversions</span><span class="o">/</span><span class="n">Grid_mesa_MS</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">LOGS_M0</span><span class="mf">.80</span><span class="o">/</span><span class="n">M0</span><span class="mf">.80</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">Y0</span><span class="mf">.2536</span><span class="o">/</span><span class="n">m0</span><span class="mf">.80</span><span class="n">Y0</span><span class="mf">.2536</span><span class="n">Z0</span><span class="mf">.0028</span><span class="n">a1</span><span class="mf">.8</span><span class="n">ovh0</span><span class="mf">.2</span><span class="n">ovhe0_n1</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">FGONG</span><span class="o">.</span><span class="n">freq</span>
+</pre></div>
+</div>
+<p>The tenth column corresponds to the central hydrogen
+content, as specified by the contents of the <code class="docutils literal notranslate"><span class="pre">user_params</span></code>
+variable from <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">user_params</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;Xc&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Central hydrogen, $</span><span class="si">%s</span><span class="s1">X_c</span><span class="si">%s</span><span class="s1">$&#39;</span><span class="p">),)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="format-of-a-file-with-theoretical-frequencies">
+<h2>Format of a file with theoretical frequencies:<a class="headerlink" href="#format-of-a-file-with-theoretical-frequencies" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>AIMS is able to read files with the theoretical frequencies in various
+different text formats (see example below) as well as in the grand summary
+format from <a class="reference external" href="http://astro.phys.au.dk/~jcd/adipack.n/">ADIPLS</a>.
+This is a FORTRAN binary format described on pages 32 and 33 of the ADIPLS
+<a class="reference external" href="http://astro.phys.au.dk/~jcd/adipack.n/notes/adiab_prog.ps.gz">documentation</a>.
+What follows is a description of one the text formats used by AIMS for files
+with frequencies:</p>
+<dl>
+<dt>Description:</dt><dd><ul class="simple">
+<li><p>the first line is a header (and is skipped)</p></li>
+<li><p>the following lines contain five columns which correspond
+to l, n, frequency, a_value, inertia</p>
+<ul>
+<li><p>the a_value column is ignored, so it could contain anything.
+<code class="docutils literal notranslate"><span class="pre">InversionKit</span></code> will typically put the difference between
+the numerical and variational frequencies in that column.</p></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt>Example:</dt><dd><p>Here’s an example of a file with theoretical pulsation
+frequencies which can be read by AIMS (via the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">model.Model.read_file()</span></code> method):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#l  n         nu_theo (muHz)  nu_var-nu_theo (muHz)                Inertia</span>
+<span class="mi">0</span>  <span class="mi">15</span>  <span class="mf">3.225852209451052e+03</span>  <span class="mf">1.312960435370769e-03</span>  <span class="mf">3.233628965187502e-09</span>
+<span class="mi">0</span>  <span class="mi">16</span>  <span class="mf">3.421699035498995e+03</span> <span class="o">-</span><span class="mf">2.482639610207116e-03</span>  <span class="mf">2.229252226305757e-09</span>
+<span class="mi">0</span>  <span class="mi">17</span>  <span class="mf">3.615805033992529e+03</span>  <span class="mf">3.993051574070705e-03</span>  <span class="mf">1.618154348529283e-09</span>
+<span class="mi">0</span>  <span class="mi">18</span>  <span class="mf">3.809740380503104e+03</span>  <span class="mf">9.650666734160040e-04</span>  <span class="mf">1.250359548964621e-09</span>
+<span class="mi">0</span>  <span class="mi">19</span>  <span class="mf">4.003716857281849e+03</span> <span class="o">-</span><span class="mf">7.991676880010345e-03</span>  <span class="mf">1.033914933206195e-09</span>
+<span class="mi">0</span>  <span class="mi">20</span>  <span class="mf">4.198691419457581e+03</span>  <span class="mf">1.742711681799847e-03</span>  <span class="mf">8.866985261874711e-10</span>
+<span class="mi">1</span>  <span class="mi">15</span>  <span class="mf">3.316007619955153e+03</span>  <span class="mf">5.056100344972947e-03</span>  <span class="mf">2.715966891128009e-09</span>
+<span class="mi">1</span>  <span class="mi">16</span>  <span class="mf">3.511258977705781e+03</span>  <span class="mf">1.855844971032639e-04</span>  <span class="mf">1.902147334986236e-09</span>
+<span class="mi">1</span>  <span class="mi">17</span>  <span class="mf">3.705576731149742e+03</span> <span class="o">-</span><span class="mf">2.505276897409203e-03</span>  <span class="mf">1.424266453221534e-09</span>
+<span class="mi">1</span>  <span class="mi">18</span>  <span class="mf">3.899485457373566e+03</span>  <span class="mf">5.212276555539575e-03</span>  <span class="mf">1.134594720287415e-09</span>
+<span class="mi">1</span>  <span class="mi">19</span>  <span class="mf">4.094401244305849e+03</span>  <span class="mf">6.020260397235688e-03</span>  <span class="mf">9.579611596023003e-10</span>
+<span class="mi">1</span>  <span class="mi">20</span>  <span class="mf">4.289716814475406e+03</span> <span class="o">-</span><span class="mf">1.019475706561934e-02</span>  <span class="mf">8.344804874142957e-10</span>
+<span class="mi">2</span>  <span class="mi">15</span>  <span class="mf">3.399280335063532e+03</span> <span class="o">-</span><span class="mf">8.466318249702454e-04</span>  <span class="mf">2.315947651745295e-09</span>
+<span class="mi">2</span>  <span class="mi">16</span>  <span class="mf">3.594141943503532e+03</span>  <span class="mf">4.712417365681176e-03</span>  <span class="mf">1.665322627996223e-09</span>
+<span class="mi">2</span>  <span class="mi">17</span>  <span class="mf">3.788792185755381e+03</span> <span class="o">-</span><span class="mf">1.167229517704982e-03</span>  <span class="mf">1.277569745555387e-09</span>
+<span class="mi">2</span>  <span class="mi">18</span>  <span class="mf">3.983271067684743e+03</span> <span class="o">-</span><span class="mf">6.187409578615188e-03</span>  <span class="mf">1.048757367028520e-09</span>
+<span class="mi">2</span>  <span class="mi">19</span>  <span class="mf">4.178866833517976e+03</span>  <span class="mf">6.893199766636826e-03</span>  <span class="mf">8.963691946280509e-10</span>
+<span class="mi">2</span>  <span class="mi">20</span>  <span class="mf">4.374959711016754e+03</span>  <span class="mf">3.274638356742798e-03</span>  <span class="mf">7.911508926344487e-10</span>
+<span class="mi">3</span>  <span class="mi">15</span>  <span class="mf">3.476224140192640e+03</span> <span class="o">-</span><span class="mf">2.524210208321165e-03</span>  <span class="mf">2.009476926536794e-09</span>
+<span class="mi">3</span>  <span class="mi">16</span>  <span class="mf">3.671438520072859e+03</span>  <span class="mf">2.351724720028869e-04</span>  <span class="mf">1.485336526791650e-09</span>
+<span class="mi">3</span>  <span class="mi">17</span>  <span class="mf">3.866350877376991e+03</span>  <span class="mf">5.643782460992952e-03</span>  <span class="mf">1.167619144668003e-09</span>
+<span class="mi">3</span>  <span class="mi">18</span>  <span class="mf">4.061929209725198e+03</span> <span class="o">-</span><span class="mf">1.552865011490212e-03</span>  <span class="mf">9.789648655155361e-10</span>
+<span class="mi">3</span>  <span class="mi">19</span>  <span class="mf">4.258077196700047e+03</span> <span class="o">-</span><span class="mf">8.629839649984206e-03</span>  <span class="mf">8.472972126693386e-10</span>
+<span class="mi">3</span>  <span class="mi">20</span>  <span class="mf">4.455063887754256e+03</span>  <span class="mf">1.484804296796938e-02</span>  <span class="mf">7.528069568152023e-10</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="format-of-a-file-with-observational-constraints">
+<h2>Format of a file with observational constraints:<a class="headerlink" href="#format-of-a-file-with-observational-constraints" title="Link to this heading"></a></h2>
+<blockquote>
+<div><dl>
+<dt>Description:</dt><dd><ul>
+<li><p>a collection of lines with frequency data with either
+(l, freq, error_bar) or (l, n, freq, error_bar) (depending on
+the value of <code class="docutils literal notranslate"><span class="pre">read_n</span></code> in the <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>
+file).  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mf">1503.5</span> <span class="mf">0.16</span>
+</pre></div>
+</div>
+<p>or the following if specifying the radial order:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mi">15</span> <span class="mf">1503.5</span> <span class="mf">0.16</span>
+</pre></div>
+</div>
+</li>
+<li><p>a collection of lines with classical constraints.  These
+start with the name of the relevant parameter (see
+possible options in <code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code>)
+followed by a description of its probability distribution
+function.  This probability distribution function is
+specified in two possible ways:</p>
+<ul>
+<li><p>it is implicitly assumed to be Gaussian.  In this situation
+it is only necessary to specify the mean value and the
+one sigma error bar.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Teff</span> <span class="mi">6100</span> <span class="mi">80</span>
+</pre></div>
+</div>
+</li>
+<li><p>it is explicitly specified (different options are given
+in <code class="xref py py-class docutils literal notranslate"><span class="pre">AIMS.Distribution</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Teff</span> <span class="n">Uniform</span> <span class="mi">6000</span> <span class="mi">6200</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>anything following a <code class="docutils literal notranslate"><span class="pre">#</span></code> is a comment</p></li>
+<li><p>the order of the lines does not matter</p></li>
+</ul>
+</dd>
+<dt>Examples:</dt><dd><ul>
+<li><p>example of a file where n is <em>not</em> specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mf">1582.20</span> <span class="mf">0.13</span>  <span class="c1"># this is a (useless) comment</span>
+<span class="mi">0</span> <span class="mf">1684.02</span> <span class="mf">0.16</span>
+<span class="mi">0</span> <span class="mf">1785.57</span> <span class="mf">0.15</span>
+<span class="mi">1</span> <span class="mf">1526.55</span> <span class="mf">0.29</span>
+<span class="mi">1</span> <span class="mf">1628.90</span> <span class="mf">0.30</span>
+<span class="mi">1</span> <span class="mf">1730.45</span> <span class="mf">0.17</span>
+<span class="mi">2</span> <span class="mf">1575.49</span> <span class="mf">0.82</span>
+<span class="mi">2</span> <span class="mf">1676.25</span> <span class="mf">0.51</span>
+<span class="mi">2</span> <span class="mf">1777.62</span> <span class="mf">0.27</span>
+<span class="n">Teff</span> <span class="mf">6060.00</span> <span class="mf">84.00</span>
+<span class="n">Fe_H</span> <span class="o">-</span><span class="mf">0.20</span> <span class="mf">0.09</span>
+</pre></div>
+</div>
+</li>
+<li><p>example of a file where n is specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mi">15</span> <span class="mf">1582.20</span> <span class="mf">0.13</span>
+<span class="mi">0</span> <span class="mi">16</span> <span class="mf">1684.02</span> <span class="mf">0.16</span>
+<span class="n">Teff</span> <span class="mf">6060.00</span> <span class="mf">84.00</span> <span class="c1"># AIMS doesn&#39;t worry about the order of the lines</span>
+<span class="mi">0</span> <span class="mi">17</span> <span class="mf">1785.57</span> <span class="mf">0.15</span>
+<span class="mi">1</span> <span class="mi">14</span> <span class="mf">1526.55</span> <span class="mf">0.29</span>
+<span class="mi">1</span> <span class="mi">15</span> <span class="mf">1628.90</span> <span class="mf">0.30</span>
+<span class="mi">1</span> <span class="mi">16</span> <span class="mf">1730.45</span> <span class="mf">0.17</span>
+<span class="mi">2</span> <span class="mi">14</span> <span class="mf">1575.49</span> <span class="mf">0.82</span>
+<span class="mi">2</span> <span class="mi">15</span> <span class="mf">1676.25</span> <span class="mf">0.51</span>
+<span class="mi">2</span> <span class="mi">16</span> <span class="mf">1777.62</span> <span class="mf">0.27</span>
+<span class="n">Fe_H</span> <span class="o">-</span><span class="mf">0.20</span> <span class="mf">0.09</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+<dt>Differences with <a class="reference external" href="https://amp.phys.au.dk/">AMP</a>:</dt><dd><ul class="simple">
+<li><p>the number of frequencies does not need to be specified
+(if this line contains supplementary parameters, than
+<code class="docutils literal notranslate"><span class="pre">AIMS.py</span></code> may confuse it with frequency data)</p></li>
+<li><p>there are no flags (one should adjust the parameters in
+<code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code> instead)</p></li>
+<li><p>the order of the lines is not important (one can mix
+the classic and seismic observables)</p></li>
+<li><p>it is possible to specify radial orders (depending on
+the value of <code class="docutils literal notranslate"><span class="pre">read_n</span></code> in the <code class="docutils literal notranslate"><span class="pre">AIMS_configure.py</span></code>
+file)</p></li>
+<li><p>the treatment of non-seismic constraints is more flexible</p>
+<ul>
+<li><p>a larger variety of non-seismic constraints can be included
+(see possible options in <code class="xref py py-func docutils literal notranslate"><span class="pre">model.Model.string_to_param()</span></code>)</p></li>
+<li><p>full parameter names are allowed (and preferred); for compatibility
+with <a class="reference external" href="https://amp.phys.au.dk/">AMP</a>, the same one letter
+abbreviations are also allowed</p></li>
+<li><p>it is possible to specify the probability distribution function</p></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changes.html" class="btn btn-neutral float-right" title="List of changes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Daniel R. Reese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

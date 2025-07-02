@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>plot_interpolation_test &mdash; AIMS 2.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b21de401"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AIMS
+              <img src="../_static/AIMS_logo_small.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../project.html">Project Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Download <code class="docutils literal notranslate"><span class="pre">AIMS</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats.html">File formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">List of changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../AIMS.html">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model.html">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functions.html">The <code class="docutils literal notranslate"><span class="pre">functions</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">The <code class="docutils literal notranslate"><span class="pre">utilities</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plot_interpolation_test.html">The <code class="docutils literal notranslate"><span class="pre">plot_interpolation_test</span></code> tool</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">plot_interpolation_test</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for plot_interpolation_test</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># coding: utf-8</span>
+<span class="c1"># $Id: plot_interpolation_test.py</span>
+<span class="c1"># Author: Daniel R. Reese &lt;daniel.reese@obspm.fr&gt;</span>
+<span class="c1"># Copyright (C) Daniel R. Reese and contributors</span>
+<span class="c1"># Copyright license: GNU GPL v3.0</span>
+<span class="c1">#</span>
+<span class="c1">#   AIMS is free software: you can redistribute it and/or modify</span>
+<span class="c1">#   it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#   the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#   (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#   This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#   but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#   GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#   You should have received a copy of the GNU General Public License</span>
+<span class="c1">#   along with AIMS.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An interactive utility which plots various forms of interpolation error,</span>
+<span class="sd">stored in a binary file produced by :py:func:`AIMS.test_interpolation`.</span>
+<span class="sd">It specifically tests the errors from two types of interpolation:</span>
+
+<span class="sd">- age interpolation: this is interpolation along a given evolutionary track</span>
+<span class="sd">- track interpolation: this is interpolation between different evolutionary</span>
+<span class="sd">  tracks</span>
+
+<span class="sd">This utility allows various types of plots:</span>
+
+<span class="sd">- 3D plots of interpolation errors as a function of grid structural parameters</span>
+<span class="sd">- 2D slices which show interpolation errors as a function of age for a</span>
+<span class="sd">  given evolutionary track</span>
+<span class="sd">- interactive plots which allow you to select 2D slices</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">  Interpolation errors for models in a given evolutionary track are typically</span>
+<span class="sd">  stored in arrays as follows:</span>
+
+<span class="sd">  - ``result[model_number,ndim+0]`` = maximum error on the radial modes</span>
+<span class="sd">  - ``result[model_number,ndim+1]`` = RMS error on the radial modes</span>
+<span class="sd">  - ``result[model_number,ndim+2]`` = RMS error on the radial modes near</span>
+<span class="sd">    :math:`\\nu_{\\mathrm{max}}`</span>
+<span class="sd">  - ``result[model_number,ndim+3]`` = maximum error on the non radial modes</span>
+<span class="sd">  - ``result[model_number,ndim+4]`` = RMS error on the non radial modes</span>
+<span class="sd">  - ``result[model_number,ndim+5]`` = RMS error on the non radial modes near</span>
+<span class="sd">    :math:`\\nu_{\\mathrm{max}}`</span>
+<span class="sd">  - ``result[model_number,ndim+6+[0:nglb]]`` = errors on the global parameters</span>
+
+<span class="sd">  where:</span>
+
+<span class="sd">  - ``result`` = the array which containts the interpolation errors</span>
+<span class="sd">  - ``model_numer`` = an index which represents the model (not necessarily the</span>
+<span class="sd">    number of the model along the evolutionary track</span>
+<span class="sd">  - ``ndim`` = the number of dimensions in the grid (including age)</span>
+<span class="sd">  - ``nglb`` = the number of global parameters for stellar models in the grid</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">   This plot utility only works with 3 dimensional grids (incl. the age dimension).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;restructuredtext&#39;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dill</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w">  </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w">   </span><span class="k">as</span><span class="w"> </span><span class="nn">mlines</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes3D</span>
+
+<span class="c1"># global variables</span>
+<span class="n">ndim</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="sd">&quot;&quot;&quot; number of dimension in grid (including age) &quot;&quot;&quot;</span>
+
+<span class="n">nglb</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="sd">&quot;&quot;&quot; number of global parameters &quot;&quot;&quot;</span>
+
+<span class="n">titles</span> <span class="o">=</span> <span class="kc">None</span> 
+<span class="sd">&quot;&quot;&quot; the grid quantities, which will serve as axis labels &quot;&quot;&quot;</span>
+
+<span class="n">results_age</span>    <span class="o">=</span> <span class="kc">None</span>
+<span class="sd">&quot;&quot;&quot;  list which contains the arrays with the errors from age interpolation &quot;&quot;&quot;</span>
+
+<span class="n">results_track</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="sd">&quot;&quot;&quot;  list which contains the arrays with the errors from track interpolation &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="all_nan">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.all_nan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">all_nan</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test to see if all of the elements of an array are nan&#39;s.</span>
+
+<span class="sd">    :param array: array in which we&#39;re checking to see if all elements are nan&#39;s.</span>
+<span class="sd">    :type array: np.array</span>
+
+<span class="sd">    :return: ``True`` if all the elements of ``array`` are nan&#39;s, and ``False``</span>
+<span class="sd">       otherwise.</span>
+<span class="sd">    :rtype: boolean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">array</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="plot3D">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.plot3D">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot3D</span><span class="p">(</span><span class="n">results</span><span class="p">,</span><span class="n">error_ndx</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">truncate</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create 3D plot showing the error as a function of the two</span>
+<span class="sd">    first grid parameters.</span>
+
+<span class="sd">    :param results: list of 2D arrays which contain various types of errors as</span>
+<span class="sd">      a function of the model number along a given evolutionary track.</span>
+<span class="sd">    :param error_ndx: value which specifies the type of error to be plotted.</span>
+<span class="sd">    :param tpe: specifies how to combine errors along the</span>
+<span class="sd">      evolutionary track.  Options include:</span>
+
+<span class="sd">      - &quot;max&quot;: corresponds to taking the maximum value.</span>
+<span class="sd">      - &quot;avg&quot;: takes the root mean-square value.</span>
+
+<span class="sd">    :param title: the title of the plot</span>
+<span class="sd">    :param truncate: (default = 0): specifies how many models should be omitted</span>
+<span class="sd">      on both ends of the track.  This is useful for comparing results from</span>
+<span class="sd">      tests involing different sizes of increments.</span>
+
+<span class="sd">    :type results: list of np.arrays</span>
+<span class="sd">    :type error_ndx: int</span>
+<span class="sd">    :type tpe: string</span>
+<span class="sd">    :type title: string</span>
+<span class="sd">    :type truncate: int</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">      See above introductory description for a more detailled description</span>
+<span class="sd">      of the indices which intervene in the 2D arrays contained in ``results``</span>
+<span class="sd">      and of the relevant values for ``error_ndx``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">truncate</span>
+        <span class="n">stop</span>  <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">truncate</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">tpe</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">,</span><span class="n">ndim</span><span class="o">+</span><span class="n">error_ndx</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">tpe</span> <span class="o">==</span> <span class="s2">&quot;avg&quot;</span><span class="p">):</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">den</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">,</span><span class="n">ndim</span><span class="o">+</span><span class="n">error_ndx</span><span class="p">])):</span>
+                    <span class="n">num</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">,</span><span class="n">ndim</span><span class="o">+</span><span class="n">error_ndx</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+                    <span class="n">den</span> <span class="o">+=</span> <span class="mf">1.0</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">den</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num</span><span class="o">/</span><span class="n">den</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ERROR: unrecognised type: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tpe</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot_trisurf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\log_</span><span class="si">{10}</span><span class="s2">$(</span><span class="si">%s</span><span class="s2">. error)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">tpe</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_grid">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.plot_grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make an interactive plot of the grid.  Clicking on the blue dots</span>
+<span class="sd">    will produce a 2D slice showing age interpolation errors for</span>
+<span class="sd">    the associated evolutionary track.</span>
+
+<span class="sd">    :param grid: array containing basic grid parameters (excluding age)</span>
+<span class="sd">    :type grid: np.array </span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">      This only works for two-dimensional grids (excluding the age</span>
+<span class="sd">      dimension).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># remember ndim includes the age dimension.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only able to plot the tessellation in two dimensions.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># find bounds:</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">ymax</span><span class="o">/</span><span class="n">ymin</span>
+    <span class="n">xmin</span> <span class="o">-=</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.03</span>
+    <span class="n">xmax</span> <span class="o">+=</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.03</span>
+    <span class="n">ymin</span> <span class="o">/=</span> <span class="n">dy</span><span class="o">**</span><span class="mf">0.05</span>
+    <span class="n">ymax</span> <span class="o">*=</span> <span class="n">dy</span><span class="o">**</span><span class="mf">0.05</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="c1">#plt.semilogy(grid[:,0],grid[:,1],&#39;bo&#39;, picker=5)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;pick_event&#39;</span><span class="p">,</span> <span class="n">onpick_age</span><span class="p">)</span> </div>
+
+ 
+<div class="viewcode-block" id="onpick_age">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.onpick_age">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">onpick_age</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Event catcher for the grid plot (which shows the positions of</span>
+<span class="sd">    the evolutionary tracks as a function of the grid parameters,</span>
+<span class="sd">    excluding age).</span>
+
+<span class="sd">    Parameters:</span>
+
+<span class="sd">    :param event: event caught by the grid plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">ind</span><span class="p">:</span>
+        <span class="n">plot_slice_age</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_slice_age">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.plot_slice_age">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_slice_age</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot age interpolation error as a function of age for a</span>
+<span class="sd">    given track.</span>
+
+<span class="sd">    :param pos: index of the relevant track. </span>
+<span class="sd">    :type pos: int</span>
+
+<span class="sd">    .. note:: </span>
+<span class="sd">      This `pos` index applies to results_age, i.e., it is based</span>
+<span class="sd">      on the original track indices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])</span> <span class="ow">and</span> \
+        <span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cowardly refusing to plot nan&#39;s&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">style</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;b:&quot;</span><span class="p">,</span><span class="s2">&quot;b-&quot;</span><span class="p">,</span><span class="s2">&quot;bv&quot;</span><span class="p">,</span><span class="s2">&quot;r:&quot;</span><span class="p">,</span><span class="s2">&quot;r-&quot;</span><span class="p">,</span><span class="s2">&quot;rv&quot;</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Max. (incr=1)&quot;</span><span class="p">,</span> <span class="s2">&quot;Avg. (incr=1)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\nu_{\mathrm</span><span class="si">{max}</span><span class="s2">}$ avg (incr=1)&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;Max. (incr=2)&quot;</span><span class="p">,</span> <span class="s2">&quot;Avg. (incr=2)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\nu_{\mathrm</span><span class="si">{max}</span><span class="s2">}$ avg (incr=2)&quot;</span><span class="p">]</span>
+
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">))</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span> 
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span> <span class="ow">and</span> \
+        <span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;k-&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">results_age</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="n">i</span><span class="p">],</span>
+                     <span class="n">style</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error at $(M,Z)=(</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">)$&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error(radial)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])</span> <span class="ow">and</span> \
+        <span class="n">all_nan</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;k-&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results_age</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">results_age</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="o">+</span><span class="n">i</span><span class="p">],</span>
+                     <span class="n">style</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error(non radial)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_partition_tessellation">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.plot_partition_tessellation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_partition_tessellation</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">ndx1</span><span class="p">,</span> <span class="n">ndx2</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make an interactive tessellation plot based on the supplied partition</span>
+<span class="sd">    on the grid. Clicking on the blue dots will produce a 2D slice showing</span>
+<span class="sd">    track interpolation errors for the associated evolutionary track.</span>
+
+<span class="sd">    :param grid: array containing basic grid parameters (excluding age)</span>
+<span class="sd">    :param ndx1: list with the indices of the first part of the partition.</span>
+<span class="sd">    :param ndx2: list with the indices of the second part of the partition.</span>
+<span class="sd">    :param tessellation: grid tessellation associated with ``ndx2``</span>
+
+<span class="sd">    :type grid: np.array</span>
+<span class="sd">    :type ndx1: list of int</span>
+<span class="sd">    :type ndx2: list of int</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">      This only works for two-dimensional tessellations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># remember ndim includes the age dimension which is not included</span>
+    <span class="c1"># in the tessellation:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only able to plot the tessellation in two dimensions.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># find bounds:</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">grid</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">ymax</span><span class="o">/</span><span class="n">ymin</span>
+    <span class="n">xmin</span> <span class="o">-=</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.03</span>
+    <span class="n">xmax</span> <span class="o">+=</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.03</span>
+    <span class="n">ymin</span> <span class="o">/=</span> <span class="n">dy</span><span class="o">**</span><span class="mf">0.05</span>
+    <span class="n">ymax</span> <span class="o">*=</span> <span class="n">dy</span><span class="o">**</span><span class="mf">0.05</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="c1">#plt.semilogy(grid[ndx1,0],grid[ndx1,1],&#39;bo&#39;, picker=5)</span>
+    <span class="c1">#plt.semilogy(grid[ndx2,0],grid[ndx2,1],&#39;yo&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx2</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;yo&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">triplot</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx2</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">grid</span><span class="p">[</span><span class="n">ndx2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">tessellation</span><span class="o">.</span><span class="n">simplices</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;pick_event&#39;</span><span class="p">,</span> <span class="n">onpick_track</span><span class="p">)</span> </div>
+
+ 
+<div class="viewcode-block" id="onpick_track">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.onpick_track">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">onpick_track</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Event catcher for the partition tessellation plot (associated with </span>
+<span class="sd">    tests of track interpolation).</span>
+
+<span class="sd">    :param event: event caught by the partition tessellation plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">ind</span><span class="p">:</span>
+        <span class="n">plot_slice_track</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_slice_track">
+<a class="viewcode-back" href="../plot_interpolation_test.html#plot_interpolation_test.plot_slice_track">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_slice_track</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot track interpolation error as a function of age for a</span>
+<span class="sd">    given track.</span>
+
+<span class="sd">    :param pos: index of the relevant track.</span>
+<span class="sd">    :type pos: int</span>
+
+<span class="sd">    .. note:: </span>
+<span class="sd">      This `pos` index applies to results_track, i.e., it is based</span>
+<span class="sd">      on the indices deduced from the grid partition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cowardly refusing to plot nan&#39;s&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">style</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;b:&quot;</span><span class="p">,</span><span class="s2">&quot;b-&quot;</span><span class="p">,</span><span class="s2">&quot;bv&quot;</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Max.&quot;</span><span class="p">,</span> <span class="s2">&quot;Avg.&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\nu_{\mathrm</span><span class="si">{max}</span><span class="s2">}$ avg&quot;</span><span class="p">]</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="o">+</span><span class="mf">0.3</span><span class="o">*</span><span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">))</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span> 
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;k-&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="n">i</span><span class="p">],</span>
+                     <span class="n">style</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error at $(M,Z)=(</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">)$&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error(radial)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_nan</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">ndim</span><span class="o">+</span><span class="mi">6</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;k-&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">results_track</span><span class="p">[</span><span class="n">pos</span><span class="p">][:,</span><span class="n">ndim</span><span class="o">+</span><span class="mi">3</span><span class="o">+</span><span class="n">i</span><span class="p">],</span>
+                     <span class="n">style</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Error(non radial)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot interpolation tests.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">      The user may want to edit this.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Usage: plot_interpolation_test.py data_file&quot;</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">ndim</span><span class="p">,</span> <span class="n">nglb</span><span class="p">,</span> <span class="n">titles</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">ndx1</span><span class="p">,</span> <span class="n">ndx2</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">,</span> <span class="n">results_age1</span><span class="p">,</span> \
+         <span class="n">results_age2</span><span class="p">,</span> <span class="n">results_track</span><span class="p">]</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry, but I can only plot handle 3D grids.&quot;</span><span class="p">)</span>
+
+        <span class="n">results_age</span> <span class="o">=</span> <span class="p">[</span><span class="n">results_age1</span><span class="p">,</span> <span class="n">results_age2</span><span class="p">]</span>
+
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Max radial error (nincr = 1)&quot;</span><span class="p">,</span><span class="n">truncate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Max radial error (nincr = 2)&quot;</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_track</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Max radial error (struct)&quot;</span><span class="p">)</span>
+
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Avg radial error (nincr = 1)&quot;</span><span class="p">,</span><span class="n">truncate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Avg radial error (nincr = 2)&quot;</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_track</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Avg radial error (struct)&quot;</span><span class="p">)</span>
+
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;numax radial error (nincr = 1)&quot;</span><span class="p">,</span><span class="n">truncate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_age2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;numax radial error (nincr = 2)&quot;</span><span class="p">)</span>
+    <span class="n">plot3D</span><span class="p">(</span><span class="n">results_track</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">tpe</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;numax radial error (struct)&quot;</span><span class="p">)</span>
+
+    <span class="n">plot_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+    <span class="n">plot_partition_tessellation</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">ndx1</span><span class="p">,</span> <span class="n">ndx2</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Daniel R. Reese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
