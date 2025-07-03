@@ -4663,7 +4663,7 @@ if __name__ == "__main__":
     #                     sys.argv[1][3:], names_big[1:], samples_big[:,1:])
 
     # make various plots:
-    obs_constraints = [[np.nan, np.nan] for _ in names_big]
+    obs_constraints = [[np.nan, np.nan, ''] for _ in names_big]
     for i, name in enumerate(names_big):
         i_constraint = []
         i_nonconstraint = []
@@ -4673,15 +4673,15 @@ if __name__ == "__main__":
             i_nonconstraint = np.nonzero(np.asarray(like.nonconstraints)[:,0] == name)[0]
 
         if len(i_constraint) != 0:
-            obs_constraints[i] = [like.constraints[i_constraint[0]][1].mean, like.constraints[i_constraint[0]][1].error_bar]
+            obs_constraints[i] = [like.constraints[i_constraint[0]][1].mean, like.constraints[i_constraint[0]][1].error_bar, 'r']
         if len(i_nonconstraint) != 0:
-            obs_constraints[i] = [like.nonconstraints[i_nonconstraint[0]][1].mean, like.nonconstraints[i_nonconstraint[0]][1].error_bar]
-    obs_constraints = np.asarray(obs_constraints)
+            obs_constraints[i] = [like.nonconstraints[i_nonconstraint[0]][1].mean, like.nonconstraints[i_nonconstraint[0]][1].error_bar, 'g']
+    obs_constraints = np.asarray(obs_constraints, dtype=object)
 
     if (best_grid_model is None):
         plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"])
     else:
-        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[[best_grid_result, 0]])
+        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[[best_grid_result, 0, 'g']])
 
     if (config.with_histograms):
         plot_histograms(samples_big[:, 1:], names_big[1:], labels_big[1:], truths=obs_constraints[1:])
@@ -4702,13 +4702,16 @@ if __name__ == "__main__":
         fig = corner.corner(samples[:, 1:], labels=labels[1:], hist_kwargs={'density':True})
         triangle_ind = [i for i, name in enumerate(labels_big) if name in labels[1:]]
         truths = obs_constraints[triangle_ind]
-        for i, (mean, sigma) in enumerate(truths):
-            if np.isfinite(mean) and sigma > 0:
+        for i, (mean, sigma, color) in enumerate(truths):
+            if np.isfinite(mean):
                 ax = fig.axes[(len(truths) + 1) * i]
-                x = np.linspace(*ax.get_xlim(), 101)
-                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
-                ax.fill_between(x, y, alpha=0.5, color='g', zorder=-1)
-                ax.set_xlim(x[0], x[-1])
+                if  sigma > 0:
+                    x = np.linspace(*ax.get_xlim(), 101)
+                    y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                    ax.fill_between(x, y, alpha=0.5, color=color, zorder=-1)
+                    ax.set_xlim(x[0], x[-1])
+                else:
+                    ax.axvline(mean, color=color, ls='--')
 
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, 'figs', "triangle." + ext))
@@ -4721,13 +4724,16 @@ if __name__ == "__main__":
 
         fig = corner.corner(samples_big[:, triangle_ind], labels=np.asarray(labels_big)[triangle_ind], hist_kwargs={'density':True})
         truths = obs_constraints[triangle_ind]
-        for i, (mean, sigma) in enumerate(truths):
-            if np.isfinite(mean) and sigma > 0:
+        for i, (mean, sigma, color) in enumerate(truths):
+            if np.isfinite(mean):
                 ax = fig.axes[(len(truths) + 1) * i]
-                x = np.linspace(*ax.get_xlim(), 101)
-                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
-                ax.fill_between(x, y, alpha=0.5, color='g', zorder=-1)
-                ax.set_xlim(x[0], x[-1])
+                if  sigma > 0:
+                    x = np.linspace(*ax.get_xlim(), 101)
+                    y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                    ax.fill_between(x, y, alpha=0.5, color=color, zorder=-1)
+                    ax.set_xlim(x[0], x[-1])
+                else:
+                    ax.axvline(mean, color=color, ls='--')
         for ext in config.tri_extensions:
             fig.savefig(os.path.join(output_folder, 'figs', "triangle_big." + ext))
             plt.close('all')
