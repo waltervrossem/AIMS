@@ -1002,11 +1002,11 @@ class Likelihood:
         # If either Dnu or Dnu_c in constraint or nonconstraint, also add the other one to nonconstraint
         constraint_names = [_[0] for _ in self.constraints]
         nonconstraint_names = [_[0] for _ in self.nonconstraints]
-        if ('Dnu' in constraint_names) and ('Dnu_c' not in nonconstraint_names):
+        if ('Dnu' in constraint_names) and ('Dnu_c' not in nonconstraint_names) and config.surface_option is not None:
             i_Dnu_constraint = constraint_names.index('Dnu')
             self.add_nonconstraint(('Dnu_c', self.constraints[i_Dnu_constraint][1]))
             nonconstraint_names = [_[0] for _ in self.nonconstraints]
-        if ('Dnu' in nonconstraint_names) and ('Dnu_c' not in constraint_names + nonconstraint_names):
+        if ('Dnu' in nonconstraint_names) and ('Dnu_c' not in constraint_names + nonconstraint_names) and config.surface_option is not None:
             i_Dnu_constraint = nonconstraint_names.index('Dnu')
             self.add_nonconstraint(('Dnu_c', self.nonconstraints[i_Dnu_constraint][1]))
             nonconstraint_names = [_[0] for _ in self.nonconstraints]
