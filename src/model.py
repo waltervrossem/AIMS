@@ -2426,9 +2426,9 @@ class Model_grid:
         parameter.
         """
 
-        for track in self.tracks:
+        for i, track in enumerate(self.tracks):
             if not track.is_sorted_adim():
-                raise ValueError("ERROR: track(s) not strictly sorted according to dimensionless age")
+                raise ValueError(f"ERROR: track(s) not strictly sorted according to dimensionless age. Failed at track {i}.")
 
     def range(self, aParam):
         """
