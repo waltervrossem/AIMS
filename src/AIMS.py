@@ -4293,6 +4293,7 @@ def plot_histograms(samples, names, fancy_names, truths=None):
 
             mean = truths[i][0]
             sigma = truths[i][1]
+            color = truths[i][2]
             x = np.linspace(*plt.xlim(), 101)
             if sigma > 0:
                 y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2 * math.pi))
