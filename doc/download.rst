@@ -1,7 +1,7 @@
 Download ``AIMS``
 =================
 
-  * Click :download:`here <https://github.com/waltervrossem/AIMS/archive/refs/heads/master.zip>` to download AIMS.
+  * Clone the repository from `Github <https://github.com/waltervrossem/AIMS>`_ or click :download:`here <https://github.com/waltervrossem/AIMS/archive/refs/heads/master.zip>` to download AIMS.
   * The contents of this file may then be extracted via the command::
 
      unzip master.zip
