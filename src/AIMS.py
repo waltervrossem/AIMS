@@ -4614,7 +4614,8 @@ if __name__ == "__main__":
     if (best_grid_model is not None):
         write_model(best_grid_model, best_grid_params, best_grid_result, \
                     "best_grid", extended=config.extended_model)
-        write_combinations(os.path.join(output_folder, "combinations_best_grid.txt"), [best_grid_params])
+        if config.with_combinations:
+            write_combinations(os.path.join(output_folder, "combinations_best_grid.txt"), [best_grid_params])
         if (config.with_echelle):
             plot_echelle_diagram(best_grid_model, best_grid_params, "Best grid")
         plot_frequency_diff(best_grid_model, best_grid_params, "Best grid", scaled=False)
@@ -4629,7 +4630,8 @@ if __name__ == "__main__":
     best_MCMC_params = list(best_MCMC_params) + utilities.my_map(partial(best_MCMC_model.string_to_param, a=best_grid_params[ndims - nsurf:ndims]), config.output_params)
     write_model(best_MCMC_model, best_MCMC_params, best_MCMC_result, \
                 "best_MCMC", extended=config.extended_model)
-    write_combinations(os.path.join(output_folder, "combinations_best_MCMC.txt"), [best_MCMC_params])
+    if config.with_combinations:
+        write_combinations(os.path.join(output_folder, "combinations_best_MCMC.txt"), [best_MCMC_params])
     if (config.with_echelle):
         plot_echelle_diagram(best_MCMC_model, best_MCMC_params, "Best MCMC")
     plot_frequency_diff(best_MCMC_model, best_MCMC_params, "Best MCMC", scaled=False)
@@ -4645,7 +4647,8 @@ if __name__ == "__main__":
                                                                          config.output_params)
         write_model(statistical_model, statistical_params, statistical_result, \
                     "statistical", extended=config.extended_model)
-        write_combinations(os.path.join(output_folder, "combinations_statistical.txt"), [statistical_params])
+        if config.with_combinations:
+            write_combinations(os.path.join(output_folder, "combinations_statistical.txt"), [statistical_params])
         if (config.with_echelle):
             plot_echelle_diagram(statistical_model, statistical_params, "statistical")
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=False)
