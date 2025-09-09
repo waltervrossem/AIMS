@@ -19,6 +19,7 @@ jobs:
         include:
           - os: 'macos-latest'
             python-version: "3.13"
+            continue-on-error: true
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install system dependencies (Ubuntu)
@@ -63,13 +64,13 @@ jobs:
   test:
     needs: build
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: ["ubuntu-latest"]
         include:
           - os: 'macos-latest'
             python-version: "3.13"
-            continue-on-error: true
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install system dependencies (Ubuntu)
