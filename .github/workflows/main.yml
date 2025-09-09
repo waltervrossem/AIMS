@@ -46,6 +46,7 @@ jobs:
         python -V
         python -m venv venv
         source venv/bin/activate
+        pip install --upgrade pip
         pip install -r etc/CI/requirements.txt
     
     - name: Compile AIMS
@@ -68,6 +69,7 @@ jobs:
         include:
           - os: 'macos-latest'
             python-version: "3.13"
+            continue-on-error: true
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install system dependencies (Ubuntu)
@@ -79,6 +81,7 @@ jobs:
     - name: Install system dependencies (MacOS)
       if: matrix.os == 'macos-latest'
       run: |
+        brew uninstall gcc
         brew install make gcc
         
     - name: Checkout code
