@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.3.0"
+__version__ = u"2.3.1"
 
 import os
 import sys
@@ -4414,12 +4414,12 @@ if __name__ == "__main__":
     # this if for writing binary data
     if (config.mode == "write_grid"):
         write_binary_data(config.list_grid, config.binary_grid)
-        sys.exit(0)
+        raise Exception(f"Finished {config.mode}")
 
     # this if for testing the interpolation
     if (config.mode == "test_interpolation"):
         interpolation_tests(config.interpolation_file)
-        sys.exit(0)
+        raise Exception(f"Finished {config.mode}")
 
     # sanity check
     if (config.mode != "fit_data"):
@@ -4447,7 +4447,7 @@ if __name__ == "__main__":
             print('         Should I empty this folder (y/n)?')
             answer = utilities.my_input().strip()
             if (answer[0].upper() != "Y"):
-                sys.exit(0)
+                raise FileExistsError(f"Output folder already exists: {output_folder}")
             shutil.rmtree(output_folder)
             os.makedirs(output_folder, exist_ok=True)
             os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)

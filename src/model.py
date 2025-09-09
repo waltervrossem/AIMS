@@ -336,7 +336,7 @@ class Model:
             self.modes = np.empty([0], dtype=modetype)
 
         if config.alpha_Fe_param is None or aFe is None:
-            self.A_FeH = 1.0
+            self.A_FeH = 0.0
         else:
             # These coefficients are calculated using AIMS/etc/calc_A_FeH_coeffs.py
             if config.use_Asplund_A_FeH:
@@ -347,7 +347,7 @@ class Model:
                 # Using gs98 solar mixture
                 a = 0.6622333205008432
                 b = 0.3377666794991567
-            self.A_FeH = a * 10 ** aFe + b
+            self.A_FeH = np.log10(a * 10 ** aFe + b)
 
 
     def __del__(self):
@@ -1033,10 +1033,9 @@ class Model:
         The conversion from (Xs,Zs) to [Fe/H] is performed using the
         following formula:
 
-            :math:`\\mathrm{[Fe/H] = \\frac{[M/H]}{A_{FeH}}  \
-                                   = \\frac{1}{A_{FeH}} \\log_{10} \
-                                     \\left(\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)}`
-
+            :math:`\\mathrm{[Fe/H] = [M/H] - A_{FeH}  \
+                                   = \\log_{10} \\left(\\frac{1}{a * 10 ^ {[\alpha/Fe]} + b)}\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)},`
+        where a and b are metal mixture dependent factors.
         :return: the :math:`\\mathrm{[Fe/H]}` value
         :rtype: float
 
@@ -1044,7 +1043,7 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
         try:
-            return self.MH / self.A_FeH
+            return self.MH - self.A_FeH
         except ValueError:
             return log0  # a rather low value
 
@@ -1068,7 +1067,7 @@ class Model:
         """
 
         try:
-            return self.MH0 / self.A_FeH
+            return self.MH0 - self.A_FeH
         except ValueError:
             return log0  # a rather low value
 
@@ -2787,7 +2786,7 @@ def combine_models(model1, coef1, model2, coef2):
         coef2, model2.modes['n'], model2.modes['l'], model2.modes['freq'], model2.modes['inertia'], \
         nvalues, lvalues, fvalues, ivalues)
     new_Model = Model(glb, _modes=list(zip(nvalues[0:n3], lvalues[0:n3], fvalues[0:n3], ivalues[0:n3])), aFe=None)
-    new_Model.A_FeH = model1.A_FeH * coef1 + model2.A_FeH * coef2
+    new_Model.A_FeH = np.log10(10**model1.A_FeH * coef1 + 10**model2.A_FeH * coef2)
     return new_Model
 
 
