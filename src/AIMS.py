@@ -4453,6 +4453,7 @@ if __name__ == "__main__":
             os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)
     else:
         os.makedirs(output_folder)
+        os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)
 
     # save a copy of config and input file used
     shutil.copy2(config.__file__, output_folder)
