@@ -13,8 +13,9 @@ ETCDIR := $(ROOT)/etc
 SRCDIR := $(ROOT)/src
 
 F90 := gfortran
+FC := $(F90)
 FLG := -O2 #-fcheck=all #-fbounds-check
-FPY := f2py
+FPY := f2py --backend meson
 #FPY := f2py3 # for python3
 #FPY := python3 /full/address/to/f2py # another way of working with python3
 
@@ -62,7 +63,7 @@ type:
 	python3 -m mypy $(SRCDIR) --config-file=$(ETCDIR)/Mypyrc/mypy.ini
 
 compile:
-	$(FPY) -c aims_fortran.f90 -m aims_fortran --fcompiler=$(F90) --f90flags=$(FLG)
+	$(FPY) -c aims_fortran.f90 -m aims_fortran --f90flags=$(FLG)
 	find $(SRCDIR) -name "*.py"  -exec python3 -m py_compile '{}' \;
 
 #build: type compile
