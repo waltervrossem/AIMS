@@ -1537,10 +1537,9 @@ class Track:
             self.glb = np.delete(self.glb, remove_models, 0)
             self.modes = np.delete(self.modes, mode_indices_rm, 0)
 
-            ntot = self.mode_indices[1]
-            new_indices = [0, ntot]
-            # NOTE: the first model is kept (by construction)
-            for i in range(1, len(self.mode_indices) - 1):
+            ntot = 0
+            new_indices = [0]
+            for i in range(len(self.mode_indices) - 1):
                 if (i not in remove_models):
                     ntot += self.mode_indices[i + 1] - self.mode_indices[i]
                     new_indices.append(ntot)
@@ -2728,6 +2727,8 @@ def make_scale_matrix(grid):
         x = x[1:] - x[:-1]
         x = np.sort(x)
         ind = bisect_right(x, eps)
+        if ind == len(x):  # If all x are < eps, x[ind] will fail. In that case choose the middle value.
+            ind = len(x)//2
         mat[i, i] = 1.0 / x[ind]
         print("Scale factor %d: %e" % (i, mat[i, i]))
     return mat
