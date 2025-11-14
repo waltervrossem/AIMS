@@ -3440,10 +3440,10 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
 
         out['models'][key]['modes'] = []
         for mode in best_model.modes:
-            out['models'][key]['modes'].append([int(best_model.modes['n'][i]),
-                                                int(best_model.modes['l'][i]),
-                                                float(best_model.modes['freq'][i] * best_model.glb[model.ifreq_ref]),
-                                                float(best_model.modes['inertia'][i])])
+            out['models'][key]['modes'].append([int(mode['n']),
+                                                int(mode['l']),
+                                                float(mode['freq'] * best_model.glb[model.ifreq_ref]),
+                                                float(mode['inertia'])])
 
     for name in grid_params_MCMC_with_surf + config.output_params:
         out['parameters'][str(name)] = {}
