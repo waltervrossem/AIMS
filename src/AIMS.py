@@ -3392,7 +3392,7 @@ def write_model(my_model, my_params, my_result, model_name, extended=False):
                 math.sqrt(prob.likelihood.cov[i, i]), fvalues[i]))
 
 
-def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=False):
+def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, config, return_dict=False):
 
     one_sigma = 0.682689492137
     two_sigma = 0.954499736104
@@ -3407,7 +3407,8 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
                       'MCMC': {},
                       'stat': {}},
            'info': {},
-           'constants': {}
+           'constants': {},
+           'config': {},
            }
 
     out['info']['covariance'] = np.cov(samples, rowvar=False).tolist()
@@ -3521,6 +3522,9 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
     out['observations']['modes'] = [[int(m.l), int(m.n), float(m.freq), float(m.dfreq)] for m in like.modes]
 
     out['constants'] = {k:constants.__dict__[k] for k in dir(constants) if not k.startswith('__')}
+
+    out['config']['distort_grid'] = ['no', 'yes'][int(config.distort_grid)]
+    out['config']['retessellate'] = ['no', 'yes'][int(config.retessellate)]
 
     with open(path, 'w') as handle:
         json.dump(out, handle, indent=4)
@@ -4645,7 +4649,7 @@ if __name__ == "__main__":
     statistical_params.reshape(ndims)
     statistical_result = prob(statistical_params)
     statistical_model = model.interpolate_model(grid, statistical_params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    if (statistical_model is not None):
+    if config.record_statistical and (statistical_model is not None):
         statistical_params = list(statistical_params) + utilities.my_map(partial(statistical_model.string_to_param, a=statistical_params[ndims - nsurf:ndims]),
                                                                          config.output_params)
         write_model(statistical_model, statistical_params, statistical_result, \
@@ -4657,7 +4661,8 @@ if __name__ == "__main__":
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=False)
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=True)
 
-    output = write_new_output(os.path.join(output_folder, "output.json"), samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, return_dict=True)
+    output = write_new_output(os.path.join(output_folder, "output.json"), samples, samples_big, best_grid_model,
+                              best_MCMC_model, statistical_model, config, return_dict=True)
 
     # write OSM files:
     if (config.with_osm):
