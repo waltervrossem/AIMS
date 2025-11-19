@@ -3523,6 +3523,7 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
 
     out['constants'] = {k:constants.__dict__[k] for k in dir(constants) if not k.startswith('__')}
 
+    out['config']['binary_grid'] = config.binary_grid
     out['config']['distort_grid'] = ['no', 'yes'][int(config.distort_grid)]
     out['config']['retessellate'] = ['no', 'yes'][int(config.retessellate)]
 
