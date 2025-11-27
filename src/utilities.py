@@ -118,17 +118,3 @@ def my_map(fct, lst):
     :type lst: list
     """
     return list(map(fct, lst))
-
-
-def my_input():
-    """
-    Select appropriate input function depending on whether python2 or python3 is
-    being used.
-    """
-
-    if (sys.version_info.major == 3):
-        # python 3
-        return input()
-    else:
-        # python 2
-        return raw_input()

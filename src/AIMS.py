@@ -4455,7 +4455,7 @@ if __name__ == "__main__":
             if not config.batch:
                 print('WARNING: output folder "%s" already exists.' % (output_folder))
                 print('         Should I empty this folder (y/n)?')
-                answer = utilities.my_input().strip()
+                answer = input().strip()
                 if (answer[0].upper() != "Y"):
                     raise FileExistsError(f"Output folder already exists: {output_folder}")
             shutil.rmtree(output_folder)
