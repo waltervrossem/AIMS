@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The model module &mdash; AIMS 2.2.0 documentation</title>
+  <title>The model module &mdash; AIMS 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=b21de401"></script>
+      <script src="_static/documentation_options.js?v=67b02a41"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -68,6 +68,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.find_large_separation"><code class="docutils literal notranslate"><span class="pre">Model.find_large_separation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.find_mode"><code class="docutils literal notranslate"><span class="pre">Model.find_mode()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.find_mode_range"><code class="docutils literal notranslate"><span class="pre">Model.find_mode_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.find_surface_corrected_large_separation"><code class="docutils literal notranslate"><span class="pre">Model.find_surface_corrected_large_separation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.freq_sorted"><code class="docutils literal notranslate"><span class="pre">Model.freq_sorted()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.get_age"><code class="docutils literal notranslate"><span class="pre">Model.get_age()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.get_freq"><code class="docutils literal notranslate"><span class="pre">Model.get_freq()</span></code></a></li>
@@ -108,6 +109,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.range"><code class="docutils literal notranslate"><span class="pre">Model_grid.range()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list_Aldo"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list_Aldo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list_BASTA"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list_BASTA()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.read_model_list_standard"><code class="docutils literal notranslate"><span class="pre">Model_grid.read_model_list_standard()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.remove_tracks"><code class="docutils literal notranslate"><span class="pre">Model_grid.remove_tracks()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model_grid.replace_age_adim"><code class="docutils literal notranslate"><span class="pre">Model_grid.replace_age_adim()</span></code></a></li>
@@ -161,6 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#model.find_combination"><code class="docutils literal notranslate"><span class="pre">find_combination()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model.find_interpolation_coefficients"><code class="docutils literal notranslate"><span class="pre">find_interpolation_coefficients()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model.ftype"><code class="docutils literal notranslate"><span class="pre">ftype</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model.get_aFe"><code class="docutils literal notranslate"><span class="pre">get_aFe()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model.get_surface_parameter_names"><code class="docutils literal notranslate"><span class="pre">get_surface_parameter_names()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model.gtype"><code class="docutils literal notranslate"><span class="pre">gtype</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model.iage"><code class="docutils literal notranslate"><span class="pre">iage</span></code></a></li>
@@ -236,7 +239,7 @@ a number of operations, such as:</p>
 </ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="model.Model">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_glb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_glb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aFe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model" title="Link to this definition"></a></dt>
 <dd><p>A class which contains a stellar model, including classical and seismic information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -246,6 +249,8 @@ be greater or equal to <a class="reference internal" href="#model.nglb" title="m
 <li><p><strong>_name</strong> (<em>string</em>) – name of the model (typically the second part of its path)</p></li>
 <li><p><strong>_modes</strong> (<em>list</em><em> of </em><em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em>) – list of modes in the form of tuples
 (n,l,freq,inertia) which will be appended to the set of modes in the model.</p></li>
+<li><p><strong>aFe</strong> – [alpha/Fe] used to calculate A_FeH correction factor. Can be a float
+or string or None. If a string, it must be a grid parameter.</p></li>
 </ul>
 </dd>
 </dl>
@@ -256,16 +261,11 @@ be greater or equal to <a class="reference internal" href="#model.nglb" title="m
 <p>The conversion from (Xs,Zs) to [Fe/H] is performed using the
 following formula:</p>
 <blockquote>
-<div><p><span class="math notranslate nohighlight">\(\mathrm{[Fe/H] = \frac{[M/H]}{A_{FeH}}                                     = \frac{1}{A_{FeH}} \log_{10}                                      \left(\frac{z/x}{z_{\odot}/x_{\odot}} \right)}\)</span></p>
+<div><p><span class="math notranslate nohighlight">\(\mathrm{[Fe/H] = [M/H] - A_{FeH}                                     = \log_{10} \left(\frac{1}{a * 10 ^ {[lpha/Fe]} + b)}\frac{z/x}{z_{\odot}/x_{\odot}} \right)},\)</span></p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the <span class="math notranslate nohighlight">\(\mathrm{[Fe/H]}\)</span> value</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
+<p>where a and b are metal mixture dependent factors.
+:return: the <span class="math notranslate nohighlight">\(\mathrm{[Fe/H]}\)</span> value
+:rtype: float</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The relevant values are given in <a class="reference internal" href="constants.html#module-constants" title="constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a></p>
@@ -469,6 +469,23 @@ used in obtaining epsilon.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int, int, int, int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model.find_surface_corrected_large_separation">
+<span class="sig-name descname"><span class="pre">find_surface_corrected_large_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.find_surface_corrected_large_separation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.find_surface_corrected_large_separation" title="Link to this definition"></a></dt>
+<dd><p>Find large frequency separation using only radial modes and surface corrections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> – Surface correction parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the large frequency separation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -897,11 +914,14 @@ and n values (regardless of frequency).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="model.Model.string_to_param">
-<span class="sig-name descname"><span class="pre">string_to_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.string_to_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.string_to_param" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">string_to_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.string_to_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.string_to_param" title="Link to this definition"></a></dt>
 <dd><p>Return a parameter for an input string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>string</strong> (<em>string</em>) – string that indicates which parameter we’re seeking</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – string that indicates which parameter we’re seeking</p></li>
+<li><p><strong>a</strong> (<em>array-like</em>) – amplitude parameters which intervene in the surface correction</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the value of the parameter</p>
@@ -1115,6 +1135,18 @@ correspond to the model ID, global quantities, and pulsation frequencies
 and inertias.</p></li>
 </ol>
 </div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the list of track files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="model.Model_grid.read_model_list_BASTA">
+<span class="sig-name descname"><span class="pre">read_model_list_BASTA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model_grid.read_model_list_BASTA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid.read_model_list_BASTA" title="Link to this definition"></a></dt>
+<dd><p>Read list of models in BASTA format from a file and construct a grid.</p>
+<p>BASTA grids are contained HDF5 files with a tree-like structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – name of the file with the list of track files.</p>
@@ -1868,6 +1900,12 @@ tessellation</p></li>
 <dt class="sig sig-object py" id="model.ftype">
 <span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ftype</span></span><a class="headerlink" href="#model.ftype" title="Link to this definition"></a></dt>
 <dd><p>type used for the frequencies</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.get_aFe">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">get_aFe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#get_aFe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.get_aFe" title="Link to this definition"></a></dt>
+<dd><p>Get [alpha/Fe] from a track.</p>
 </dd></dl>
 
 <dl class="py function">

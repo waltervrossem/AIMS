@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>model &mdash; AIMS 2.2.0 documentation</title>
+  <title>model &mdash; AIMS 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b21de401"></script>
+      <script src="../_static/documentation_options.js?v=67b02a41"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -147,6 +147,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Delaunay</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bisect</span><span class="w"> </span><span class="kn">import</span> <span class="n">bisect_right</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 
 <span class="c1"># maximum filename length</span>
 <span class="c1"># filename_dtype = &quot;U1000&quot;</span>
@@ -304,6 +305,8 @@
         <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$</span><span class="si">%s</span><span class="s1">T_{\mathrm</span><span class="si">{eff}</span><span class="s1">}</span><span class="si">%s</span><span class="s1">$ (in K)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Dnu&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;Large separation (in $\mu$Hz), $</span><span class="si">%s</span><span class="s1">\Delta \nu</span><span class="si">%s</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Dnu_c&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;Corrected Large separation (in $\mu$Hz), $</span><span class="si">%s</span><span class="s1">\Delta \nu</span><span class="si">%s</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;numax&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$</span><span class="si">%s</span><span class="s1">\nu_{\mathrm</span><span class="si">{max}</span><span class="s1">}</span><span class="si">%s</span><span class="s1">$ (in $\mu$Hz)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Rho&quot;</span><span class="p">):</span>
@@ -368,20 +371,100 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown surface correction: &quot;</span> <span class="o">+</span> <span class="n">surface_option</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="get_aFe">
+<a class="viewcode-back" href="../model.html#model.get_aFe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_aFe</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get [alpha/Fe] from a track.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">grid_params</span><span class="p">:</span>
+            <span class="n">i_aFe</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">grid_params</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span><span class="p">)</span>
+            <span class="n">aFe</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i_aFe</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aFe</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">aFe</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span>
+    <span class="k">return</span> <span class="n">aFe</span></div>
+
 
 <div class="viewcode-block" id="Model">
 <a class="viewcode-back" href="../model.html#model.Model">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class which contains a stellar model, including classical and seismic information.&quot;&quot;&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_glb</span><span class="p">,</span> <span class="n">_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param _glb: 1D array of global parameters for this model.  Its dimension should</span>
+<span class="sd">          be greater or equal to :py:data:`nglb`</span>
+<span class="sd">        :param _name: name of the model (typically the second part of its path)</span>
+<span class="sd">        :param _modes: list of modes in the form of tuples</span>
+<span class="sd">          (n,l,freq,inertia) which will be appended to the set of modes in the model.</span>
+<span class="sd">        :param aFe: [alpha/Fe] used to calculate A_FeH correction factor. Can be a float</span>
+<span class="sd">          or string or None. If a string, it must be a grid parameter.</span>
+
+<span class="sd">        :type _glb: np.array</span>
+<span class="sd">        :type _name: string</span>
+<span class="sd">        :type _modes: list of (int, int, float, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check inputs</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">imass</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative mass!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iradius</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative radius!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iluminosity</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative luminosity!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative metallicity!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative hydrogen abundance!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iage</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative age!&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">itemperature</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative temperature!&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">_name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of the model, typically the second part of its path&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">glb</span> <span class="o">=</span> <span class="n">_glb</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Array which will contain various global quantities&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5e5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imass</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iradius</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;array containing the modes (n, l, freq, inertia)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">_modes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">aFe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A_FeH</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># These coefficients are calculated using AIMS/etc/calc_A_FeH_coeffs.py</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">use_Asplund_A_FeH</span><span class="p">:</span>
+                <span class="c1"># Using Asplund 2009 solar mixture</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="mf">0.6386992237569251</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="mf">0.3613007762430738</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Using gs98 solar mixture</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="mf">0.6622333205008432</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="mf">0.3377666794991567</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A_FeH</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">aFe</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears a model instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
 <div class="viewcode-block" id="Model.string_to_param">
 <a class="viewcode-back" href="../model.html#model.Model.string_to_param">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">string_to_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">string_to_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a parameter for an input string.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param string: string that indicates which parameter we&#39;re seeking</span>
 <span class="sd">        :type string: string</span>
+
+<span class="sd">        :param a: amplitude parameters which intervene in the surface correction</span>
+<span class="sd">        :type a: array-like</span>
 
 <span class="sd">        :return: the value of the parameter</span>
 <span class="sd">        :rtype: float</span>
@@ -422,7 +505,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;M_H0&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MH0</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;dY_dZ&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">-</span> <span class="n">constants</span><span class="o">.</span><span class="n">Yp</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">-</span> <span class="n">config</span><span class="o">.</span><span class="n">Yp</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="n">age_str</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iage</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="n">age_adim_str</span><span class="p">):</span>
@@ -431,6 +514,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">itemperature</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Dnu&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_large_separation</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Dnu_c&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_surface_corrected_large_separation</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;numax&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">numax</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;Rho&quot;</span><span class="p">):</span>
@@ -451,52 +536,6 @@
         <span class="c1"># raises a KeyError if `string` isn&#39;t a valid key</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">user_params_index</span><span class="p">[</span><span class="n">string</span><span class="p">]]</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_glb</span><span class="p">,</span> <span class="n">_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param _glb: 1D array of global parameters for this model.  Its dimension should</span>
-<span class="sd">          be greater or equal to :py:data:`nglb`</span>
-<span class="sd">        :param _name: name of the model (typically the second part of its path)</span>
-<span class="sd">        :param _modes: list of modes in the form of tuples</span>
-<span class="sd">          (n,l,freq,inertia) which will be appended to the set of modes in the model.</span>
-
-<span class="sd">        :type _glb: np.array</span>
-<span class="sd">        :type _name: string</span>
-<span class="sd">        :type _modes: list of (int, int, float, float)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># check inputs</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">imass</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative mass!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iradius</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative radius!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iluminosity</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative luminosity!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative metallicity!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative hydrogen abundance!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">iage</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative age!&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">_glb</span><span class="p">[</span><span class="n">itemperature</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">),</span> <span class="s2">&quot;A star cannot have a negative temperature!&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">_name</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of the model, typically the second part of its path&quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">glb</span> <span class="o">=</span> <span class="n">_glb</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Array which will contain various global quantities&quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5e5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imass</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iradius</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`&quot;&quot;&quot;</span>
-
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;array containing the modes (n, l, freq, inertia)&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">_modes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Clears a model instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 <div class="viewcode-block" id="Model.read_file">
 <a class="viewcode-back" href="../model.html#model.Model.read_file">[docs]</a>
@@ -1079,7 +1118,37 @@
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Use numax in uHz to calculate sigma, then convert to dimless</span>
+        <span class="n">numax_dimless</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numax</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="n">sigma_dimless</span> <span class="o">=</span> <span class="mf">0.66</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numax</span> <span class="o">**</span> <span class="mf">0.88</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">freq</span> <span class="o">-</span> <span class="n">numax_dimless</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma_dimless</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Model.find_surface_corrected_large_separation">
+<a class="viewcode-back" href="../model.html#model.Model.find_surface_corrected_large_separation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_surface_corrected_large_separation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="p">[]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find large frequency separation using only radial modes and surface corrections.</span>
+
+<span class="sd">        :param a: Surface correction parameters.</span>
+
+<span class="sd">        :return: the large frequency separation</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Weight large sep by envelope</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_freq</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">surface_option</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="n">numax_dimless</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numax</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="n">sigma_dimless</span> <span class="o">=</span> <span class="mf">0.66</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numax</span> <span class="o">**</span> <span class="mf">0.88</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">freq</span> <span class="o">-</span> <span class="n">numax_dimless</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma_dimless</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
@@ -1122,10 +1191,9 @@
 <span class="sd">        The conversion from (Xs,Zs) to [Fe/H] is performed using the</span>
 <span class="sd">        following formula:</span>
 
-<span class="sd">            :math:`\\mathrm{[Fe/H] = \\frac{[M/H]}{A_{FeH}}  \</span>
-<span class="sd">                                   = \\frac{1}{A_{FeH}} \\log_{10} \</span>
-<span class="sd">                                     \\left(\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)}`</span>
-
+<span class="sd">            :math:`\\mathrm{[Fe/H] = [M/H] - A_{FeH}  \</span>
+<span class="sd">                                   = \\log_{10} \\left(\\frac{1}{a * 10 ^ {[\alpha/Fe]} + b)}\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)},`</span>
+<span class="sd">        where a and b are metal mixture dependent factors.</span>
 <span class="sd">        :return: the :math:`\\mathrm{[Fe/H]}` value</span>
 <span class="sd">        :rtype: float</span>
 
@@ -1133,7 +1201,7 @@
 <span class="sd">          The relevant values are given in :py:mod:`constants`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MH</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">A_FeH</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MH</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_FeH</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">log0</span>  <span class="c1"># a rather low value</span>
 
@@ -1157,7 +1225,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MH0</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">A_FeH</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MH0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_FeH</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">log0</span>  <span class="c1"># a rather low value</span>
 
@@ -1207,7 +1275,7 @@
                 <span class="n">have_Zs</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Zs</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_x</span> <span class="o">/</span> <span class="p">(</span><span class="n">Xs</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_z</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Zs</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">solar_x</span> <span class="o">/</span> <span class="p">(</span><span class="n">Xs</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">solar_z</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">log0</span>  <span class="c1"># a rather low value</span>
 
@@ -1229,7 +1297,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_x</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_z</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iz0</span><span class="p">]</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">solar_x</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ix0</span><span class="p">]</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">solar_z</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">log0</span>  <span class="c1"># a rather low value</span>
 
@@ -1605,7 +1673,14 @@
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">istart</span><span class="p">:</span><span class="n">istop</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">numax</span> <span class="o">=</span> <span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">solar_numax</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imodel</span><span class="p">,</span> <span class="n">imass</span><span class="p">]</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_mass</span><span class="p">)</span> <span class="o">/</span>
+                 <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imodel</span><span class="p">,</span> <span class="n">iradius</span><span class="p">]</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_radius</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span>
+                  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imodel</span><span class="p">,</span> <span class="n">itemperature</span><span class="p">]</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_temperature</span><span class="p">)))</span>
+        <span class="n">numax_dimless</span> <span class="o">=</span> <span class="n">numax</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imodel</span><span class="p">,</span> <span class="n">ifreq_ref</span><span class="p">]</span>
+        <span class="n">sigma_dimless</span> <span class="o">=</span> <span class="mf">0.66</span> <span class="o">*</span> <span class="n">numax</span> <span class="o">**</span> <span class="mf">0.88</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">imodel</span><span class="p">,</span> <span class="n">ifreq_ref</span><span class="p">]</span> <span class="c1"># Use numax in uHz, then convert to dimless</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">freq</span> <span class="o">-</span> <span class="n">numax_dimless</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma_dimless</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
@@ -1644,6 +1719,11 @@
         <span class="n">remove_models</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">))</span> \
                          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iage</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">iage</span><span class="p">]]</span>
 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_models</span><span class="p">(</span><span class="n">remove_models</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remove_models</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">remove_models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1657,18 +1737,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">glb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">,</span> <span class="n">remove_models</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">,</span> <span class="n">mode_indices_rm</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-            <span class="n">ntot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">new_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntot</span><span class="p">]</span>
-            <span class="c1"># NOTE: the first model is kept (by construction)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ntot</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">new_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">remove_models</span><span class="p">):</span>
                     <span class="n">ntot</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                     <span class="n">new_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ntot</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span> <span class="o">=</span> <span class="n">new_indices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nmodes</span> <span class="o">=</span> <span class="n">ntot</span>
 
-            <span class="k">return</span> <span class="kc">True</span></div>
-
+            <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="Track.age_adim_to_age">
 <a class="viewcode-back" href="../model.html#model.Track.age_adim_to_age">[docs]</a>
@@ -1752,11 +1830,11 @@
                 <span class="n">istart</span> <span class="o">=</span> <span class="n">itemp</span>
         <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">age</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istart</span><span class="p">,</span> <span class="n">iage</span><span class="p">])</span> \
              <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istop</span><span class="p">,</span> <span class="n">iage</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istart</span><span class="p">,</span> <span class="n">iage</span><span class="p">])</span>
-
+        <span class="n">aFe</span> <span class="o">=</span> <span class="n">get_aFe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">combine_models</span><span class="p">(</span>
-            <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istart</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istart</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]),</span>
+            <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istart</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istart</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">),</span>
             <span class="mf">1.0</span> <span class="o">-</span> <span class="n">mu</span><span class="p">,</span> \
-            <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istop</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istop</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istop</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]),</span> <span class="n">mu</span><span class="p">)</span></div>
+            <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">istop</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istop</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">istop</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">),</span> <span class="n">mu</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Track.find_combination">
@@ -1929,25 +2007,22 @@
         <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nmodels</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">+</span> <span class="n">nglb</span> <span class="o">+</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">gtype</span><span class="p">)</span>
 
+        <span class="n">aFe</span> <span class="o">=</span> <span class="n">get_aFe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># loop through all models:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nincr</span><span class="p">,</span> <span class="n">nmodels</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">):</span>
             <span class="c1"># carry out interpolation</span>
             <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">iage</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">iage</span><span class="p">])</span> \
                  <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">iage</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">iage</span><span class="p">])</span>
-            <span class="n">aModel</span> <span class="o">=</span> <span class="n">combine_models</span><span class="p">(</span><span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">combine_models</span><span class="p">(</span><span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span>
                                                                       <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span>
                                                                           <span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]),</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">mu</span><span class="p">,</span> \
-                                    <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">nincr</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span>
+                                    <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">nincr</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span>
                                                                       <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">nincr</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span>
                                                                           <span class="n">i</span> <span class="o">+</span> <span class="n">nincr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]),</span> <span class="n">mu</span><span class="p">)</span>
 
             <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
             <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">iage</span><span class="p">]</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">nglb</span> <span class="o">+</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span>
-                                                                                                       <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span>
-                                                                                                           <span class="n">i</span><span class="p">]:</span>
-                                                                                                       <span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span>
-                                                                                                           <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]))</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">nincr</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">nglb</span> <span class="o">+</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]))</span>
 
         <span class="k">return</span> <span class="n">result</span></div>
 </div>
@@ -2020,6 +2095,8 @@
 
         <span class="k">if</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">mode_format</span> <span class="o">==</span> <span class="s2">&quot;Aldo&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_model_list_Aldo</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">mode_format</span> <span class="o">==</span> <span class="s2">&quot;BASTA&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_model_list_BASTA</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_model_list_standard</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
@@ -2109,7 +2186,12 @@
         <span class="n">models_small_spectra</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">nmodels</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">glb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">nmodels</span><span class="p">]</span>
-            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">i_aFe</span> <span class="o">=</span> <span class="n">grid_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span><span class="p">)</span>
+                <span class="n">aFe</span> <span class="o">=</span> <span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i_aFe</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aFe</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">)</span>
             <span class="n">exceed_freqlim</span> <span class="o">=</span> <span class="n">aModel</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span><span class="p">)</span>
             <span class="n">aModel</span><span class="o">.</span><span class="n">multiply_modes</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">aModel</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">])</span>  <span class="c1"># make frequencies non-dimensional</span>
             <span class="n">aModel</span><span class="o">.</span><span class="n">sort_modes</span><span class="p">()</span>
@@ -2135,7 +2217,7 @@
         <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">params_span</span> <span class="o">*=</span> <span class="n">eps</span>
         <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
-            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">get_aFe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
                 <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span> <span class="n">params_tol</span><span class="o">=</span><span class="n">params_span</span><span class="p">)):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append_track</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -2267,7 +2349,7 @@
                     <span class="n">glb</span><span class="p">[</span><span class="n">user_params_index</span><span class="p">[</span><span class="s2">&quot;Xc&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">glbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
                     <span class="n">glb</span><span class="p">[</span><span class="n">user_params_index</span><span class="p">[</span><span class="s2">&quot;Zc&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">glbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">-</span> <span class="n">glbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
 
-                    <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">,</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">,</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
                     <span class="n">exceed_freqlim</span> <span class="o">=</span> <span class="n">aModel</span><span class="o">.</span><span class="n">read_modes_Aldo</span><span class="p">(</span><span class="n">norder</span><span class="p">,</span> <span class="n">glbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">10</span><span class="p">:])</span>
                     <span class="n">aModel</span><span class="o">.</span><span class="n">multiply_modes</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">aModel</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">])</span>  <span class="c1"># make frequencies non-dimensional</span>
                     <span class="n">aModel</span><span class="o">.</span><span class="n">sort_modes</span><span class="p">()</span>
@@ -2294,7 +2376,7 @@
         <span class="c1"># find span for each grid parameter prior to merging tracks:</span>
         <span class="n">grid_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">track</span><span class="o">.</span><span class="n">params</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">])</span>
         <span class="n">params_span</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">grid_temp</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">grid_temp</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> \
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">grid_temp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+                               <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_temp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
         <span class="k">del</span> <span class="n">grid_temp</span>
 
         <span class="c1"># merge tracks which are too close:</span>
@@ -2302,7 +2384,7 @@
         <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">params_span</span> <span class="o">*=</span> <span class="n">eps</span>
         <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
-            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
                 <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span> <span class="n">params_tol</span><span class="o">=</span><span class="n">params_span</span><span class="p">)):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append_track</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -2326,6 +2408,229 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">remove_duplicate_ages</span><span class="p">():</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the track </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">grid_params</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">params</span><span class="p">)))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         has models with the same age.  Removing duplicate models.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># update list of indices:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">))</span>
+
+        <span class="c1"># need to create grid from scratch since tracks have been sorted.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">track</span><span class="o">.</span><span class="n">params</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Model_grid.read_model_list_BASTA">
+<a class="viewcode-back" href="../model.html#model.Model_grid.read_model_list_BASTA">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_model_list_BASTA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read list of models in BASTA format from a file and construct a grid.</span>
+
+<span class="sd">        BASTA grids are contained HDF5 files with a tree-like structure.</span>
+
+<span class="sd">        :param filename: name of the file with the list of track files.</span>
+<span class="sd">        :type filename: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># sanity check (to be completed if need be) ...</span>
+
+        <span class="n">qdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;FeH&quot;</span><span class="p">:</span><span class="s2">&quot;Fe_H&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FeHini&quot;</span><span class="p">:</span><span class="s2">&quot;Fe_H0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MeH&quot;</span><span class="p">:</span><span class="s2">&quot;M_H&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MeHini&quot;</span><span class="p">:</span><span class="s2">&quot;M_H0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;alphaFe&quot;</span><span class="p">:</span><span class="s2">&quot;alpha_Fe&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;alphaMLT&quot;</span><span class="p">:</span><span class="s2">&quot;alpha_MLT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;massini&quot;</span><span class="p">:</span><span class="s2">&quot;Mass0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ove&quot;</span><span class="p">:</span><span class="s2">&quot;alpha_OV&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rho&quot;</span><span class="p">:</span><span class="s2">&quot;Rho&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rhocen&quot;</span><span class="p">:</span><span class="s2">&quot;RhoC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xcen&quot;</span><span class="p">:</span><span class="s2">&quot;Xc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xini&quot;</span><span class="p">:</span><span class="s2">&quot;X0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xsur&quot;</span><span class="p">:</span><span class="s2">&quot;Xs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ycen&quot;</span><span class="p">:</span><span class="s2">&quot;Yc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;yini&quot;</span><span class="p">:</span><span class="s2">&quot;Y0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ysur&quot;</span><span class="p">:</span><span class="s2">&quot;Ys&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zcen&quot;</span><span class="p">:</span><span class="s2">&quot;Zc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zini&quot;</span><span class="p">:</span><span class="s2">&quot;Z0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zsur&quot;</span><span class="p">:</span><span class="s2">&quot;Zs&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">qlatexdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;FeH&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Iron content, $</span><span class="si">%s</span><span class="s2">[Fe/H]</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FeHini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Iron content, $</span><span class="si">%s</span><span class="s2">[Fe/H]_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LPhot&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Luminosity, $</span><span class="si">%s</span><span class="s2">L</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mbcz&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Mass BCZ, $</span><span class="si">%s</span><span class="s2">M_{\mathrm</span><span class="si">{BCZ}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mcore&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Core mass, $</span><span class="si">%s</span><span class="s2">M_{\mathrm</span><span class="si">{core}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;McoreX&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;H core mass, $</span><span class="si">%s</span><span class="s2">M_{\mathrm{H,\,core}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MeH&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Metallicity, $</span><span class="si">%s</span><span class="s2">[M/H]</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MeHini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Metallicity, $</span><span class="si">%s</span><span class="s2">[M/H]_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Rbcz&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Radius BCZ, $</span><span class="si">%s</span><span class="s2">R_{\mathrm</span><span class="si">{BCZ}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Rcore&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Core radius, $</span><span class="si">%s</span><span class="s2">R_{\mathrm</span><span class="si">{BCZ}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RcoreX&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;H core radius, $</span><span class="si">%s</span><span class="s2">R_{\mathrm{H,\,BCZ}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Teff&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Temperature, $</span><span class="si">%s</span><span class="s2">T_{\mathrm</span><span class="si">{eff}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ZAMSLPhot&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;ZAMS luminosity, $</span><span class="si">%s</span><span class="s2">L_{\mathrm</span><span class="si">{ZAMS}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ZAMSTeff&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;ZAMS temperature, $</span><span class="si">%s</span><span class="s2">T_{\mathrm{eff,\,ZAMS}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Age (Myrs)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;alphaFe&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;$</span><span class="si">%s</span><span class="s2">\alpha_{\mathrm</span><span class="si">{Fe}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;alphaMLT&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Mixing length parameter, $</span><span class="si">%s</span><span class="s2">\alpha_{\mathrm</span><span class="si">{MLT}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dnuscal&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;$</span><span class="si">%s</span><span class="s2">\Delta\nu_{\mathrm{scal.}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;massfin&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Mass, $</span><span class="si">%s</span><span class="s2">M</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;massini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Initial mass, $</span><span class="si">%s</span><span class="s2">M_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;numax&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;$</span><span class="si">%s</span><span class="s2">\nu_{\mathrm</span><span class="si">{max}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ove&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Overshoot parameter, $</span><span class="si">%s</span><span class="s2">\alpha_{\mathrm{ov.}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;radPhot&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Photospheric radius, $</span><span class="si">%s</span><span class="s2">R_{\mathrm{phot.}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;radTot&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Total radius, $</span><span class="si">%s</span><span class="s2">R_{\mathrm{tot.}}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rho&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Mean density, $</span><span class="si">%s</span><span class="s2">\rho</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rhocen&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Central density, $</span><span class="si">%s</span><span class="s2">\rho_{\mathrm</span><span class="si">{C}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tau0&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Acoustic radius, $</span><span class="si">%s</span><span class="s2">\tau</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;taubcz&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;BZC acoustic radius, $</span><span class="si">%s</span><span class="s2">\tau_{\mathrm</span><span class="si">{BCZ}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tauhe&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;He acoustic radius, $</span><span class="si">%s</span><span class="s2">\tau_{\mathrm</span><span class="si">{He}</span><span class="s2">}</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xcen&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Central hydrogen, $</span><span class="si">%s</span><span class="s2">X_c</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Initial hydrogen, $</span><span class="si">%s</span><span class="s2">X_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xsur&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Hydrogen content, $</span><span class="si">%s</span><span class="s2">X_s</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ycen&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Central helium, $</span><span class="si">%s</span><span class="s2">Y_c</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;yini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Initial helium, $</span><span class="si">%s</span><span class="s2">Y_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ysur&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Helium content, $</span><span class="si">%s</span><span class="s2">Y_s</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zcen&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Central metallicity, $</span><span class="si">%s</span><span class="s2">Z_c</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zini&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Initial metallicity, $</span><span class="si">%s</span><span class="s2">Z_0</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zsur&quot;</span><span class="p">:</span><span class="sa">r</span><span class="s2">&quot;Metallicity, $</span><span class="si">%s</span><span class="s2">Z_s</span><span class="si">%s</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_params</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">grid_params</span>
+
+        <span class="c1"># set the correct dimension:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_params</span><span class="p">)</span>
+
+        <span class="c1"># set prefix and postfix:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># read grid</span>
+        <span class="n">h5_grid</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># read models and put them into evolutionary tracks:</span>
+        <span class="n">nmodels</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nmodes</span>  <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># get names of quantities in tracks</span>
+        <span class="n">track0</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">quantities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track0</span><span class="p">)]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">quantities_del</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;osc&quot;</span><span class="p">,</span> <span class="s2">&quot;osckey&quot;</span><span class="p">,</span> <span class="s2">&quot;volume_weight&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;massfin&quot;</span><span class="p">,</span> \
+                          <span class="s2">&quot;Teff&quot;</span><span class="p">,</span> <span class="s2">&quot;zini&quot;</span><span class="p">,</span> <span class="s2">&quot;xini&quot;</span><span class="p">,</span> <span class="s2">&quot;radPhot&quot;</span><span class="p">,</span> <span class="s2">&quot;LPhot&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantities_del</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="ow">in</span> <span class="n">quantities</span><span class="p">):</span>
+                <span class="k">del</span> <span class="n">quantities</span><span class="p">[</span><span class="n">quantities</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">q</span><span class="p">)]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">user_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="ow">in</span> <span class="n">qdict</span><span class="p">):</span>
+                <span class="n">q1</span> <span class="o">=</span> <span class="n">qdict</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q1</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="ow">in</span> <span class="n">qlatexdict</span><span class="p">):</span>
+                <span class="n">q2</span> <span class="o">=</span> <span class="n">qlatexdict</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q2</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">user_params</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span><span class="n">q2</span><span class="p">))</span>
+        <span class="k">global</span> <span class="n">nglb</span><span class="p">,</span> <span class="n">nlin</span><span class="p">,</span> <span class="n">ifreq_ref</span><span class="p">,</span> <span class="n">iradius</span><span class="p">,</span> <span class="n">iluminosity</span>
+        <span class="n">nglb</span>        <span class="o">=</span> <span class="mi">9</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span>
+        <span class="n">nlin</span>        <span class="o">=</span> <span class="mi">6</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span>
+        <span class="n">ifreq_ref</span>   <span class="o">=</span> <span class="mi">6</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span>
+        <span class="n">iradius</span>     <span class="o">=</span> <span class="mi">7</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span>
+        <span class="n">iluminosity</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span>
+        <span class="n">init_user_param_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_params</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">user_params</span>
+
+        <span class="c1"># read tracks</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+
+            <span class="c1"># get models names:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)),</span> \
+                             <span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/name&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)]))</span>
+            <span class="n">nmodels_track</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+            <span class="c1"># get global quantities</span>
+            <span class="n">glb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nmodels_track</span><span class="p">,</span><span class="n">nglb</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">gtype</span><span class="p">)</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">iage</span><span class="p">]</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/age&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span> <span class="c1"># (in Myrs ?)</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">imass</span><span class="p">]</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/massfin&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span> \
+                                <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_mass</span> <span class="c1"># conversion to g</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">itemperature</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/Teff&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span> <span class="c1"># K</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">iz0</span><span class="p">]</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/zini&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">ix0</span><span class="p">]</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/xini&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">iradius</span><span class="p">]</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/radPhot&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span> \
+                                <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_radius</span> <span class="c1"># conversion to cm</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">iluminosity</span><span class="p">]</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/LPhot&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span> \
+                                <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">solar_luminosity</span> <span class="c1"># conversion to erg/s</span>
+            <span class="n">glb</span><span class="p">[:,</span><span class="n">ifreq_ref</span><span class="p">]</span>    <span class="o">=</span> <span class="mf">5e5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">G</span><span class="o">*</span><span class="n">glb</span><span class="p">[:,</span><span class="n">imass</span><span class="p">]</span><span class="o">/</span><span class="n">glb</span><span class="p">[:,</span><span class="n">iradius</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="c1">#muHz</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantities</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="ow">in</span> <span class="n">qdict</span><span class="p">):</span>
+                    <span class="n">glb</span><span class="p">[:,</span><span class="n">user_params_index</span><span class="p">[</span><span class="n">qdict</span><span class="p">[</span><span class="n">q</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">,</span><span class="n">q</span><span class="p">)])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">glb</span><span class="p">[:,</span><span class="n">user_params_index</span><span class="p">[</span><span class="n">q</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">,</span><span class="n">q</span><span class="p">)])</span>
+
+            <span class="c1"># initialise track</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">aTrack</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_params</span><span class="p">)</span>
+            <span class="n">aTrack</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">aTrack</span><span class="o">.</span><span class="n">glb</span> <span class="o">=</span> <span class="n">glb</span>
+
+            <span class="c1"># get mode frequencies and inertias</span>
+            <span class="n">nmodes_track</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodels_track</span><span class="p">):</span>
+                <span class="n">nmodes_track</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osc&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">aTrack</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nmodes_track</span><span class="p">,),</span><span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">)</span>
+            <span class="n">nmodes_track</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">aTrack</span><span class="o">.</span><span class="n">mode_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">nmodes_track</span><span class="p">,]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodels_track</span><span class="p">):</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osc&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">aTrack</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">][</span><span class="n">nmodes_track</span><span class="p">:</span><span class="n">nmodes_track</span><span class="o">+</span><span class="n">n</span><span class="p">]</span>       <span class="o">=</span> <span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osckey&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">][:]</span>
+                <span class="n">aTrack</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">][</span><span class="n">nmodes_track</span><span class="p">:</span><span class="n">nmodes_track</span><span class="o">+</span><span class="n">n</span><span class="p">]</span>       <span class="o">=</span> <span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osckey&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">][:]</span>
+                <span class="n">aTrack</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">][</span><span class="n">nmodes_track</span><span class="p">:</span><span class="n">nmodes_track</span><span class="o">+</span><span class="n">n</span><span class="p">]</span>    <span class="o">=</span> <span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osc&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">][:]</span> \
+                                                                     <span class="o">/</span> <span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">ifreq_ref</span><span class="p">]</span>
+                <span class="n">aTrack</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s2">&quot;inertia&quot;</span><span class="p">][</span><span class="n">nmodes_track</span><span class="p">:</span><span class="n">nmodes_track</span><span class="o">+</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5_grid</span><span class="p">[</span><span class="s2">&quot;grid/tracks/</span><span class="si">%s</span><span class="s2">/osc&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">track</span><span class="p">)][</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">][:]</span>
+                <span class="n">nmodes_track</span> <span class="o">+=</span> <span class="n">n</span>
+                <span class="n">aTrack</span><span class="o">.</span><span class="n">mode_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nmodes_track</span><span class="p">)</span>
+
+            <span class="n">aTrack</span><span class="o">.</span><span class="n">nmodes</span> <span class="o">=</span> <span class="n">nmodes_track</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aTrack</span><span class="p">)</span>
+            <span class="n">nmodels</span> <span class="o">+=</span> <span class="n">nmodels_track</span>
+            <span class="n">nmodes</span> <span class="o">+=</span> <span class="n">nmodes_track</span>
+            <span class="k">del</span> <span class="n">glb</span>
+            <span class="k">del</span> <span class="n">names</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">batch</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">),</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">nmodes</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[2A&#39;</span><span class="p">)</span> <span class="c1"># backup two line - might not work in all terminals</span>
+
+        <span class="n">h5_grid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">),</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">nmodes</span><span class="p">))</span>
+
+        <span class="c1"># find span for each grid parameter prior to merging tracks:</span>
+        <span class="n">grid_temp</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">track</span><span class="o">.</span><span class="n">params</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">])</span>
+        <span class="n">params_span</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">grid_temp</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">grid_temp</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span> \
+                               <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_temp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+        <span class="k">del</span> <span class="n">grid_temp</span>
+
+        <span class="c1"># merge tracks which are too close:</span>
+        <span class="n">imerge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">params_span</span> <span class="o">*=</span> <span class="n">eps</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
+            <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">aModel</span><span class="p">,</span><span class="n">params_tol</span><span class="o">=</span><span class="n">params_span</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append_track</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">imerge</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I merged </span><span class="si">%d</span><span class="s2"> track(s)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">imerge</span><span class="p">))</span>
+
+        <span class="c1"># sort tracks:</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="c1"># sanity check:</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">remove_duplicate_ages</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the track </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">grid_params</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">params</span><span class="p">)))</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         has models with the same age.  Removing duplicate models.&quot;</span><span class="p">)</span>
 
         <span class="c1"># update list of indices:</span>
@@ -2366,9 +2671,9 @@
 <span class="sd">        parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">is_sorted_adim</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ERROR: track(s) not strictly sorted according to dimensionless age&quot;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: track(s) not strictly sorted according to dimensionless age. Failed at track </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Model_grid.range">
@@ -2539,7 +2844,7 @@
             <span class="n">pt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="p">]</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodels</span><span class="p">):</span>
-                <span class="n">aModel1</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> \
+                <span class="n">aModel1</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                 <span class="n">_modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> \
                                                             <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">mode_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span>
                 <span class="n">pt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">aModel1</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">iage</span><span class="p">]</span>
@@ -2706,6 +3011,8 @@
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>  <span class="c1"># If all x are &lt; eps, x[ind] will fail. In that case choose the middle value.</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
         <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scale factor </span><span class="si">%d</span><span class="s2">: </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">mat</span></div>
@@ -2766,8 +3073,9 @@
         <span class="n">coef1</span><span class="p">,</span> <span class="n">model1</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">],</span> <span class="n">model1</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">],</span> <span class="n">model1</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">],</span> <span class="n">model1</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;inertia&#39;</span><span class="p">],</span> \
         <span class="n">coef2</span><span class="p">,</span> <span class="n">model2</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">],</span> <span class="n">model2</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">],</span> <span class="n">model2</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">],</span> <span class="n">model2</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;inertia&#39;</span><span class="p">],</span> \
         <span class="n">nvalues</span><span class="p">,</span> <span class="n">lvalues</span><span class="p">,</span> <span class="n">fvalues</span><span class="p">,</span> <span class="n">ivalues</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">lvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">fvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">ivalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">])))</span></div>
+    <span class="n">new_Model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">,</span> <span class="n">_modes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">lvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">fvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">],</span> <span class="n">ivalues</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n3</span><span class="p">])),</span> <span class="n">aFe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">new_Model</span><span class="o">.</span><span class="n">A_FeH</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">model1</span><span class="o">.</span><span class="n">A_FeH</span> <span class="o">*</span> <span class="n">coef1</span> <span class="o">+</span> <span class="mi">10</span><span class="o">**</span><span class="n">model2</span><span class="o">.</span><span class="n">A_FeH</span> <span class="o">*</span> <span class="n">coef2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_Model</span></div>
 
 
 

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The constants module &mdash; AIMS 2.2.0 documentation</title>
+  <title>The constants module &mdash; AIMS 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=b21de401"></script>
+      <script src="_static/documentation_options.js?v=67b02a41"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -56,9 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="AIMS.html">The <code class="docutils literal notranslate"><span class="pre">AIMS</span></code> program</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model.html">The <code class="docutils literal notranslate"><span class="pre">model</span></code> module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#constants.A_FeH"><code class="docutils literal notranslate"><span class="pre">A_FeH</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.G"><code class="docutils literal notranslate"><span class="pre">G</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#constants.Yp"><code class="docutils literal notranslate"><span class="pre">Yp</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_cutoff"><code class="docutils literal notranslate"><span class="pre">solar_cutoff</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_dnu"><code class="docutils literal notranslate"><span class="pre">solar_dnu</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_luminosity"><code class="docutils literal notranslate"><span class="pre">solar_luminosity</span></code></a></li>
@@ -66,8 +64,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_numax"><code class="docutils literal notranslate"><span class="pre">solar_numax</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_radius"><code class="docutils literal notranslate"><span class="pre">solar_radius</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants.solar_temperature"><code class="docutils literal notranslate"><span class="pre">solar_temperature</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#constants.solar_x"><code class="docutils literal notranslate"><span class="pre">solar_x</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#constants.solar_z"><code class="docutils literal notranslate"><span class="pre">solar_z</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">The <code class="docutils literal notranslate"><span class="pre">functions</span></code> module</a></li>
@@ -102,68 +98,15 @@
   <section id="module-constants">
 <span id="the-constants-module"></span><h1>The <code class="docutils literal notranslate"><span class="pre">constants</span></code> module<a class="headerlink" href="#module-constants" title="Link to this heading"></a></h1>
 <p>A module which contains the following physical constants:</p>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><strong>Name of variable</strong></p></td>
-<td><p><strong>Quantity it describes</strong></p></td>
-<td><p><strong>Units</strong></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#constants.solar_radius" title="constants.solar_radius"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_radius</span></code></a></p></td>
-<td><p>the solar radius</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{cm}\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#constants.solar_mass" title="constants.solar_mass"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_mass</span></code></a></p></td>
-<td><p>the solar mass</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{g}\)</span></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#constants.solar_luminosity" title="constants.solar_luminosity"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_luminosity</span></code></a></p></td>
-<td><p>the solar luminosity</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{g.cm^2.s^{-3}}\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#constants.solar_temperature" title="constants.solar_temperature"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_temperature</span></code></a></p></td>
-<td><p>the solar effective temperature</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{K}\)</span></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#constants.solar_dnu" title="constants.solar_dnu"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_dnu</span></code></a></p></td>
-<td><p>the solar large frequency separation</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#constants.solar_numax" title="constants.solar_numax"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_numax</span></code></a></p></td>
-<td><p>the solar frequency at maximum power</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#constants.solar_cutoff" title="constants.solar_cutoff"><code class="xref py py-const docutils literal notranslate"><span class="pre">solar_cutoff</span></code></a></p></td>
-<td><p>the solar cutoff frequency</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{\mu Hz}\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#constants.G" title="constants.G"><code class="xref py py-const docutils literal notranslate"><span class="pre">G</span></code></a></p></td>
-<td><p>the gravitational constant</p></td>
-<td><p><span class="math notranslate nohighlight">\(\mathrm{cm^3.g^{-1}.s^{-2}}\)</span></p></td>
-</tr>
-</tbody>
-</table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These values can be edited according to the latest discoveries.  As
 good practise, it is helpful to include the relevant reference.</p>
 </div>
 <dl class="py data">
-<dt class="sig sig-object py" id="constants.A_FeH">
-<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">A_FeH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#constants.A_FeH" title="Link to this definition"></a></dt>
-<dd><p>multiplicative constant which intervenes in the
-conversion from metal content to iron content</p>
-</dd></dl>
-
-<dl class="py data">
 <dt class="sig sig-object py" id="constants.G">
 <span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.67428e-08</span></em><a class="headerlink" href="#constants.G" title="Link to this definition"></a></dt>
 <dd><p>the gravitational constant in <span class="math notranslate nohighlight">\(\mathrm{cm^3.g^{-1}.s^{-2}}\)</span></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="constants.Yp">
-<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">Yp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.248</span></em><a class="headerlink" href="#constants.Yp" title="Link to this definition"></a></dt>
-<dd><p>Primordial helium</p>
 </dd></dl>
 
 <dl class="py data">
@@ -206,18 +149,6 @@ conversion from metal content to iron content</p>
 <dt class="sig sig-object py" id="constants.solar_temperature">
 <span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">solar_temperature</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5777.0</span></em><a class="headerlink" href="#constants.solar_temperature" title="Link to this definition"></a></dt>
 <dd><p>the solar temperature in <span class="math notranslate nohighlight">\(\mathrm{K}\)</span></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="constants.solar_x">
-<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">solar_x</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.7345</span></em><a class="headerlink" href="#constants.solar_x" title="Link to this definition"></a></dt>
-<dd><p>the solar hydrogen content</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="constants.solar_z">
-<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">solar_z</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0169</span></em><a class="headerlink" href="#constants.solar_z" title="Link to this definition"></a></dt>
-<dd><p>the solar metallicity content</p>
 </dd></dl>
 
 </section>
