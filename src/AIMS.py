@@ -103,9 +103,11 @@ if (not hasattr(np, "float")):
 if (not hasattr(np, "int")):
     np.int = int
 
-# If config file does not have write_samples, default to True
+# If option missing in config file set the option
 if not hasattr(config, 'write_samples'):
     config.write_samples = True
+if not hasattr(config, 'recentre_tight_ball'):
+    config.recentre_tight_ball = True
 
 # parameters associated with the grid
 grid = None
@@ -2753,7 +2755,8 @@ def init_walkers():
                 # the star notation unpacks the tuple:
                 if (param_name in config.tight_ball_range):
                     new_distrib = Distribution(*config.tight_ball_range[param_name])
-                    new_distrib.re_centre(best_grid_params[i])
+                    if config.recentre_tight_ball:
+                        new_distrib.re_centre(best_grid_params[i])
                     tight_ball_distributions.add_prior(new_distrib)
                 else:
                     if (param_name == model.age_str):

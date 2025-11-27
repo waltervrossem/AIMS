@@ -61,6 +61,7 @@ samples_file = None
 #          temperature is reproduced correctly.
 
 tight_ball   = True  # initialise with a tight ball around best solution
+recentre_tight_ball = True  # Recentre tight ball around the best grid model
 max_iter     = 1000  # maximum number of iterations to find walker
 
 # Ranges used around tight ball configuration for walkers.
