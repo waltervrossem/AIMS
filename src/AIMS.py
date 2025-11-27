@@ -44,11 +44,13 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.2.0"
+__version__ = u"2.3.1"
 
 import os
 import sys
 
+os.environ["OMP_NUM_THREADS"] = "1"
+import numpy as np
 # AIMS configuration option
 if 'AIMS_configure.py' in os.listdir(os.getcwd()):
     sys.path = [os.getcwd(), *sys.path]
@@ -67,14 +69,17 @@ import time
 import math
 import matplotlib
 import shutil
+import json
+from functools import partial
 
 if (config.backend is not None):
     matplotlib.use(config.backend)
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-import numpy as np
-from scipy.stats import truncnorm
+from scipy.stats import truncnorm, moment
+import diptest
+from sklearn.mixture import GaussianMixture
 import emcee
 import corner
 
@@ -98,9 +103,11 @@ if (not hasattr(np, "float")):
 if (not hasattr(np, "int")):
     np.int = int
 
-# If config file does not have write_samples, default to True
+# If option missing in config file set the option
 if not hasattr(config, 'write_samples'):
     config.write_samples = True
+if not hasattr(config, 'recentre_tight_ball'):
+    config.recentre_tight_ball = True
 
 # parameters associated with the grid
 grid = None
@@ -227,6 +234,9 @@ class Distribution:
 
         self.values = _values
         """List of parameters relevant to probability function"""
+
+    def __repr__(self):
+        return f"Distribution('{self.type}', {self.values})"
 
     def __call__(self, value):
         """
@@ -991,6 +1001,25 @@ class Likelihood:
                         add_constraint_func((columns[0],
                                              Distribution(columns[1],
                                                           utilities.my_map(utilities.to_float, columns[2:]))))
+        # If either Dnu or Dnu_c in constraint or nonconstraint, also add the other one to nonconstraint
+        constraint_names = [_[0] for _ in self.constraints]
+        nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu' in constraint_names) and ('Dnu_c' not in nonconstraint_names) and config.surface_option is not None:
+            i_Dnu_constraint = constraint_names.index('Dnu')
+            self.add_nonconstraint(('Dnu_c', self.constraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu' in nonconstraint_names) and ('Dnu_c' not in constraint_names + nonconstraint_names) and config.surface_option is not None:
+            i_Dnu_constraint = nonconstraint_names.index('Dnu')
+            self.add_nonconstraint(('Dnu_c', self.nonconstraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu_c' in constraint_names) and ('Dnu' not in nonconstraint_names):
+            i_Dnu_constraint = constraint_names.index('Dnu_c')
+            self.add_nonconstraint(('Dnu', self.constraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
+        if ('Dnu_c' in nonconstraint_names) and ('Dnu' not in constraint_names + nonconstraint_names):
+            i_Dnu_constraint = nonconstraint_names.index('Dnu_c')
+            self.add_nonconstraint(('Dnu', self.nonconstraints[i_Dnu_constraint][1]))
+            nonconstraint_names = [_[0] for _ in self.nonconstraints]
 
         # print number of modes:
         print("I found %d modes in %s." % (len(self.modes), filename))
@@ -2338,7 +2367,8 @@ class Probability:
             result2 = self.priors(utilities.my_map(my_model.string_to_param, grid_params_MCMC))
         else:
             result1, surf_amplitudes, reject_classic, reject_seismic = self.likelihood.evaluate(my_model)
-            result2 = self.priors(utilities.my_map(my_model.string_to_param, grid_params_MCMC) + list(surf_amplitudes))
+            result2 = self.priors(utilities.my_map(
+                partial(my_model.string_to_param, a=surf_amplitudes), grid_params_MCMC) + list(surf_amplitudes))
 
         reject_prior = 0
         if (result2 < threshold):
@@ -2493,7 +2523,7 @@ def write_list_file(filename):
             # if (int(round(track.params[1]*100.0))%10 != 0): continue # impose step of 0.1 on alpha_MLT
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i])
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None)
                 output.write("%20s " % (amodel.name))  # the filename
                 output.write("%22.15e " % (amodel.glb[model.imass]))  # the mass (in g)
                 output.write("%22.15e " % (amodel.glb[model.iradius]))  # the radius (in cm)
@@ -2535,7 +2565,7 @@ def write_SPInS_file_cgs(filename):
         for track in grid.tracks:
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i],
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None,
                                      _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
                 output.write("%22.15e " % (amodel.glb[model.iage_adim]))  # dimensionless age parameter
                 output.write("%22.15e " % (amodel.glb[model.iage]))  # the age (in Myrs)
@@ -2578,7 +2608,7 @@ def write_SPInS_file_solar(filename):
         for track in grid.tracks:
             for i in range(0, len(track.names)):
                 # no need to copy the modes since they are not used
-                amodel = model.Model(track.glb[i], _name=track.names[i],
+                amodel = model.Model(track.glb[i], _name=track.names[i], aFe=None,
                                      _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
                 output.write("%22.15e " % (amodel.glb[model.iage_adim]))  # dimensionless age
                 output.write("%22.15e " % (amodel.glb[model.iage]))  # the age (in Myrs)
@@ -2646,8 +2676,10 @@ def find_best_model():
             print("An unexpected error occured.  Please contact the authors of AIMS.")
         optimal_amplitudes = prob.likelihood.get_optimal_surface_amplitudes(best_grid_model, mode_map)
         best_grid_params = best_grid_params + list(optimal_amplitudes)
+    else:
+        optimal_amplitudes = []
 
-    best_grid_params = best_grid_params + utilities.my_map(best_grid_model.string_to_param, config.output_params)
+    best_grid_params = best_grid_params + utilities.my_map(partial(best_grid_model.string_to_param, a=optimal_amplitudes), config.output_params)
 
     # print("Best model:  " + str(best_grid_result) + " " + str(best_grid_params))
     # best_grid_model.print_me()
@@ -2676,7 +2708,8 @@ def find_best_model_in_track(ntrack):
     reject_prior = 0
     track = grid.tracks[ntrack]
     for i in range(len(track.names)):
-        amodel = model.Model(track.glb[i], _name=track.names[i], \
+        aFe = model.get_aFe(track)
+        amodel = model.Model(track.glb[i], _name=track.names[i], aFe=aFe,
                              _modes=track.modes[track.mode_indices[i]:track.mode_indices[i + 1]])
         result, rc, rs, rp = prob.evaluate(amodel)
         reject_classic += rc
@@ -2722,7 +2755,8 @@ def init_walkers():
                 # the star notation unpacks the tuple:
                 if (param_name in config.tight_ball_range):
                     new_distrib = Distribution(*config.tight_ball_range[param_name])
-                    new_distrib.re_centre(best_grid_params[i])
+                    if config.recentre_tight_ball:
+                        new_distrib.re_centre(best_grid_params[i])
                     tight_ball_distributions.add_prior(new_distrib)
                 else:
                     if (param_name == model.age_str):
@@ -2743,56 +2777,36 @@ def init_walkers():
             tight_ball_distributions = prob.priors
 
         print("Generating walkers...")
-        if (config.PT):
+        if config.PT:
             p0 = np.zeros([config.ntemps, config.nwalkers, ndims])
-
-            ii = 0
             ntotal = config.ntemps * config.nwalkers
-            for k in range(config.ntemps):
-                for j in range(config.nwalkers):
-                    if (not config.batch):
-                        print("%d/%d" % (ii, ntotal))
-                        print('\033[2A')  # backup two lines - might not work in all terminals
-                    params = None
-                    counter = 0
-                    while (prob.is_outside(params)):
-                        if (counter > config.max_iter):
-                            raise ValueError("Too many iterations to produce walkers.")
-                        params = tight_ball_distributions.realisation()
-                        counter += 1
-                    p0[k, j, :] = params
-                    ii += 1
-            print("%d/%d" % (ii, ntotal))
-
-            # include the parameters of the best model as the first walker:
-            if (config.tight_ball):
-                for i in range(ndims):
-                    p0[0, 0, i] = best_grid_params[i]
-
         else:
             p0 = np.zeros([config.nwalkers, ndims])
-
-            ii = 0
             ntotal = config.nwalkers
-            for j in range(config.nwalkers):
-                if (not config.batch):
-                    print("%d/%d" % (ii, ntotal))
-                    print('\033[2A')  # backup two lines - might not work in all terminals
-                params = None
-                counter = 0
-                while (prob.is_outside(params)):
-                    if (counter > config.max_iter):
-                        raise ValueError("Too many iterations to produce walkers.")
-                    params = tight_ball_distributions.realisation()
-                    counter += 1
-                p0[j, :] = params
-                ii += 1
-            print("%d/%d" % (ii, ntotal))
 
-            # include the parameters of the best model as the first walker:
-            if (config.tight_ball):
-                for i in range(ndims):
-                    p0[0, i] = best_grid_params[i]
+        for ii in tqdm(range(ntotal)):
+
+            params = None
+            counter = 0
+            while (prob.is_outside(params)):
+                if (counter > config.max_iter):
+                    raise ValueError(f"Too many iterations to produce walkers. Walker index {ii}, num walkers {ntotal} Max iter {config.max_iter}")
+                params = tight_ball_distributions.realisation()
+                counter += 1
+
+            if config.PT:
+                k = ii // config.nwalkers
+                j = ii % config.nwalkers
+                p0[k, j, :] = params
+            else:
+                p0[ii, :] = params
+
+        # include the parameters of the best model as the first walker:
+        if (config.tight_ball):
+            if config.PT:
+                p0[0, 0, :] = best_grid_params[:ndims]
+            else:
+                p0[0, :] = best_grid_params[:ndims]
 
     else:
         print("Initialise walkers from samples file")
@@ -2909,6 +2923,8 @@ def run_emcee(p0):
         print("Autocorrelation time: %s" % (str(autocorr_time)))
     except emcee.autocorr.AutocorrError:
         print("Autocorrelation time not available")
+    except IndexError:
+        print("Autocorrelation time not available")
 
     return sampler, np.array(percentiles)
 
@@ -2942,7 +2958,7 @@ def find_a_blob(params):
     """
 
     my_model = model.interpolate_model(grid, params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    return utilities.my_map(my_model.string_to_param, config.output_params)
+    return utilities.my_map(partial(my_model.string_to_param, a=params[-nsurf:]), config.output_params)
 
 
 def write_samples(filename, labels, samples):
@@ -3379,6 +3395,175 @@ def write_model(my_model, my_params, my_result, model_name, extended=False):
                 math.sqrt(prob.likelihood.cov[i, i]), fvalues[i]))
 
 
+def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_model, statistical_model, config, return_dict=False):
+
+    one_sigma = 0.682689492137
+    two_sigma = 0.954499736104
+    three_sigma = 0.997300203937
+    quantiles = 0.5 + np.array([-three_sigma/2, -two_sigma/2, -one_sigma/2, 0, one_sigma/2, two_sigma/2, three_sigma/2])
+
+
+    out = {'parameters': {},
+           'observations': {'constraints': {},
+                            'nonconstraints': {}},
+           'models': {'grid': {},
+                      'MCMC': {},
+                      'stat': {}},
+           'info': {},
+           'constants': {},
+           'config': {},
+           }
+
+    out['info']['covariance'] = np.cov(samples, rowvar=False).tolist()
+    out['info']['covariance_big'] = np.cov(samples_big, rowvar=False).tolist()
+
+    for i, best_model in enumerate([best_grid_model, best_MCMC_model, statistical_model]):
+        key = list(out['models'].keys())[i]
+        if best_model is None:
+            out['models'][key] = {}
+            continue
+
+        if key == 'grid':
+            out['models'][key]['name'] = str(best_model.name)
+        out['models'][key]['mass'] = float(best_model.glb[model.imass])
+        out['models'][key]['freq_ref'] = float(best_model.glb[model.ifreq_ref])
+        out['models'][key]['temperature'] = float(best_model.glb[model.itemperature])
+        out['models'][key]['luminosity'] = float(best_model.glb[model.iluminosity])
+        out['models'][key]['age'] = float(best_model.glb[model.iage])
+        out['models'][key]['age_adim'] = float(best_model.glb[model.iage_adim])
+        out['models'][key]['z0'] = float(best_model.glb[model.iz0])
+        out['models'][key]['x0'] = float(best_model.glb[model.ix0])
+        for (name, latex_name) in config.user_params:
+            out['models'][key][name] = float(best_model.glb[model.user_params_index[name]])
+
+        out['models'][key]['ln(P)'] = prob.evaluate(best_model)[0]
+        mode_map, nmissing = prob.likelihood.find_map(best_model, config.use_n)
+        out['models'][key]['ln(P_seismic)'] = prob.likelihood.compare_frequency_combinations(best_model, mode_map, a=best_model.glb[ndims - nsurf:ndims])
+        out['models'][key]['ln(P_classic)'] = prob.likelihood.apply_constraints(best_model)
+        out['models'][key]['ln(P_priors)'] = prob.priors(best_model.glb[:ndims])
+
+        out['models'][key]['modes'] = []
+        for mode in best_model.modes:
+            out['models'][key]['modes'].append([int(mode['n']),
+                                                int(mode['l']),
+                                                float(mode['freq'] * best_model.glb[model.ifreq_ref]),
+                                                float(mode['inertia'])])
+
+    for name in grid_params_MCMC_with_surf + config.output_params:
+        out['parameters'][str(name)] = {}
+
+    for name in out['parameters'].keys():
+        if name in grid_params_MCMC_with_surf:
+            i_samples = 1 + grid_params_MCMC_with_surf.index(name)
+            use_samples = samples[:, i_samples]
+            i_mode = np.argmax(samples[:,0])
+        else:
+            i_samples = 1 + len(grid_params_MCMC_with_surf) + config.output_params.index(name)
+            use_samples = samples_big[:, i_samples]
+            i_mode = np.argmax(samples_big[:, 0])
+
+        out['parameters'][name]['mean'] = float(np.mean(use_samples))
+        out['parameters'][name]['std'] = float(np.std(use_samples))
+
+        sigmas = np.quantile(use_samples, quantiles)
+        median = sigmas[3]
+        out['parameters'][name]['median'] = float(median)
+        out['parameters'][name]['sigmas'] = [float(_) for _ in (sigmas[sigmas != median] - median)]
+
+        out['parameters'][name]['mode'] = float(use_samples[i_mode])
+
+        # Hartigan's Dip statistic and Bimodality coefficient
+        # https://doi.org/10.1155/2019/4819475
+
+        n = len(use_samples)
+        m2, m3, m4 = moment(use_samples, (2, 3, 4), center=out['parameters'][name]['mean'])
+
+        skew = math.sqrt(n * (n - 1)) / (n - 2) * m3 / math.sqrt(m2 ** 3)
+        kurt = (n - 1) / ((n - 2) * (n - 3)) * ((n + 1) * m4 / m2 ** 2 - (n - 1) * 3)
+        bimod_coeff = (skew ** 2 + 1) / (kurt + 3 * ((n - 1) ** 2 / ((n - 2) * (n - 3))))
+
+        out['parameters'][name]['bimodality_coeff'] = float(bimod_coeff)
+
+        dip, pval, extra = diptest.diptest(use_samples, full_output=True)
+        out['parameters'][name]['hartigan_dip'] = dip
+        out['parameters'][name]['hartigan_dip_pval'] = pval
+
+        # extra['lo'] = int(extra['lo'])
+        # extra['hi'] = int(extra['hi'])
+        extra.pop('lo')
+        extra.pop('hi')
+        extra['xu'] = float(extra['xu'])
+        extra['xl'] = float(extra['xl'])
+        extra.pop('gcm')
+        extra.pop('lcm')
+        out['parameters'][name]['hartigan_dip_info'] = extra
+
+        alpha_L = 0.001
+        alpha_U = 0.32
+        alpha = np.sqrt((alpha_U - alpha_L) ** 2 * bimod_coeff) + alpha_L
+        out['parameters'][name]['is_multimodal'] = ['no', 'yes'][int(pval > alpha)]
+
+        if out['parameters'][name]['is_multimodal'] == 'yes':
+            gmms = [GaussianMixture(n_components=num) for num in range(1, 6)]
+            for gm in gmms:
+                gm.fit(use_samples.reshape(-1, 1))
+            bics = [gm.bic(use_samples.reshape(-1, 1)) for gm in gmms]
+
+            gmm_info = {}
+            for gm in gmms:
+                gmm_info[gm.n_components] = {'means': gm.means_.reshape(-1).tolist(),
+                                             'std': np.sqrt(gm.covariances_).reshape(-1).tolist(),
+                                             'weigths': gm.weights_.reshape(-1).tolist(),
+                                             'bic': gm.bic(use_samples.reshape(-1, 1)).reshape(-1).tolist()}
+            out['parameters'][name]['gaussian_mixtures'] = gmm_info
+
+    for name, dist in like.constraints:
+        out['observations']['constraints'][name] = [dist.type, *dist.values]
+    for name, dist in like.nonconstraints:
+        out['observations']['nonconstraints'][name] = [dist.type, *dist.values]
+
+    out['observations']['modes'] = [[int(m.l), int(m.n), float(m.freq), float(m.dfreq)] for m in like.modes]
+
+    out['constants'] = {k:constants.__dict__[k] for k in dir(constants) if not k.startswith('__')}
+
+    out['config']['binary_grid'] = config.binary_grid
+    out['config']['distort_grid'] = ['no', 'yes'][int(config.distort_grid)]
+    out['config']['retessellate'] = ['no', 'yes'][int(config.retessellate)]
+
+    with open(path, 'w') as handle:
+        json.dump(out, handle, indent=4)
+
+    if return_dict:
+        return out
+
+
+# def calculate_HDSwBC(samples, bimod_coeff, n=1000, kind='irrational'):
+#     """
+#     Calculate the Hartigan Dip Statistic with bimodality coefficient.
+#
+#     :param samples:
+#     :param bimod_coeff:
+#     :param n: Number of bootstrap samples.
+#     :param kind:
+#     :return:
+#     """
+#     alpha_U =
+#     alpha_L =
+#
+#     if kind == 'linear':
+#         alpha = (alpha_U - alpha_L) * bimod_coeff + alpha_L
+#     elif kind == 'quadratic':
+#         alpha = (alpha_U - alpha_L) * bimod_coeff**2 + alpha_L
+#     elif kind == 'exponential':
+#         alpha_UL = (alpha_U/alpha_L)
+#         alpha = alpha_UL ** (bimod_coeff + np.log(alpha_L)/np.log(alpha_UL))
+#     elif kind == 'irrational':
+#         alpha = np.sqrt((alpha_U - alpha_L)**2 * bimod_coeff) + alpha_L
+#     else:
+#         raise ValueError(f'Unknown kind {kind}.')
+#
+#     dip, pval = diptest.diptest(x)
+
 def string_to_title(string):
     """
     Create fancy title from string.
@@ -3611,7 +3796,7 @@ def write_osm_xml(filename, my_params, my_model):
             target_osm = etree.Element("target")
             target_osm.set("name", "log_zsx_s")
             value_osm = etree.SubElement(target_osm, "value")
-            value_osm.text = "%22.15e" % (distrib.mean + np.log10(constants.solar_z / constants.solar_x))
+            value_osm.text = "%22.15e" % (distrib.mean + np.log10(config.solar_z / config.solar_x))
             sigma_osm = etree.SubElement(target_osm, "sigma")
             sigma_osm.text = "%22.15e" % (distrib.error_bar)
             config_osm.append(target_osm)
@@ -3889,7 +4074,7 @@ def plot_echelle_diagram(my_model, my_params, model_name):
 
     # save plot
     for ext in config.plot_extensions:
-        plt.savefig(os.path.join(output_folder, "echelle_" + model_name.replace(" ", "_") + "." + ext))
+        plt.savefig(os.path.join(output_folder, 'figs', "echelle_" + model_name.replace(" ", "_") + "." + ext))
 
     plt.close()
 
@@ -3954,13 +4139,13 @@ def plot_frequency_diff(my_model, my_params, model_name, scaled=False):
     else:
         plt.ylabel(r"Frequency differences, $\nu_{\mathrm{theo}}-\nu_{\mathrm{obs}}$ (in $\mu$Hz)")
     plt.legend()
-
+    plt.axhline(0, ls='--', color='grey', zorder=-10)
     # save plot
     for ext in config.plot_extensions:
         if (scaled):
-            plt.savefig(os.path.join(output_folder, "diff_scaled_" + model_name.replace(" ", "_") + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "diff_scaled_" + model_name.replace(" ", "_") + "." + ext))
         else:
-            plt.savefig(os.path.join(output_folder, "diff_" + model_name.replace(" ", "_") + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "diff_" + model_name.replace(" ", "_") + "." + ext))
 
         plt.close()
 
@@ -4086,7 +4271,7 @@ def plot_distrib_iter(percentiles, labels, folder):
         plt.xlabel(r"Iteration, $n$")
         plt.ylabel(r"Walker distribution")
         for ext in config.plot_extensions:
-            plt.savefig(os.path.join(folder, "distrib_iter_" + grid_params_MCMC_with_surf[i] + "." + ext))
+            plt.savefig(os.path.join(folder, 'figs/',  "distrib_iter_" + grid_params_MCMC_with_surf[i] + "." + ext))
         plt.clf()
 
 
@@ -4111,14 +4296,25 @@ def plot_histograms(samples, names, fancy_names, truths=None):
     for i in range(len(names)):
         plt.figure()
         n, bins, patches = plt.hist(samples[:, i], 50, density=True, histtype='bar')
-        # n, bins, patches = plt.hist(samples[:,i],50,normed=True,histtype='bar')
-        if (truths is not None):
+        if np.isfinite(truths[i][0]):
             ylim = plt.ylim()
-            plt.plot([truths[i], truths[i]], ylim, 'g-')
-            plt.ylim(ylim)  # restore limits, just in case
+
+            mean = truths[i][0]
+            sigma = truths[i][1]
+            color = truths[i][2]
+            x = np.linspace(*plt.xlim(), 101)
+            if sigma > 0:
+                y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2 * math.pi))
+                plt.fill_between(x, y, alpha=0.5, color='g')
+            else:
+                plt.axvline(mean, color='g', ls='-')
+
+            # restore limits
+            plt.xlim(x[0], x[-1])
+            plt.ylim(ylim)
         plt.xlabel(fancy_names[i])
         for ext in config.plot_extensions:
-            plt.savefig(os.path.join(output_folder, "histogram_" + names[i] + "." + ext))
+            plt.savefig(os.path.join(output_folder, 'figs', "histogram_" + names[i] + "." + ext))
 
     plt.close()
 
@@ -4226,12 +4422,12 @@ if __name__ == "__main__":
     # this if for writing binary data
     if (config.mode == "write_grid"):
         write_binary_data(config.list_grid, config.binary_grid)
-        sys.exit(0)
+        raise Exception(f"Finished {config.mode}")
 
     # this if for testing the interpolation
     if (config.mode == "test_interpolation"):
         interpolation_tests(config.interpolation_file)
-        sys.exit(0)
+        raise Exception(f"Finished {config.mode}")
 
     # sanity check
     if (config.mode != "fit_data"):
@@ -4255,15 +4451,19 @@ if __name__ == "__main__":
         if (os.path.isfile(output_folder)):
             raise FileExistsError('Unable to overwrite file "%s" with folder' % (output_folder))
         else:
-            print('WARNING: output folder "%s" already exists.' % (output_folder))
-            print('         Should I empty this folder (y/n)?')
-            answer = utilities.my_input().strip()
-            if (answer[0].upper() != "Y"):
-                sys.exit(0)
+            # Ignore pre-existing folder in batch-mode
+            if not config.batch:
+                print('WARNING: output folder "%s" already exists.' % (output_folder))
+                print('         Should I empty this folder (y/n)?')
+                answer = input().strip()
+                if (answer[0].upper() != "Y"):
+                    raise FileExistsError(f"Output folder already exists: {output_folder}")
             shutil.rmtree(output_folder)
             os.makedirs(output_folder, exist_ok=True)
+            os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)
     else:
         os.makedirs(output_folder)
+        os.makedirs(os.path.join(output_folder, 'figs'), exist_ok=True)
 
     # save a copy of config and input file used
     shutil.copy2(config.__file__, output_folder)
@@ -4281,6 +4481,30 @@ if __name__ == "__main__":
     # seed random number generator (NOTE: this is not thread-safe):
     np.random.seed()
 
+    # load grid and associated quantities
+    grid = load_binary_data(config.binary_grid)
+    grid_params_MCMC = grid.grid_params + (model.age_str,)
+    grid_params_MCMC_with_surf = grid_params_MCMC \
+                                 + model.get_surface_parameter_names(config.surface_option)
+    nsurf = len(model.get_surface_parameter_names(config.surface_option))
+    ndims = len(grid_params_MCMC_with_surf)
+
+    # Remove duplicates in grid_params + output_params
+    n_output_params = len(config.output_params)
+    new_output = []
+    duplicates = []
+    for name in config.output_params:
+        if name in grid_params_MCMC_with_surf:
+            duplicates.append(name)
+        else:
+            if name in new_output:
+                duplicates.append(name)
+            else:
+                new_output.append(name)
+    config.output_params = tuple(new_output)
+    if len(config.output_params) != n_output_params:
+        print(f'Warning! Duplicate output_params in AIMS_configure.py: {", ".join(duplicates)}')
+
     # define likelihood function:
     like = Likelihood()
     like.read_constraints(sys.argv[1], factor=1.0)
@@ -4289,14 +4513,6 @@ if __name__ == "__main__":
     like.find_covariance()
     like.create_combination_arrays()
     like.find_weights()
-
-    # load grid and associated quantities
-    grid = load_binary_data(config.binary_grid)
-    grid_params_MCMC = grid.grid_params + (model.age_str,)
-    grid_params_MCMC_with_surf = grid_params_MCMC \
-                                 + model.get_surface_parameter_names(config.surface_option)
-    nsurf = len(model.get_surface_parameter_names(config.surface_option))
-    ndims = len(grid_params_MCMC_with_surf)
 
     # define priors:
     priors = Prior_list()
@@ -4373,7 +4589,7 @@ if __name__ == "__main__":
 
     # Various diagnostic which must be done before reshaping the samples:
     if (config.with_walkers):
-        plot_walkers(samples, labels[1:], os.path.join(output_folder, "walkers."), nw=3)
+        plot_walkers(samples, labels[1:], os.path.join(output_folder, 'figs/', "walkers."), nw=3)
 
     if (config.with_distrib_iter):
         plot_distrib_iter(percentiles, labels[1:], output_folder)
@@ -4401,12 +4617,7 @@ if __name__ == "__main__":
     if config.write_samples:
         write_samples(os.path.join(output_folder, "samples.txt"), labels, samples)
         write_samples(os.path.join(output_folder, "samples_big.txt"), labels_big, samples_big)
-    write_statistics(os.path.join(output_folder, "results.txt"), names_big[1:], samples[:, 1:])
-    write_statistics(os.path.join(output_folder, "results_big.txt"), names_big[1:], samples_big[:, 1:])
-    write_percentiles(os.path.join(output_folder, "percentiles.txt"), \
-                      names_big[1:], samples[:, 1:])
-    write_percentiles(os.path.join(output_folder, "percentiles_big.txt"), \
-                      names_big[1:], samples_big[:, 1:])
+
     if (config.with_combinations):
         write_combinations(os.path.join(output_folder, "combinations.txt"), samples[0::config.thin_comb, 1:])
 
@@ -4414,7 +4625,8 @@ if __name__ == "__main__":
     if (best_grid_model is not None):
         write_model(best_grid_model, best_grid_params, best_grid_result, \
                     "best_grid", extended=config.extended_model)
-        write_combinations(os.path.join(output_folder, "combinations_best_grid.txt"), [best_grid_params])
+        if config.with_combinations:
+            write_combinations(os.path.join(output_folder, "combinations_best_grid.txt"), [best_grid_params])
         if (config.with_echelle):
             plot_echelle_diagram(best_grid_model, best_grid_params, "Best grid")
         plot_frequency_diff(best_grid_model, best_grid_params, "Best grid", scaled=False)
@@ -4426,10 +4638,11 @@ if __name__ == "__main__":
     best_MCMC_params = samples[ndx_max, 1:]
     best_MCMC_params.reshape(ndims)
     best_MCMC_model = model.interpolate_model(grid, best_MCMC_params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    best_MCMC_params = list(best_MCMC_params) + utilities.my_map(best_MCMC_model.string_to_param, config.output_params)
+    best_MCMC_params = list(best_MCMC_params) + utilities.my_map(partial(best_MCMC_model.string_to_param, a=best_grid_params[ndims - nsurf:ndims]), config.output_params)
     write_model(best_MCMC_model, best_MCMC_params, best_MCMC_result, \
                 "best_MCMC", extended=config.extended_model)
-    write_combinations(os.path.join(output_folder, "combinations_best_MCMC.txt"), [best_MCMC_params])
+    if config.with_combinations:
+        write_combinations(os.path.join(output_folder, "combinations_best_MCMC.txt"), [best_MCMC_params])
     if (config.with_echelle):
         plot_echelle_diagram(best_MCMC_model, best_MCMC_params, "Best MCMC")
     plot_frequency_diff(best_MCMC_model, best_MCMC_params, "Best MCMC", scaled=False)
@@ -4440,16 +4653,20 @@ if __name__ == "__main__":
     statistical_params.reshape(ndims)
     statistical_result = prob(statistical_params)
     statistical_model = model.interpolate_model(grid, statistical_params[0:ndims - nsurf], grid.tessellation, grid.ndx)
-    if (statistical_model is not None):
-        statistical_params = list(statistical_params) + utilities.my_map(statistical_model.string_to_param,
+    if config.record_statistical and (statistical_model is not None):
+        statistical_params = list(statistical_params) + utilities.my_map(partial(statistical_model.string_to_param, a=statistical_params[ndims - nsurf:ndims]),
                                                                          config.output_params)
         write_model(statistical_model, statistical_params, statistical_result, \
                     "statistical", extended=config.extended_model)
-        write_combinations(os.path.join(output_folder, "combinations_statistical.txt"), [statistical_params])
+        if config.with_combinations:
+            write_combinations(os.path.join(output_folder, "combinations_statistical.txt"), [statistical_params])
         if (config.with_echelle):
             plot_echelle_diagram(statistical_model, statistical_params, "statistical")
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=False)
         plot_frequency_diff(statistical_model, statistical_params, "statistical", scaled=True)
+
+    output = write_new_output(os.path.join(output_folder, "output.json"), samples, samples_big, best_grid_model,
+                              best_MCMC_model, statistical_model, config, return_dict=True)
 
     # write OSM files:
     if (config.with_osm):
@@ -4462,7 +4679,7 @@ if __name__ == "__main__":
     #                     sys.argv[1][3:], names_big[1:], samples_big[:,1:])
 
     # make various plots:
-    obs_constraints = [None for _ in names_big]
+    obs_constraints = [[np.nan, np.nan, ''] for _ in names_big]
     for i, name in enumerate(names_big):
         i_constraint = []
         i_nonconstraint = []
@@ -4472,45 +4689,67 @@ if __name__ == "__main__":
             i_nonconstraint = np.nonzero(np.asarray(like.nonconstraints)[:,0] == name)[0]
 
         if len(i_constraint) != 0:
-            obs_constraints[i] = like.constraints[i_constraint[0]][1].mean
+            obs_constraints[i] = [like.constraints[i_constraint[0]][1].mean, like.constraints[i_constraint[0]][1].error_bar, 'r']
         if len(i_nonconstraint) != 0:
-            obs_constraints[i] = like.nonconstraints[i_nonconstraint[0]][1].mean
-    obs_constraints = np.asarray(obs_constraints)
+            obs_constraints[i] = [like.nonconstraints[i_nonconstraint[0]][1].mean, like.nonconstraints[i_nonconstraint[0]][1].error_bar, 'g']
+    obs_constraints = np.asarray(obs_constraints, dtype=object)
 
     if (best_grid_model is None):
         plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"])
     else:
-        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[best_grid_result])
+        plot_histograms(samples[:, 0:1], ["lnP"], ["ln(P)"], truths=[[best_grid_result, 0, 'g']])
 
     if (config.with_histograms):
         plot_histograms(samples_big[:, 1:], names_big[1:], labels_big[1:], truths=obs_constraints[1:])
 
     if (config.with_rejected):
         if (len(rejected_parameters) >= ndims - nsurf):
-            fig = corner.corner(np.array(rejected_parameters), labels=labels[1:ndims - nsurf + 1])
+            fig = corner.corner(np.array(rejected_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
-                fig.savefig(os.path.join(output_folder, "rejected." + ext))
+                fig.savefig(os.path.join(output_folder, 'figs', "rejected." + ext))
                 plt.close('all')
         if (len(accepted_parameters) >= ndims - nsurf):
-            fig = corner.corner(np.array(accepted_parameters), labels=labels[1:ndims - nsurf + 1])
+            fig = corner.corner(np.array(accepted_parameters), labels=labels[1:ndims - nsurf + 1], hist_kwargs={'density':True})
             for ext in config.tri_extensions:
-                fig.savefig(os.path.join(output_folder, "accepted." + ext))
+                fig.savefig(os.path.join(output_folder, 'figs', "accepted." + ext))
                 plt.close('all')
 
     if (config.with_triangles):
-        fig = corner.corner(samples[:, 1:], truths=obs_constraints[1:ndims+1], labels=labels[1:])
+        fig = corner.corner(samples[:, 1:], labels=labels[1:], hist_kwargs={'density':True})
+        triangle_ind = [i for i, name in enumerate(labels_big) if name in labels[1:]]
+        truths = obs_constraints[triangle_ind]
+        for i, (mean, sigma, color) in enumerate(truths):
+            if np.isfinite(mean):
+                ax = fig.axes[(len(truths) + 1) * i]
+                if  sigma > 0:
+                    x = np.linspace(*ax.get_xlim(), 101)
+                    y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                    ax.fill_between(x, y, alpha=0.5, color=color, zorder=-1)
+                    ax.set_xlim(x[0], x[-1])
+                else:
+                    ax.axvline(mean, color=color, ls='--')
+
         for ext in config.tri_extensions:
-            fig.savefig(os.path.join(output_folder, "triangle." + ext))
+            fig.savefig(os.path.join(output_folder, 'figs', "triangle." + ext))
             plt.close('all')
 
         triangle_ind = slice(1, samples_big.shape[1])
-        triangle_truths_ind = slice(samples_big.shape[1] - 1)
         if hasattr(config, 'triangle_params'):
             if config.triangle_params is not None:
                 triangle_ind = [i for i, name in enumerate(names_big) if name in config.triangle_params]
 
-        fig = corner.corner(samples_big[:, triangle_ind], truths=obs_constraints[triangle_ind],
-                            labels=np.asarray(labels_big)[triangle_ind])
+        fig = corner.corner(samples_big[:, triangle_ind], labels=np.asarray(labels_big)[triangle_ind], hist_kwargs={'density':True})
+        truths = obs_constraints[triangle_ind]
+        for i, (mean, sigma, color) in enumerate(truths):
+            if np.isfinite(mean):
+                ax = fig.axes[(len(truths) + 1) * i]
+                if  sigma > 0:
+                    x = np.linspace(*ax.get_xlim(), 101)
+                    y = np.exp(-0.5 * ((x - mean) / sigma) ** 2) / (sigma * math.sqrt(2*np.pi))
+                    ax.fill_between(x, y, alpha=0.5, color=color, zorder=-1)
+                    ax.set_xlim(x[0], x[-1])
+                else:
+                    ax.axvline(mean, color=color, ls='--')
         for ext in config.tri_extensions:
-            fig.savefig(os.path.join(output_folder, "triangle_big." + ext))
+            fig.savefig(os.path.join(output_folder, 'figs', "triangle_big." + ext))
             plt.close('all')

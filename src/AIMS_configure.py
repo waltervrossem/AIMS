@@ -61,6 +61,7 @@ samples_file = None
 #          temperature is reproduced correctly.
 
 tight_ball   = True  # initialise with a tight ball around best solution
+recentre_tight_ball = True  # Recentre tight ball around the best grid model
 max_iter     = 1000  # maximum number of iterations to find walker
 
 # Ranges used around tight ball configuration for walkers.
@@ -194,6 +195,23 @@ binary_grid = "tests/data/test.aimsgrid" # binary file with model grid
                                  # this file is read from otherwise
 track_threshold = 2              # minimal number of models for a stellar evolutionary
                                  # track.  Tracks with fewer models are removed
+#########################   Grid specific constants   ######################
+# solar_x = 0.7336  # Grevesse & Noels (1993)
+solar_x = 0.7345  # Grevesse & Sauval (1998)
+# solar_x = 0.7392  # Asplund et al. (2005)
+# solar_x = 0.7381  # Asplund et al. (2009)
+# solar_x = 0.7355 # Asplund et al. (2009), Lebreton
+""" the solar hydrogen content """
+
+# solar_z = 0.0179  # Grevesse & Noels (1993)
+solar_z = 0.0169  # Grevesse & Sauval (1998)
+# solar_z = 0.0122  # Asplund et al. (2005)
+# solar_z = 0.0134  # Asplund et al. (2009)
+# solar_z = 0.0131  # Asplund et al. (2009), Lebreton
+""" the solar metallicity content """
+
+Yp = 0.2485
+""" Primordial helium """
 #########################   User-defined parameters   ######################
 # This variable allows the user to introduce supplementary parameters in
 # addition to the parameters hard-coded in to AIMS.  These parameters
@@ -219,7 +237,11 @@ user_params = (('Zs', 'Surface metallicity, $%sZ_s%s$'), \
                ('Xc', 'Central hydrogen, $%sX_c%s$'), \
                ('alpha_MLT', 'Mixing-length parameter, $%s\\alpha%s$'), \
                ('Tc', 'Central temperature, $%sT_c%s$'))
-
+alpha_Fe_param = None
+""" [alpha/Fe] used to calculate A_FeH correction factor. Can be a float or string. If a string, it must be a
+ grid parameter."""
+use_Asplund_A_FeH = True  # If True, uses the Asplund 09 metal mixture for the Salaris correction. If False,
+                          # use the gs98 metal mixture
 #########################   Priors    ######################################
 # The priors are given in a similar format as the tight-ball ranges above.
 # An important difference is that the relevant probability distributions

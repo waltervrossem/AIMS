@@ -63,6 +63,7 @@ if (config.backend is not None):
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from bisect import bisect_right
+import h5py
 
 # maximum filename length
 # filename_dtype = "U1000"
@@ -218,6 +219,8 @@ def string_to_latex(string, prefix="", postfix=""):
         return r'$%sT_{\mathrm{eff}}%s$ (in K)' % (prefix, postfix)
     if (string == "Dnu"):
         return r'Large separation (in $\mu$Hz), $%s\Delta \nu%s$' % (prefix, postfix)
+    if (string == "Dnu_c"):
+        return r'Corrected Large separation (in $\mu$Hz), $%s\Delta \nu%s$' % (prefix, postfix)
     if (string == "numax"):
         return r'$%s\nu_{\mathrm{max}}%s$ (in $\mu$Hz)' % (prefix, postfix)
     if (string == "Rho"):
@@ -278,16 +281,93 @@ def get_surface_parameter_names(surface_option):
         return ("alpha_surf", "beta_Sonoi2015")
     raise ValueError("Unknown surface correction: " + surface_option)
 
+def get_aFe(track):
+    """Get [alpha/Fe] from a track."""
+    if isinstance(config.alpha_Fe_param, str):
+        if config.alpha_Fe_param in track.grid_params:
+            i_aFe = track.grid_params.index(config.alpha_Fe_param)
+            aFe = track.params[i_aFe]
+        else:
+            aFe = None
+    else:
+        aFe = config.alpha_Fe_param
+    return aFe
 
 class Model:
     """A class which contains a stellar model, including classical and seismic information."""
 
-    def string_to_param(self, string):
+    def __init__(self, _glb, _name=None, _modes=None, aFe=None):
+        """
+        :param _glb: 1D array of global parameters for this model.  Its dimension should
+          be greater or equal to :py:data:`nglb`
+        :param _name: name of the model (typically the second part of its path)
+        :param _modes: list of modes in the form of tuples
+          (n,l,freq,inertia) which will be appended to the set of modes in the model.
+        :param aFe: [alpha/Fe] used to calculate A_FeH correction factor. Can be a float
+          or string or None. If a string, it must be a grid parameter.
+
+        :type _glb: np.array
+        :type _name: string
+        :type _modes: list of (int, int, float, float)
+        """
+
+        # check inputs
+        assert (_glb[imass] >= 0.0), "A star cannot have a negative mass!"
+        assert (_glb[iradius] >= 0.0), "A star cannot have a negative radius!"
+        assert (_glb[iluminosity] >= 0.0), "A star cannot have a negative luminosity!"
+        assert (_glb[iz0] >= 0.0), "A star cannot have a negative metallicity!"
+        assert (_glb[ix0] >= 0.0), "A star cannot have a negative hydrogen abundance!"
+        assert (_glb[iage] >= 0.0), "A star cannot have a negative age!"
+        assert (_glb[itemperature] >= 0.0), "A star cannot have a negative temperature!"
+
+        self.name = _name
+        """Name of the model, typically the second part of its path"""
+
+        self.glb = _glb
+        """Array which will contain various global quantities"""
+
+        self.glb[ifreq_ref] = 5e5 * math.sqrt(constants.G * self.glb[imass] / self.glb[iradius] ** 3) / math.pi
+        """Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`"""
+
+        """array containing the modes (n, l, freq, inertia)"""
+        if _modes is not None:
+            self.modes = np.array(_modes, dtype=modetype)
+        else:
+            self.modes = np.empty([0], dtype=modetype)
+
+        if config.alpha_Fe_param is None or aFe is None:
+            self.A_FeH = 0.0
+        else:
+            # These coefficients are calculated using AIMS/etc/calc_A_FeH_coeffs.py
+            if config.use_Asplund_A_FeH:
+                # Using Asplund 2009 solar mixture
+                a = 0.6386992237569251
+                b = 0.3613007762430738
+            else:
+                # Using gs98 solar mixture
+                a = 0.6622333205008432
+                b = 0.3377666794991567
+            self.A_FeH = np.log10(a * 10 ** aFe + b)
+
+
+    def __del__(self):
+        """
+        Clears a model instance.
+        """
+
+        del self.modes
+        del self.glb
+        del self.name
+
+    def string_to_param(self, string, a=[]):
         """
         Return a parameter for an input string.
-        
+
         :param string: string that indicates which parameter we're seeking
         :type string: string
+
+        :param a: amplitude parameters which intervene in the surface correction
+        :type a: array-like
 
         :return: the value of the parameter
         :rtype: float
@@ -328,7 +408,7 @@ class Model:
         if (string == "M_H0"):
             return self.MH0
         if (string == "dY_dZ"):
-            return (1.0 - self.glb[iz0] - self.glb[ix0] - constants.Yp) / self.glb[iz0]
+            return (1.0 - self.glb[iz0] - self.glb[ix0] - config.Yp) / self.glb[iz0]
         if (string == age_str):
             return self.glb[iage]
         if (string == age_adim_str):
@@ -337,6 +417,8 @@ class Model:
             return self.glb[itemperature]
         if (string == "Dnu"):
             return self.find_large_separation() * self.glb[ifreq_ref]
+        if (string == "Dnu_c"):
+            return self.find_surface_corrected_large_separation(a) * self.glb[ifreq_ref]
         if (string == "numax"):
             return self.numax
         if (string == "Rho"):
@@ -356,52 +438,6 @@ class Model:
 
         # raises a KeyError if `string` isn't a valid key
         return self.glb[user_params_index[string]]
-
-    def __init__(self, _glb, _name=None, _modes=None):
-        """
-        :param _glb: 1D array of global parameters for this model.  Its dimension should
-          be greater or equal to :py:data:`nglb`
-        :param _name: name of the model (typically the second part of its path)
-        :param _modes: list of modes in the form of tuples
-          (n,l,freq,inertia) which will be appended to the set of modes in the model.
-
-        :type _glb: np.array
-        :type _name: string
-        :type _modes: list of (int, int, float, float)
-        """
-
-        # check inputs
-        assert (_glb[imass] >= 0.0), "A star cannot have a negative mass!"
-        assert (_glb[iradius] >= 0.0), "A star cannot have a negative radius!"
-        assert (_glb[iluminosity] >= 0.0), "A star cannot have a negative luminosity!"
-        assert (_glb[iz0] >= 0.0), "A star cannot have a negative metallicity!"
-        assert (_glb[ix0] >= 0.0), "A star cannot have a negative hydrogen abundance!"
-        assert (_glb[iage] >= 0.0), "A star cannot have a negative age!"
-        assert (_glb[itemperature] >= 0.0), "A star cannot have a negative temperature!"
-
-        self.name = _name
-        """Name of the model, typically the second part of its path"""
-
-        self.glb = _glb
-        """Array which will contain various global quantities"""
-
-        self.glb[ifreq_ref] = 5e5 * math.sqrt(constants.G * self.glb[imass] / self.glb[iradius] ** 3) / math.pi
-        """Characteristic frequency of the model in :math:`\\mathrm{cyclic \\, \\mu Hz}`"""
-
-        """array containing the modes (n, l, freq, inertia)"""
-        if _modes is not None:
-            self.modes = np.array(_modes, dtype=modetype)
-        else:
-            self.modes = np.empty([0], dtype=modetype)
-
-    def __del__(self):
-        """
-        Clears a model instance.
-        """
-
-        del self.modes
-        del self.glb
-        del self.name
 
     def read_file(self, filename):
         """
@@ -931,7 +967,34 @@ class Model:
         if (len(np.unique(n)) < 2):
             return np.nan
         freq = self.modes['freq'].compress(ind)
-        coeff = np.polyfit(n, freq, 1)
+        # Use numax in uHz to calculate sigma, then convert to dimless
+        numax_dimless = self.numax / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
+        return coeff[0]
+
+    def find_surface_corrected_large_separation(self, a=[]):
+        """
+        Find large frequency separation using only radial modes and surface corrections.
+
+        :param a: Surface correction parameters.
+
+        :return: the large frequency separation
+        :rtype: float
+        """
+
+        ind = (self.modes['l'] == 0).flat
+        n = self.modes['n'].compress(ind)
+        if (len(np.unique(n)) < 2):
+            return np.nan
+
+        # Weight large sep by envelope
+        freq = self.get_freq(config.surface_option, a).compress(ind)
+        numax_dimless = self.numax / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless)**2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
 
     def find_epsilon(self, ltarget):
@@ -970,10 +1033,9 @@ class Model:
         The conversion from (Xs,Zs) to [Fe/H] is performed using the
         following formula:
 
-            :math:`\\mathrm{[Fe/H] = \\frac{[M/H]}{A_{FeH}}  \
-                                   = \\frac{1}{A_{FeH}} \\log_{10} \
-                                     \\left(\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)}`
-
+            :math:`\\mathrm{[Fe/H] = [M/H] - A_{FeH}  \
+                                   = \\log_{10} \\left(\\frac{1}{a * 10 ^ {[\alpha/Fe]} + b)}\\frac{z/x}{z_{\\odot}/x_{\\odot}} \\right)},`
+        where a and b are metal mixture dependent factors.
         :return: the :math:`\\mathrm{[Fe/H]}` value
         :rtype: float
 
@@ -981,7 +1043,7 @@ class Model:
           The relevant values are given in :py:mod:`constants`
         """
         try:
-            return self.MH / constants.A_FeH
+            return self.MH - self.A_FeH
         except ValueError:
             return log0  # a rather low value
 
@@ -1005,7 +1067,7 @@ class Model:
         """
 
         try:
-            return self.MH0 / constants.A_FeH
+            return self.MH0 - self.A_FeH
         except ValueError:
             return log0  # a rather low value
 
@@ -1055,7 +1117,7 @@ class Model:
                 have_Zs = True
 
         try:
-            return math.log10(Zs * constants.solar_x / (Xs * constants.solar_z))
+            return math.log10(Zs * config.solar_x / (Xs * config.solar_z))
         except ValueError:
             return log0  # a rather low value
 
@@ -1077,7 +1139,7 @@ class Model:
         """
 
         try:
-            return math.log10(self.glb[iz0] * constants.solar_x / (self.glb[ix0] * constants.solar_z))
+            return math.log10(self.glb[iz0] * config.solar_x / (self.glb[ix0] * config.solar_z))
         except ValueError:
             return log0  # a rather low value
 
@@ -1418,7 +1480,14 @@ class Track:
         if (len(n) < 2):
             return np.nan
         freq = self.modes['freq'][istart:istop].compress(ind)
-        coeff = np.polyfit(n, freq, 1)
+        numax = (constants.solar_numax * (self.glb[imodel, imass] / constants.solar_mass) /
+                 ((self.glb[imodel, iradius] / constants.solar_radius) ** 2 *
+                  np.sqrt(self.glb[imodel, itemperature] / constants.solar_temperature)))
+        numax_dimless = numax / self.glb[imodel, ifreq_ref]
+        sigma_dimless = 0.66 * numax ** 0.88 / self.glb[imodel, ifreq_ref] # Use numax in uHz, then convert to dimless
+        weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
+        coeff = np.polyfit(n, freq, deg=1, w=weights)
+
         return coeff[0]
 
     def duplicate_ages(self):
@@ -1451,6 +1520,10 @@ class Track:
         remove_models = [i for i in range(1, len(self.names)) \
                          if self.glb[i - 1, iage] == self.glb[i, iage]]
 
+        return self.remove_models(remove_models)
+
+
+    def remove_models(self, remove_models):
         if (len(remove_models) == 0):
             return False
         else:
@@ -1464,10 +1537,9 @@ class Track:
             self.glb = np.delete(self.glb, remove_models, 0)
             self.modes = np.delete(self.modes, mode_indices_rm, 0)
 
-            ntot = self.mode_indices[1]
-            new_indices = [0, ntot]
-            # NOTE: the first model is kept (by construction)
-            for i in range(1, len(self.mode_indices) - 1):
+            ntot = 0
+            new_indices = [0]
+            for i in range(len(self.mode_indices) - 1):
                 if (i not in remove_models):
                     ntot += self.mode_indices[i + 1] - self.mode_indices[i]
                     new_indices.append(ntot)
@@ -1547,11 +1619,11 @@ class Track:
                 istart = itemp
         mu = (age - self.glb[istart, iage]) \
              / (self.glb[istop, iage] - self.glb[istart, iage])
-
+        aFe = get_aFe(self)
         return combine_models(
-            Model(self.glb[istart], _modes=self.modes[self.mode_indices[istart]:self.mode_indices[istart + 1]]),
+            Model(self.glb[istart], _modes=self.modes[self.mode_indices[istart]:self.mode_indices[istart + 1]], aFe=aFe),
             1.0 - mu, \
-            Model(self.glb[istop], _modes=self.modes[self.mode_indices[istop]:self.mode_indices[istop + 1]]), mu)
+            Model(self.glb[istop], _modes=self.modes[self.mode_indices[istop]:self.mode_indices[istop + 1]], aFe=aFe), mu)
 
     def find_combination(self, age, coef):
         """
@@ -1709,25 +1781,22 @@ class Track:
         ndim = len(self.params) + 1
         result = np.zeros((nmodels - 2 * nincr, ndim + nglb + 6), dtype=gtype)
 
+        aFe = get_aFe(self)
         # loop through all models:
         for i in range(nincr, nmodels - nincr):
             # carry out interpolation
             mu = (self.glb[i, iage] - self.glb[i - nincr, iage]) \
                  / (self.glb[i + nincr, iage] - self.glb[i - nincr, iage])
-            aModel = combine_models(Model(self.glb[i - nincr], _modes=self.modes[
+            aModel = combine_models(Model(self.glb[i - nincr], aFe=aFe, _modes=self.modes[
                                                                       self.mode_indices[i - nincr]:self.mode_indices[
                                                                           i - nincr + 1]]), 1.0 - mu, \
-                                    Model(self.glb[i + nincr], _modes=self.modes[
+                                    Model(self.glb[i + nincr], aFe=aFe, _modes=self.modes[
                                                                       self.mode_indices[i + nincr]:self.mode_indices[
                                                                           i + nincr + 1]]), mu)
 
             result[i - nincr, 0:ndim - 1] = self.params
             result[i - nincr, ndim - 1] = self.glb[i, iage]
-            result[i - nincr, ndim:ndim + nglb + 6] = compare_models(aModel, Model(self.glb[i], _modes=self.modes[
-                                                                                                       self.mode_indices[
-                                                                                                           i]:
-                                                                                                       self.mode_indices[
-                                                                                                           i + 1]]))
+            result[i - nincr, ndim:ndim + nglb + 6] = compare_models(aModel, Model(self.glb[i], aFe=aFe, _modes=self.modes[self.mode_indices[i]:self.mode_indices[i + 1]]))
 
         return result
 
@@ -1794,6 +1863,8 @@ class Model_grid:
 
         if (config.mode_format == "Aldo"):
             self.read_model_list_Aldo(filename)
+        elif (config.mode_format == "BASTA"):
+            self.read_model_list_BASTA(filename)
         else:
             self.read_model_list_standard(filename)
 
@@ -1880,7 +1951,12 @@ class Model_grid:
         models_small_spectra = []
         for nmodels in range(glb.shape[0]):
             i = ind[nmodels]
-            aModel = Model(glb[i], _name=names[i])
+            if isinstance(config.alpha_Fe_param, str):
+                i_aFe = grid_list.index(config.alpha_Fe_param)
+                aFe = glb[i][i_aFe]
+            else:
+                aFe = config.alpha_Fe_param
+            aModel = Model(glb[i], _name=names[i], aFe=aFe)
             exceed_freqlim = aModel.read_file(self.prefix + names[i] + self.postfix)
             aModel.multiply_modes(1.0 / aModel.glb[ifreq_ref])  # make frequencies non-dimensional
             aModel.sort_modes()
@@ -1906,7 +1982,7 @@ class Model_grid:
         i = 1
         params_span *= eps
         while (i < len(self.tracks)):
-            aModel = Model(self.tracks[i].glb[0])
+            aModel = Model(self.tracks[i].glb[0], aFe=get_aFe(self.tracks[i]))
             for j in range(i):
                 if (self.tracks[j].matches(aModel, params_tol=params_span)):
                     self.tracks[j].append_track(self.tracks[i])
@@ -2035,7 +2111,7 @@ class Model_grid:
                     glb[user_params_index["Xc"]] = glbs[i, 8]
                     glb[user_params_index["Zc"]] = 1.0 - glbs[i, 9] - glbs[i, 8]
 
-                    aModel = Model(glb, _name=names[i])
+                    aModel = Model(glb, _name=names[i], aFe=None)
                     exceed_freqlim = aModel.read_modes_Aldo(norder, glbs[i, 10:])
                     aModel.multiply_modes(1.0 / aModel.glb[ifreq_ref])  # make frequencies non-dimensional
                     aModel.sort_modes()
@@ -2062,7 +2138,7 @@ class Model_grid:
         # find span for each grid parameter prior to merging tracks:
         grid_temp = np.asarray([track.params for track in self.tracks])
         params_span = np.array([np.max(grid_temp[:, i]) - np.min(grid_temp[:, i]) \
-                                for i in range(1, grid_temp.shape[1])])
+                               for i in range(grid_temp.shape[1])])
         del grid_temp
 
         # merge tracks which are too close:
@@ -2070,7 +2146,7 @@ class Model_grid:
         i = 1
         params_span *= eps
         while (i < len(self.tracks)):
-            aModel = Model(self.tracks[i].glb[0])
+            aModel = Model(self.tracks[i].glb[0], aFe=None)
             for j in range(i):
                 if (self.tracks[j].matches(aModel, params_tol=params_span)):
                     self.tracks[j].append_track(self.tracks[i])
@@ -2094,6 +2170,226 @@ class Model_grid:
         for track in self.tracks:
             if track.remove_duplicate_ages():
                 print("WARNING: the track %s = %s" % (str(track.grid_params), str(track.params)))
+                print("         has models with the same age.  Removing duplicate models.")
+
+        # update list of indices:
+        self.ndx = range(len(self.tracks))
+
+        # need to create grid from scratch since tracks have been sorted.
+        self.grid = np.asarray([track.params for track in self.tracks])
+
+    def read_model_list_BASTA(self,filename):
+        """
+        Read list of models in BASTA format from a file and construct a grid.
+
+        BASTA grids are contained HDF5 files with a tree-like structure.
+
+        :param filename: name of the file with the list of track files.
+        :type filename: string
+        """
+
+        # sanity check (to be completed if need be) ...
+
+        qdict = {
+            "FeH":"Fe_H",
+            "FeHini":"Fe_H0",
+            "MeH":"M_H",
+            "MeHini":"M_H0",
+            "alphaFe":"alpha_Fe",
+            "alphaMLT":"alpha_MLT",
+            "massini":"Mass0",
+            "ove":"alpha_OV",
+            "rho":"Rho",
+            "rhocen":"RhoC",
+            "xcen":"Xc",
+            "xini":"X0",
+            "xsur":"Xs",
+            "ycen":"Yc",
+            "yini":"Y0",
+            "ysur":"Ys",
+            "zcen":"Zc",
+            "zini":"Z0",
+            "zsur":"Zs",
+        }
+
+        qlatexdict = {
+            "FeH":r"Iron content, $%s[Fe/H]%s$",
+            "FeHini":r"Iron content, $%s[Fe/H]_0%s$",
+            "LPhot":r"Luminosity, $%sL%s$",
+            "Mbcz":r"Mass BCZ, $%sM_{\mathrm{BCZ}}%s$",
+            "Mcore":r"Core mass, $%sM_{\mathrm{core}}%s$",
+            "McoreX":r"H core mass, $%sM_{\mathrm{H,\,core}}%s$",
+            "MeH":r"Metallicity, $%s[M/H]%s$",
+            "MeHini":r"Metallicity, $%s[M/H]_0%s$",
+            "Rbcz":r"Radius BCZ, $%sR_{\mathrm{BCZ}}%s$",
+            "Rcore":r"Core radius, $%sR_{\mathrm{BCZ}}%s$",
+            "RcoreX":r"H core radius, $%sR_{\mathrm{H,\,BCZ}}%s$",
+            "Teff":r"Temperature, $%sT_{\mathrm{eff}}%s$",
+            "ZAMSLPhot":r"ZAMS luminosity, $%sL_{\mathrm{ZAMS}}%s$",
+            "ZAMSTeff":r"ZAMS temperature, $%sT_{\mathrm{eff,\,ZAMS}}%s$",
+            "age":r"Age (Myrs)",
+            "alphaFe":r"$%s\alpha_{\mathrm{Fe}}%s$",
+            "alphaMLT":r"Mixing length parameter, $%s\alpha_{\mathrm{MLT}}%s$",
+            "dnuscal":r"$%s\Delta\nu_{\mathrm{scal.}}%s$",
+            "massfin":r"Mass, $%sM%s$",
+            "massini":r"Initial mass, $%sM_0%s$",
+            "numax":r"$%s\nu_{\mathrm{max}}%s$",
+            "ove":r"Overshoot parameter, $%s\alpha_{\mathrm{ov.}}%s$",
+            "radPhot":r"Photospheric radius, $%sR_{\mathrm{phot.}}%s$",
+            "radTot":r"Total radius, $%sR_{\mathrm{tot.}}%s$",
+            "rho":r"Mean density, $%s\rho%s$",
+            "rhocen":r"Central density, $%s\rho_{\mathrm{C}}%s$",
+            "tau0":r"Acoustic radius, $%s\tau%s$",
+            "taubcz":r"BZC acoustic radius, $%s\tau_{\mathrm{BCZ}}%s$",
+            "tauhe":r"He acoustic radius, $%s\tau_{\mathrm{He}}%s$",
+            "xcen":r"Central hydrogen, $%sX_c%s$",
+            "xini":r"Initial hydrogen, $%sX_0%s$",
+            "xsur":r"Hydrogen content, $%sX_s%s$",
+            "ycen":r"Central helium, $%sY_c%s$",
+            "yini":r"Initial helium, $%sY_0%s$",
+            "ysur":r"Helium content, $%sY_s%s$",
+            "zcen":r"Central metallicity, $%sZ_c%s$",
+            "zini":r"Initial metallicity, $%sZ_0%s$",
+            "zsur":r"Metallicity, $%sZ_s%s$",
+        }
+
+        self.grid_params = config.grid_params
+
+        # set the correct dimension:
+        self.ndim = len(self.grid_params)
+
+        # set prefix and postfix:
+        self.prefix = "%s:"%(filename)
+        self.postfix = ""
+
+        # read grid
+        h5_grid = h5py.File(filename)
+
+        # read models and put them into evolutionary tracks:
+        nmodels = 0
+        nmodes  = 0
+
+        # get names of quantities in tracks
+        track0 = list(h5_grid["grid/tracks/"].keys())[0]
+        quantities = list(h5_grid["grid/tracks/%s/"%(track0)].keys())
+        quantities_del = ["name", "osc", "osckey", "volume_weight", "age", "massfin", \
+                          "Teff", "zini", "xini", "radPhot", "LPhot"]
+        for q in quantities_del:
+            if (q in quantities):
+                del quantities[quantities.index(q)]
+        config.user_params = []
+        for q in quantities:
+            if (q in qdict):
+                q1 = qdict[q]
+            else:
+                q1 = q
+            if (q in qlatexdict):
+                q2 = qlatexdict[q]
+            else:
+                q2 = q
+            config.user_params.append((q1,q2))
+        global nglb, nlin, ifreq_ref, iradius, iluminosity
+        nglb        = 9 + len(quantities)
+        nlin        = 6 + len(quantities)
+        ifreq_ref   = 6 + len(quantities)
+        iradius     = 7 + len(quantities)
+        iluminosity = 8 + len(quantities)
+        init_user_param_dict()
+        self.user_params = config.user_params
+
+        # read tracks
+        for track in list(h5_grid["grid/tracks/"].keys()):
+
+            # get models names:
+            names = list(map(lambda s: "%s/%s"%(track,s.decode("utf-8")), \
+                             h5_grid["grid/tracks/%s/name"%(track)]))
+            nmodels_track = len(names)
+
+            # get global quantities
+            glb = np.zeros((nmodels_track,nglb),dtype=gtype)
+            glb[:,iage]         = np.array(h5_grid["grid/tracks/%s/age"%(track)]) # (in Myrs ?)
+            glb[:,imass]        = np.array(h5_grid["grid/tracks/%s/massfin"%(track)]) \
+                                * constants.solar_mass # conversion to g
+            glb[:,itemperature] = np.array(h5_grid["grid/tracks/%s/Teff"%(track)]) # K
+            glb[:,iz0]          = np.array(h5_grid["grid/tracks/%s/zini"%(track)])
+            glb[:,ix0]          = np.array(h5_grid["grid/tracks/%s/xini"%(track)])
+            glb[:,iradius]      = np.array(h5_grid["grid/tracks/%s/radPhot"%(track)]) \
+                                * constants.solar_radius # conversion to cm
+            glb[:,iluminosity]  = np.array(h5_grid["grid/tracks/%s/LPhot"%(track)]) \
+                                * constants.solar_luminosity # conversion to erg/s
+            glb[:,ifreq_ref]    = 5e5*np.sqrt(constants.G*glb[:,imass]/glb[:,iradius]**3)/np.pi #muHz
+            for q in quantities:
+                if (q in qdict):
+                    glb[:,user_params_index[qdict[q]]] = np.array(h5_grid["grid/tracks/%s/%s"%(track,q)])
+                else:
+                    glb[:,user_params_index[q]] = np.array(h5_grid["grid/tracks/%s/%s"%(track,q)])
+
+            # initialise track
+            aModel = Model(glb[0,:], _name=names[0], aFe=None)
+            aTrack = Track(aModel,self.grid_params)
+            aTrack.names = names
+            aTrack.glb = glb
+
+            # get mode frequencies and inertias
+            nmodes_track = 0
+            for n in range(nmodels_track):
+                nmodes_track += len(h5_grid["grid/tracks/%s/osc"%(track)][n][0])
+            aTrack.modes = np.empty((nmodes_track,),dtype=modetype)
+            nmodes_track = 0
+            aTrack.mode_indices = [nmodes_track,]
+            for i in range(nmodels_track):
+                n = len(h5_grid["grid/tracks/%s/osc"%(track)][i][0])
+                aTrack.modes["n"][nmodes_track:nmodes_track+n]       = h5_grid["grid/tracks/%s/osckey"%(track)][i][1][:]
+                aTrack.modes["l"][nmodes_track:nmodes_track+n]       = h5_grid["grid/tracks/%s/osckey"%(track)][i][0][:]
+                aTrack.modes["freq"][nmodes_track:nmodes_track+n]    = h5_grid["grid/tracks/%s/osc"%(track)][i][0][:] \
+                                                                     / glb[i,ifreq_ref]
+                aTrack.modes["inertia"][nmodes_track:nmodes_track+n] = h5_grid["grid/tracks/%s/osc"%(track)][i][1][:]
+                nmodes_track += n
+                aTrack.mode_indices.append(nmodes_track)
+
+            aTrack.nmodes = nmodes_track
+            self.tracks.append(aTrack)
+            nmodels += nmodels_track
+            nmodes += nmodes_track
+            del glb
+            del names
+
+            if (not config.batch):
+                print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
+                print('\033[2A') # backup two line - might not work in all terminals
+
+        h5_grid.close()
+        print("%d %d %d"%(len(self.tracks), nmodels, nmodes))
+
+        # find span for each grid parameter prior to merging tracks:
+        grid_temp   = np.asarray([track.params for track in self.tracks])
+        params_span = np.array([np.max(grid_temp[:,i])-np.min(grid_temp[:,i]) \
+                               for i in range(grid_temp.shape[1])])
+        del grid_temp
+
+        # merge tracks which are too close:
+        imerge = 0
+        i = 1
+        params_span *= eps
+        while (i < len(self.tracks)):
+            aModel = Model(self.tracks[i].glb[0], aFe=None)
+            for j in range(i):
+                if (self.tracks[j].matches(aModel,params_tol=params_span)):
+                    self.tracks[j].append_track(self.tracks[i])
+                    del self.tracks[i]
+                    imerge += 1
+                    break
+            else:
+                i+=1
+        print("I merged %d track(s)"%(imerge))
+
+        # sort tracks:
+        for track in self.tracks: track.sort()
+
+        # sanity check:
+        for track in self.tracks:
+            if track.remove_duplicate_ages():
+                print("WARNING: the track %s = %s"%(str(track.grid_params),str(track.params)))
                 print("         has models with the same age.  Removing duplicate models.")
 
         # update list of indices:
@@ -2128,9 +2424,9 @@ class Model_grid:
         parameter.
         """
 
-        for track in self.tracks:
+        for i, track in enumerate(self.tracks):
             if not track.is_sorted_adim():
-                raise ValueError("ERROR: track(s) not strictly sorted according to dimensionless age")
+                raise ValueError(f"ERROR: track(s) not strictly sorted according to dimensionless age. Failed at track {i}.")
 
     def range(self, aParam):
         """
@@ -2283,7 +2579,7 @@ class Model_grid:
             pt = list(self.tracks[j].params) + [0.0, ]
 
             for i in range(nmodels):
-                aModel1 = Model(self.tracks[j].glb[i], \
+                aModel1 = Model(self.tracks[j].glb[i], aFe=None,
                                 _modes=self.tracks[j].modes[self.tracks[j].mode_indices[i]: \
                                                             self.tracks[j].mode_indices[i + 1]])
                 pt[-1] = aModel1.glb[iage]
@@ -2431,6 +2727,8 @@ def make_scale_matrix(grid):
         x = x[1:] - x[:-1]
         x = np.sort(x)
         ind = bisect_right(x, eps)
+        if ind == len(x):  # If all x are < eps, x[ind] will fail. In that case choose the middle value.
+            ind = len(x)//2
         mat[i, i] = 1.0 / x[ind]
         print("Scale factor %d: %e" % (i, mat[i, i]))
     return mat
@@ -2488,8 +2786,9 @@ def combine_models(model1, coef1, model2, coef2):
         coef1, model1.modes['n'], model1.modes['l'], model1.modes['freq'], model1.modes['inertia'], \
         coef2, model2.modes['n'], model2.modes['l'], model2.modes['freq'], model2.modes['inertia'], \
         nvalues, lvalues, fvalues, ivalues)
-
-    return Model(glb, _modes=list(zip(nvalues[0:n3], lvalues[0:n3], fvalues[0:n3], ivalues[0:n3])))
+    new_Model = Model(glb, _modes=list(zip(nvalues[0:n3], lvalues[0:n3], fvalues[0:n3], ivalues[0:n3])), aFe=None)
+    new_Model.A_FeH = np.log10(10**model1.A_FeH * coef1 + 10**model2.A_FeH * coef2)
+    return new_Model
 
 
 def compare_models(model1, model2):

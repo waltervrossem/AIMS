@@ -28,7 +28,7 @@ def plot_number_of_modes(grid):
             nmodes.append(track.mode_indices[i]-track.mode_indices[i-1])
     nmax = max(nmodes)
     x = np.array(range(nmax+1))
-    y = np.zeros((nmax+1,),dtype=np.int)
+    y = np.zeros((nmax+1,),dtype=int)
     for i in x: y[i] = nmodes.count(i)
     plt.plot(x,y,"b-")
     plt.plot(x,y,"bo")

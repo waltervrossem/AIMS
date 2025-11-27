@@ -19,27 +19,27 @@
 #   along with AIMS.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-r"""
+"""
 A module which contains the following physical constants:
 
 +------------------------------+--------------------------------------+-------------------------------------+
 | **Name of variable**         | **Quantity it describes**            | **Units**                           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_radius`     | the solar radius                     | :math:`\mathrm{cm}`                 |
+| :py:const:`solar_radius`     | the solar radius                     | :math:`\\mathrm{cm}`                |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_mass`       | the solar mass                       | :math:`\mathrm{g}`                  |
+| :py:const:`solar_mass`       | the solar mass                       | :math:`\\mathrm{g}`                 |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_luminosity` | the solar luminosity                 | :math:`\mathrm{g.cm^2.s^{-3}}`      |
+| :py:const:`solar_luminosity` | the solar luminosity                 | :math:`\\mathrm{g.cm^2.s^{-3}}`     |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_temperature`| the solar effective temperature      | :math:`\mathrm{K}`                  |
+| :py:const:`solar_temperature`| the solar effective temperature      | :math:`\\mathrm{K}`                 |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_dnu`        | the solar large frequency separation | :math:`\mathrm{\mu Hz}`             |
+| :py:const:`solar_dnu`        | the solar large frequency separation | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_numax`      | the solar frequency at maximum power | :math:`\mathrm{\mu Hz}`             |
+| :py:const:`solar_numax`      | the solar frequency at maximum power | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`solar_cutoff`     | the solar cutoff frequency           | :math:`\mathrm{\mu Hz}`             |
+| :py:const:`solar_cutoff`     | the solar cutoff frequency           | :math:`\\mathrm{\\mu Hz}`           |
 +------------------------------+--------------------------------------+-------------------------------------+
-| :py:const:`G`                | the gravitational constant           | :math:`\mathrm{cm^3.g^{-1}.s^{-2}}` |
+| :py:const:`G`                | the gravitational constant           | :math:`\\mathrm{cm^3.g^{-1}.s^{-2}}`|
 +------------------------------+--------------------------------------+-------------------------------------+
 
 .. note::
@@ -72,29 +72,3 @@ solar_cutoff = 5300.0  # Jimenez et al. (2011) (see Balmforth & Gough 1990, Foss
 
 G = 6.67428e-8  # CODATA 2006
 """ the gravitational constant in :math:`\\mathrm{cm^3.g^{-1}.s^{-2}}` """
-
-
-
-
-A_FeH = 1.0
-"""
-multiplicative constant which intervenes in the
-conversion from metal content to iron content
-"""
-
-# solar_x          = 0.7336  # Grevesse & Noels (1993)
-solar_x = 0.7345  # Grevesse & Sauval (1998)Add commentMore actions
-# solar_x          = 0.7392  # Asplund et al. (2005)
-# solar_x          = 0.7381  # Asplund et al. (2009)
-# solar_x          = 0.7355 # Asplund et al. (2009), Lebreton
-""" the solar hydrogen content """
-
-# solar_z          = 0.0179  # Grevesse & Noels (1993)
-solar_z = 0.0169  # Grevesse & Sauval (1998)
-# solar_z          = 0.0122  # Asplund et al. (2005)
-# solar_z          = 0.0134  # Asplund et al. (2009)
-# solar_z          = 0.0131  # Asplund et al. (2009), Lebreton
-""" the solar metallicity content """
-
-Yp = 0.248  # 0.16
-""" Primordial helium """

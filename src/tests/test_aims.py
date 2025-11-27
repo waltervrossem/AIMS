@@ -421,7 +421,24 @@ def test_fit_data():
                    'Fe_H', 'Luminosity', 'X', 'Y', 'Xc']
     AIMS.write_LEGACY_summary('tests/data/tmp.legacy', '0', LEGACY_keys,
                               sampler.get_chain(flat=True)[:,[0]*len(LEGACY_keys)])
+    # Collect results:
+    if (config.PT):
+        samples = sampler.chain[0, ...]
+        lnprob = sampler.logprobability[0, ...]
+    else:
+        samples = AIMS.swap_dimensions(sampler.get_chain())
+        lnprob = AIMS.swap_dimensions(sampler.get_log_prob())
 
+    samples = samples.reshape((config.nwalkers * config.nsteps, AIMS.ndims), order='C')
+    lnprob = lnprob.reshape((config.nwalkers * config.nsteps, 1), order='C')
+    samples = AIMS.np.concatenate((lnprob, samples), axis=1)
+
+    thin_samples = samples[0::config.thin, :]
+    blobs = AIMS.find_blobs(thin_samples[:, 1:])
+    samples_big = AIMS.np.concatenate((thin_samples, blobs), axis=1)
+
+    AIMS.write_new_output('output.json', samples, samples_big, AIMS.best_grid_model, AIMS.best_MCMC_model, AIMS.statistical_model,
+                          config, return_dict=True)
     # restore settings
     AIMS.config = config
 

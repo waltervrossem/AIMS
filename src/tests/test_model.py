@@ -68,6 +68,7 @@ def test_Model():
     """
     Test functions in the Model class.
     """
+    model.init_user_param_dict()
     test = model.Model_grid()
     test.read_model_list('tests/data/test.aimslist')
     m = test.tracks[0].interpolate_model(1000.0)
@@ -141,6 +142,9 @@ def test_Model():
 
     assert 0.5 < m.numax/m.cutoff < 0.7 # vaguely reasonable values
 
+    # find epsilon assumes dimensionless mode frequencies, however, the conversion to dimless frequencies occurs
+    # in Model_grid
+    m.multiply_modes(1/m.glb[model.ifreq_ref])
     assert 0 < m.find_epsilon(0) < 2
     assert 0 == m.find_epsilon(99)
 
@@ -211,6 +215,13 @@ def test_Track():
     # if we append the track to itself, there should be duplicates
     track.append_track(track)
     assert track.remove_duplicate_ages()
+
+    # Check that model large separation and track large separation are equal
+    i_track = 5
+    model_Dnu = model.Model(track.glb[i_track], _modes=track.modes[track.mode_indices[i_track]:track.mode_indices[i_track+1]]).find_large_separation()
+    track_Dnu = track.find_large_separation(i_track)
+    assert track_Dnu == pytest.approx(model_Dnu)
+
 
 def test_Aldo_grid():
     """
