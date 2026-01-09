@@ -1021,6 +1021,15 @@ class Likelihood:
             self.add_nonconstraint(('Dnu', self.nonconstraints[i_Dnu_constraint][1]))
             nonconstraint_names = [_[0] for _ in self.nonconstraints]
 
+        # Check for double added (non)contraints, keeping constraint if found
+        to_remove = []
+        for i, name in enumerate(nonconstraint_names):
+            if name in constraint_names:  # Skip '-'
+                to_remove.append(i)
+        to_remove = to_remove[::-1]
+        for i in to_remove:
+            print(f'Removed non-constraint {self.nonconstraints.pop(i)} as it is already in constraints')
+
         # print number of modes:
         print("I found %d modes in %s." % (len(self.modes), filename))
 
@@ -1077,10 +1086,7 @@ class Likelihood:
         if (name == "G"):
             name = "log_g"
 
-        if name in np.asarray(self.constraints)[:,0]:
-            raise ValueError(f'Non-constraint {name} already in constraints. Check input file.')
-        else:
-            self.nonconstraints.append((name, distribution))
+        self.nonconstraints.append((name, distribution))
 
     def guess_dnu(self, with_n=False):
         """
@@ -2490,7 +2496,7 @@ def load_binary_data(filename):
 
     if (grid.user_params != config.user_params):
         print("WARNING: mismatch between the user_params in the binary grid file")
-        print("         and in AIMS_configure.py.  Will overwrite user_params.")
+        print("         and in AIMS_configure.py. Will use user_params from binary grid file.")
         print("  Binary grid file:  ", grid.user_params)
         print("  AIMS_configure.py: ", config.user_params)
 
