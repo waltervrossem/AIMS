@@ -176,6 +176,8 @@ mode_format   = "MESA"           # specifies the format of the files with
                                  #             along with their pulsation frequencies
 npositive     = True             # if True, only save modes with n >= 0 in
                                  # binary grid file
+set_mode_n_to_radial_n = True    # if True, re-assign non-radial mode orders to their
+                                 # corresponding radial mode order
 cutoff        = 5.0              # remove frequencies above this value times
                                  # the acoustic cutoff-frequency
 agsm_cutoff   = False            # if True, only keep frequencies with icase=10010
