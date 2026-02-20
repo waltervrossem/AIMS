@@ -3516,11 +3516,11 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
             bics = [gm.bic(use_samples.reshape(-1, 1)) for gm in gmms]
 
             gmm_info = {}
-            for gm in gmms:
+            for i, gm in enumerate(gmms):
                 gmm_info[gm.n_components] = {'means': gm.means_.reshape(-1).tolist(),
                                              'std': np.sqrt(gm.covariances_).reshape(-1).tolist(),
                                              'weigths': gm.weights_.reshape(-1).tolist(),
-                                             'bic': gm.bic(use_samples.reshape(-1, 1)).reshape(-1).tolist()}
+                                             'bic': bics[i]}
             out['parameters'][name]['gaussian_mixtures'] = gmm_info
 
     for name, dist in like.constraints:
