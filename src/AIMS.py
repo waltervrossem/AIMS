@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.3.1"
+__version__ = u"2.3.2"
 
 import os
 import sys
@@ -1021,6 +1021,15 @@ class Likelihood:
             self.add_nonconstraint(('Dnu', self.nonconstraints[i_Dnu_constraint][1]))
             nonconstraint_names = [_[0] for _ in self.nonconstraints]
 
+        # Check for double added (non)contraints, keeping constraint if found
+        to_remove = []
+        for i, name in enumerate(nonconstraint_names):
+            if name in constraint_names:  # Skip '-'
+                to_remove.append(i)
+        to_remove = to_remove[::-1]
+        for i in to_remove:
+            print(f'Removed non-constraint {self.nonconstraints.pop(i)} as it is already in constraints')
+
         # print number of modes:
         print("I found %d modes in %s." % (len(self.modes), filename))
 
@@ -1077,10 +1086,7 @@ class Likelihood:
         if (name == "G"):
             name = "log_g"
 
-        if name in np.asarray(self.constraints)[:,0]:
-            raise ValueError(f'Non-constraint {name} already in constraints. Check input file.')
-        else:
-            self.nonconstraints.append((name, distribution))
+        self.nonconstraints.append((name, distribution))
 
     def guess_dnu(self, with_n=False):
         """
@@ -2448,6 +2454,7 @@ def write_binary_data(infile, outfile):
         grid.distort_grid()
     grid.tessellate()
 
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
     with open(outfile, "wb") as output:
         dill.dump(grid, output)
 
@@ -2490,7 +2497,7 @@ def load_binary_data(filename):
 
     if (grid.user_params != config.user_params):
         print("WARNING: mismatch between the user_params in the binary grid file")
-        print("         and in AIMS_configure.py.  Will overwrite user_params.")
+        print("         and in AIMS_configure.py. Will use user_params from binary grid file.")
         print("  Binary grid file:  ", grid.user_params)
         print("  AIMS_configure.py: ", config.user_params)
 
@@ -3510,11 +3517,11 @@ def write_new_output(path, samples, samples_big, best_grid_model, best_MCMC_mode
             bics = [gm.bic(use_samples.reshape(-1, 1)) for gm in gmms]
 
             gmm_info = {}
-            for gm in gmms:
+            for i, gm in enumerate(gmms):
                 gmm_info[gm.n_components] = {'means': gm.means_.reshape(-1).tolist(),
                                              'std': np.sqrt(gm.covariances_).reshape(-1).tolist(),
                                              'weigths': gm.weights_.reshape(-1).tolist(),
-                                             'bic': gm.bic(use_samples.reshape(-1, 1)).reshape(-1).tolist()}
+                                             'bic': bics[i]}
             out['parameters'][name]['gaussian_mixtures'] = gmm_info
 
     for name, dist in like.constraints:

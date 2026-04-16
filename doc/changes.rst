@@ -4,6 +4,9 @@ List of changes
 +---------------+---------------------------------------------------------------------------+
 | **Version**   | **Changes**                                                               |
 +---------------+---------------------------------------------------------------------------+
+| 2.3.2         | * added set_mode_n_to_radial_n, which sets non-radial modes' order to that|
+|               |   of the corresponding radial mode order.                                 |
++---------------+---------------------------------------------------------------------------+
 | 2.3.1         | * changed Delta nu determination to use weights using power envelope      |
 |               | * added option to output surface corrected Delta nu                       |
 |               | * implemented new output format which consolidates the various text files |

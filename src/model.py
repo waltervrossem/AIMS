@@ -734,6 +734,44 @@ class Model:
         """
         self.modes = np.append(self.modes, np.array(modes, dtype=modetype))
 
+    def set_mode_n_to_radial_n(self):
+        """
+        Set a non-radial mode's order to the corresponing radial mode order.
+        If multiple modes are assigned one order, keep the one with lower inertia.
+        Removes all modes outside the frequency range of radial modes.
+        """
+        mask_l0 = self.modes['l'] == 0
+        min_freq_l0 = min(self.modes['freq'][mask_l0])
+        max_freq_l0 = max(self.modes['freq'][mask_l0])
+
+        self.modes = self.modes[(self.modes['freq'] >= min_freq_l0) & (self.modes['freq'] <= max_freq_l0)]
+        mask_l0 = self.modes['l'] == 0
+
+        available_nonradial = np.unique(self.modes['l'][~mask_l0])
+        indeces = np.digitize(self.modes['freq'][~mask_l0], bins=self.modes['freq'][mask_l0])
+        mask_in_range = indeces < sum(mask_l0)
+        ind = np.arange(self.modes.shape[0], dtype=int)
+        try:
+            # Can't mask a view to set values, so mask an array of indeces
+            self.modes['n'][ind[~mask_l0][mask_in_range]] = self.modes['n'][mask_l0][indeces[mask_in_range]]
+        except IndexError:
+            print(self.name)
+            print(repr(self.modes))
+            raise
+
+        for l in available_nonradial:
+            mask = self.modes['l'] == l
+            if not np.all(np.diff(self.modes['n'][mask]) == 1):
+                # np.bincount will return correct counts as fills counts with 0 for orders before first in self.modes['n'][mask]
+                order_counts = np.bincount(self.modes['n'][mask])
+                for n_multi in np.where(order_counts > 1)[0]:
+                    mask_multi = (self.modes['n'] == n_multi) & (mask)
+                    # Flag modes which are not the minimum inertia mode for removal
+                    self.modes['freq'][ind[mask_multi][self.modes['inertia'][mask_multi] != min(self.modes['inertia'][mask_multi])]] = np.nan
+
+        # Remove modes
+        self.modes = self.modes[np.isfinite(self.modes['freq'])]
+
     def sort_modes(self):
         """
         Sort the modes by l, then n, then freq.
@@ -1945,6 +1983,9 @@ class Model_grid:
                 raise ValueError("ERROR: parameter %s is constant in your grid" % self.grid_params[i] +
                                  "and cannot be used as a grid parameter.")
 
+        if glb.shape[0] != names.shape[0]:
+            raise ValueError('Grid data glb and names have different lengths, updating numpy may fix this.')
+
         # create tracks:
         print("Creating evolutionary tracks")
         nmodes = 0
@@ -1957,8 +1998,15 @@ class Model_grid:
             else:
                 aFe = config.alpha_Fe_param
             aModel = Model(glb[i], _name=names[i], aFe=aFe)
-            exceed_freqlim = aModel.read_file(self.prefix + names[i] + self.postfix)
+            filename = self.prefix + names[i] + self.postfix
+            try:
+                exceed_freqlim = aModel.read_file(filename)
+            except:
+                print(f'Failed filename: {filename}')
+                raise
             aModel.multiply_modes(1.0 / aModel.glb[ifreq_ref])  # make frequencies non-dimensional
+            if config.set_mode_n_to_radial_n:
+                aModel.set_mode_n_to_radial_n()
             aModel.sort_modes()
             aModel.remove_duplicate_modes()
             if ((len(self.tracks) > 0) and (self.tracks[-1].matches(aModel))):
