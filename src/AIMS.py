@@ -44,7 +44,7 @@ of seismic an classic constraints.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = u"2.3.1"
+__version__ = u"2.3.2"
 
 import os
 import sys
@@ -2454,6 +2454,7 @@ def write_binary_data(infile, outfile):
         grid.distort_grid()
     grid.tessellate()
 
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
     with open(outfile, "wb") as output:
         dill.dump(grid, output)
 
