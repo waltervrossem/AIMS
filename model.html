@@ -6,17 +6,17 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The model module &mdash; AIMS 2.3.1 documentation</title>
+  <title>The model module &mdash; AIMS 2.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=67b02a41"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="_static/documentation_options.js?v=5048a02b"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -86,6 +86,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.read_file_agsm"><code class="docutils literal notranslate"><span class="pre">Model.read_file_agsm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.read_modes_Aldo"><code class="docutils literal notranslate"><span class="pre">Model.read_modes_Aldo()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.remove_duplicate_modes"><code class="docutils literal notranslate"><span class="pre">Model.remove_duplicate_modes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Model.set_mode_n_to_radial_n"><code class="docutils literal notranslate"><span class="pre">Model.set_mode_n_to_radial_n()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.sort_modes"><code class="docutils literal notranslate"><span class="pre">Model.sort_modes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.string_to_param"><code class="docutils literal notranslate"><span class="pre">Model.string_to_param()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Model.write_file_simple"><code class="docutils literal notranslate"><span class="pre">Model.write_file_simple()</span></code></a></li>
@@ -239,7 +240,7 @@ a number of operations, such as:</p>
 </ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="model.Model">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_glb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aFe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_glb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aFe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model" title="Link to this definition"></a></dt>
 <dd><p>A class which contains a stellar model, including classical and seismic information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -256,7 +257,7 @@ or string or None. If a string, it must be a grid parameter.</p></li>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.FeH">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FeH</span></span><a class="headerlink" href="#model.Model.FeH" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FeH</span></span><a class="headerlink" href="#model.Model.FeH" title="Link to this definition"></a></dt>
 <dd><p>Find [Fe/H] value for model.</p>
 <p>The conversion from (Xs,Zs) to [Fe/H] is performed using the
 following formula:</p>
@@ -274,7 +275,7 @@ following formula:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.FeH0">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FeH0</span></span><a class="headerlink" href="#model.Model.FeH0" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FeH0</span></span><a class="headerlink" href="#model.Model.FeH0" title="Link to this definition"></a></dt>
 <dd><p>Find initial [Fe/H] value for model.</p>
 <p>The conversion from (X,Z) to [Fe/H] is performed using the
 following formula:</p>
@@ -297,7 +298,7 @@ following formula:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.MH">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MH</span></span><a class="headerlink" href="#model.Model.MH" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MH</span></span><a class="headerlink" href="#model.Model.MH" title="Link to this definition"></a></dt>
 <dd><p>Find [M/H] value for model.</p>
 <p>The conversion from (Xs,Zs) to [M/H] is performed using the
 following formula:</p>
@@ -320,7 +321,7 @@ following formula:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.MH0">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MH0</span></span><a class="headerlink" href="#model.Model.MH0" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MH0</span></span><a class="headerlink" href="#model.Model.MH0" title="Link to this definition"></a></dt>
 <dd><p>Find initial [M/H] value for model.</p>
 <p>The conversion from (X,Z) to [M/H] is performed using the
 following formula:</p>
@@ -354,7 +355,7 @@ following formula:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.b_Kjeldsen2008">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">b_Kjeldsen2008</span></span><a class="headerlink" href="#model.Model.b_Kjeldsen2008" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">b_Kjeldsen2008</span></span><a class="headerlink" href="#model.Model.b_Kjeldsen2008" title="Link to this definition"></a></dt>
 <dd><p>Return the exponent for the Kjeldsen et al. (2008) surface correction
 recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
 <dl class="field-list simple">
@@ -369,7 +370,7 @@ recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.beta_Sonoi2015">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_Sonoi2015</span></span><a class="headerlink" href="#model.Model.beta_Sonoi2015" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">beta_Sonoi2015</span></span><a class="headerlink" href="#model.Model.beta_Sonoi2015" title="Link to this definition"></a></dt>
 <dd><p>Return the exponent for the Sonoi et al. (2015) surface correction
 recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
 <dl class="field-list simple">
@@ -384,7 +385,7 @@ recipe, as calculated based on the Sonoi et al. (2015) scaling relation.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#model.Model.cutoff" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#model.Model.cutoff" title="Link to this definition"></a></dt>
 <dd><p>Find <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> for model.</p>
 <p>The <span class="math notranslate nohighlight">\(\nu_{\mathrm{cut-off}}\)</span> value is obtained from the
 following scaling relation:</p>
@@ -668,7 +669,7 @@ result, which avoids modifications of the original frequencies and inertias.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.numax">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">numax</span></span><a class="headerlink" href="#model.Model.numax" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">numax</span></span><a class="headerlink" href="#model.Model.numax" title="Link to this definition"></a></dt>
 <dd><p>Find <span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span> for model.</p>
 <p>The <span class="math notranslate nohighlight">\(\nu_{\mathrm{max}}\)</span> value is obtained from the
 following scaling relation:</p>
@@ -907,6 +908,14 @@ and n values (regardless of frequency).</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="model.Model.set_mode_n_to_radial_n">
+<span class="sig-name descname"><span class="pre">set_mode_n_to_radial_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.set_mode_n_to_radial_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.set_mode_n_to_radial_n" title="Link to this definition"></a></dt>
+<dd><p>Set a non-radial mode’s order to the corresponing radial mode order.
+If multiple modes are assigned one order, keep the one with lower inertia.
+Removes all modes outside the frequency range of radial modes.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="model.Model.sort_modes">
 <span class="sig-name descname"><span class="pre">sort_modes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Model.sort_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model.sort_modes" title="Link to this definition"></a></dt>
 <dd><p>Sort the modes by l, then n, then freq.</p>
@@ -953,7 +962,7 @@ be written.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.zsx_0">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zsx_0</span></span><a class="headerlink" href="#model.Model.zsx_0" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">zsx_0</span></span><a class="headerlink" href="#model.Model.zsx_0" title="Link to this definition"></a></dt>
 <dd><p>Find the Z0/X0 value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -967,7 +976,7 @@ be written.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Model.zsx_s">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zsx_s</span></span><a class="headerlink" href="#model.Model.zsx_s" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">zsx_s</span></span><a class="headerlink" href="#model.Model.zsx_s" title="Link to this definition"></a></dt>
 <dd><p>Find the Zs/Xs value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -983,7 +992,7 @@ be written.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="model.Model_grid">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model_grid</span></span><a class="reference internal" href="_modules/model.html#Model_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Model_grid</span></span><a class="reference internal" href="_modules/model.html#Model_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Model_grid" title="Link to this definition"></a></dt>
 <dd><p>A grid of models.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="model.Model_grid.check_age_adim">
@@ -1281,7 +1290,7 @@ set of user parameters in <cite>AIMS_configure.py</cite></p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="model.Track">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model.html#Track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.Track" title="Link to this definition"></a></dt>
 <dd><p>An evolutionary track.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1331,19 +1340,19 @@ sorted (according to age).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Track.age_lower">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_lower</span></span><a class="headerlink" href="#model.Track.age_lower" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">age_lower</span></span><a class="headerlink" href="#model.Track.age_lower" title="Link to this definition"></a></dt>
 <dd><p>Provides the lowest age an evolutionary track.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Track.age_range">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_range</span></span><a class="headerlink" href="#model.Track.age_range" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">age_range</span></span><a class="headerlink" href="#model.Track.age_range" title="Link to this definition"></a></dt>
 <dd><p>Provides the age range for an evolutionary track.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="model.Track.age_upper">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">age_upper</span></span><a class="headerlink" href="#model.Track.age_upper" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">age_upper</span></span><a class="headerlink" href="#model.Track.age_upper" title="Link to this definition"></a></dt>
 <dd><p>Provides the highest age for an evolutionary track.</p>
 </dd></dl>
 
@@ -1701,13 +1710,13 @@ interval over which the interpolation is carried out.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.age_adim_str">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_adim_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age_adim'</span></em><a class="headerlink" href="#model.age_adim_str" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_adim_str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age_adim'</span></span><a class="headerlink" href="#model.age_adim_str" title="Link to this definition"></a></dt>
 <dd><p>Name of the non-dimensional age parameter used in the interpolation</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.age_str">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age'</span></em><a class="headerlink" href="#model.age_str" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">age_str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Age'</span></span><a class="headerlink" href="#model.age_str" title="Link to this definition"></a></dt>
 <dd><p>Name of the physical age parameter used in the interpolation</p>
 </dd></dl>
 
@@ -1778,7 +1787,7 @@ with the following measurements of the differences between the two models:</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.eps">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">eps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#model.eps" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">eps</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></span><a class="headerlink" href="#model.eps" title="Link to this definition"></a></dt>
 <dd><p>relative tolerance on parameters used for setting up evolutionary tracks</p>
 </dd></dl>
 
@@ -1933,19 +1942,19 @@ tessellation</p></li>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.iage">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#model.iage" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#model.iage" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to age in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.iage_adim">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage_adim</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#model.iage_adim" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iage_adim</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#model.iage_adim" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to dimensionless age in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.ifreq_ref">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ifreq_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#model.ifreq_ref" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ifreq_ref</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></span><a class="headerlink" href="#model.ifreq_ref" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to the reference frequency
 (used to non-dimensionalise the pulsation frequencies of the model)
 in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
@@ -1953,13 +1962,13 @@ in the <a class="reference internal" href="#model.Model.glb" title="model.Model.
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.iluminosity">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iluminosity</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#model.iluminosity" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iluminosity</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></span><a class="headerlink" href="#model.iluminosity" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to luminosity in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.imass">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">imass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#model.imass" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">imass</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#model.imass" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to mass in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
@@ -2012,33 +2021,33 @@ tessellation</p></li>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.iradius">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iradius</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#model.iradius" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iradius</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></span><a class="headerlink" href="#model.iradius" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to radius in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.itemperature">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">itemperature</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#model.itemperature" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">itemperature</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#model.itemperature" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to temperature in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.ix0">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ix0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#model.ix0" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ix0</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></span><a class="headerlink" href="#model.ix0" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to the initial hydrogen content
 in the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.iz0">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iz0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#model.iz0" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">iz0</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></span><a class="headerlink" href="#model.iz0" title="Link to this definition"></a></dt>
 <dd><p>index of the parameter corresponding to the initial metallicity
 the <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a> array</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.log0">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">log0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+150</span></em><a class="headerlink" href="#model.log0" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">log0</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1e+150</span></span><a class="headerlink" href="#model.log0" title="Link to this definition"></a></dt>
 <dd><p>value which is returned when log(0) is calculated (rather than causing an error)</p>
 </dd></dl>
 
@@ -2091,19 +2100,19 @@ times for finding simplices.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.modetype">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">modetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('n',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int16'&gt;),</span> <span class="pre">('l',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int8'&gt;),</span> <span class="pre">('freq',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;),</span> <span class="pre">('inertia',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;)]</span></em><a class="headerlink" href="#model.modetype" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">modetype</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('n',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int16'&gt;),</span> <span class="pre">('l',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int8'&gt;),</span> <span class="pre">('freq',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;),</span> <span class="pre">('inertia',</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;)]</span></span><a class="headerlink" href="#model.modetype" title="Link to this definition"></a></dt>
 <dd><p>structure for modes</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.nglb">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nglb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#model.nglb" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nglb</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></span><a class="headerlink" href="#model.nglb" title="Link to this definition"></a></dt>
 <dd><p>total number of global quantities in a model (see <a class="reference internal" href="#model.Model.glb" title="model.Model.glb"><code class="xref py py-data docutils literal notranslate"><span class="pre">Model.glb</span></code></a>).</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.nlin">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nlin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#model.nlin" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">nlin</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></span><a class="headerlink" href="#model.nlin" title="Link to this definition"></a></dt>
 <dd><p>total number of global quantities which are interpolated in a linear way (see
 <a class="reference internal" href="#model.combine_models" title="model.combine_models"><code class="xref py py-func docutils literal notranslate"><span class="pre">combine_models()</span></code></a>).  These quantities are numbered 0:nlin-1</p>
 </dd></dl>
@@ -2141,19 +2150,19 @@ times for finding simplices.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.tol">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#model.tol" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">tol</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></span><a class="headerlink" href="#model.tol" title="Link to this definition"></a></dt>
 <dd><p>tolerance level for points slightly outside the grid</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.user_params_index">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_index</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.user_params_index" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_index</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#model.user_params_index" title="Link to this definition"></a></dt>
 <dd><p>dictionary which will supply the appropriate index for the user-defined parameters</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="model.user_params_latex">
-<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_latex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.user_params_latex" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">user_params_latex</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#model.user_params_latex" title="Link to this definition"></a></dt>
 <dd><p>dictionary which will supply the appropriate latex name for the user-defined parameters</p>
 </dd></dl>
 

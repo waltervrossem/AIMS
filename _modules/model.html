@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>model &mdash; AIMS 2.3.1 documentation</title>
+  <title>model &mdash; AIMS 2.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=67b02a41"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=5048a02b"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -857,6 +857,47 @@
 <span class="sd">        :type modes: list of (int, int, float, float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">modetype</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Model.set_mode_n_to_radial_n">
+<a class="viewcode-back" href="../model.html#model.Model.set_mode_n_to_radial_n">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_mode_n_to_radial_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a non-radial mode&#39;s order to the corresponing radial mode order.</span>
+<span class="sd">        If multiple modes are assigned one order, keep the one with lower inertia.</span>
+<span class="sd">        Removes all modes outside the frequency range of radial modes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask_l0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">min_freq_l0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">mask_l0</span><span class="p">])</span>
+        <span class="n">max_freq_l0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">mask_l0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_freq_l0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_freq_l0</span><span class="p">)]</span>
+        <span class="n">mask_l0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="n">available_nonradial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">mask_l0</span><span class="p">])</span>
+        <span class="n">indeces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">mask_l0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">mask_l0</span><span class="p">])</span>
+        <span class="n">mask_in_range</span> <span class="o">=</span> <span class="n">indeces</span> <span class="o">&lt;</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mask_l0</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Can&#39;t mask a view to set values, so mask an array of indeces</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">[</span><span class="o">~</span><span class="n">mask_l0</span><span class="p">][</span><span class="n">mask_in_range</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][</span><span class="n">mask_l0</span><span class="p">][</span><span class="n">indeces</span><span class="p">[</span><span class="n">mask_in_range</span><span class="p">]]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">))</span>
+            <span class="k">raise</span>
+
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">available_nonradial</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># np.bincount will return correct counts as fills counts with 0 for orders before first in self.modes[&#39;n&#39;][mask]</span>
+                <span class="n">order_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">n_multi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">order_counts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">mask_multi</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">n_multi</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                    <span class="c1"># Flag modes which are not the minimum inertia mode for removal</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">[</span><span class="n">mask_multi</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;inertia&#39;</span><span class="p">][</span><span class="n">mask_multi</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;inertia&#39;</span><span class="p">][</span><span class="n">mask_multi</span><span class="p">])]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Remove modes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">])]</span></div>
 
 
 <div class="viewcode-block" id="Model.sort_modes">
@@ -2180,6 +2221,9 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ERROR: parameter </span><span class="si">%s</span><span class="s2"> is constant in your grid&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span>
                                  <span class="s2">&quot;and cannot be used as a grid parameter.&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">glb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">names</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Grid data glb and names have different lengths, updating numpy may fix this.&#39;</span><span class="p">)</span>
+
         <span class="c1"># create tracks:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating evolutionary tracks&quot;</span><span class="p">)</span>
         <span class="n">nmodes</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2192,8 +2236,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">aFe</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">alpha_Fe_param</span>
             <span class="n">aModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">glb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">aFe</span><span class="o">=</span><span class="n">aFe</span><span class="p">)</span>
-            <span class="n">exceed_freqlim</span> <span class="o">=</span> <span class="n">aModel</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">exceed_freqlim</span> <span class="o">=</span> <span class="n">aModel</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed filename: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span>
             <span class="n">aModel</span><span class="o">.</span><span class="n">multiply_modes</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">aModel</span><span class="o">.</span><span class="n">glb</span><span class="p">[</span><span class="n">ifreq_ref</span><span class="p">])</span>  <span class="c1"># make frequencies non-dimensional</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">set_mode_n_to_radial_n</span><span class="p">:</span>
+                <span class="n">aModel</span><span class="o">.</span><span class="n">set_mode_n_to_radial_n</span><span class="p">()</span>
             <span class="n">aModel</span><span class="o">.</span><span class="n">sort_modes</span><span class="p">()</span>
             <span class="n">aModel</span><span class="o">.</span><span class="n">remove_duplicate_modes</span><span class="p">()</span>
             <span class="k">if</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">aModel</span><span class="p">))):</span>

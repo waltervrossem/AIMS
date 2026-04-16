@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AIMS &mdash; AIMS 2.3.1 documentation</title>
+  <title>AIMS &mdash; AIMS 2.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=67b02a41"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=5048a02b"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -128,7 +128,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;restructuredtext&#39;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;2.3.1&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;2.3.2&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -1181,6 +1181,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_nonconstraint</span><span class="p">((</span><span class="s1">&#39;Dnu&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonconstraints</span><span class="p">[</span><span class="n">i_Dnu_constraint</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">nonconstraint_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonconstraints</span><span class="p">]</span>
 
+        <span class="c1"># Check for double added (non)contraints, keeping constraint if found</span>
+        <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nonconstraint_names</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">constraint_names</span><span class="p">:</span>  <span class="c1"># Skip &#39;-&#39;</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">to_remove</span> <span class="o">=</span> <span class="n">to_remove</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Removed non-constraint </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nonconstraints</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s1"> as it is already in constraints&#39;</span><span class="p">)</span>
+
         <span class="c1"># print number of modes:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I found </span><span class="si">%d</span><span class="s2"> modes in </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">),</span> <span class="n">filename</span><span class="p">))</span>
 
@@ -1243,10 +1252,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;G&quot;</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;log_g&quot;</span>
 
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Non-constraint </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> already in constraints. Check input file.&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nonconstraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">distribution</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nonconstraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">distribution</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Likelihood.guess_dnu">
@@ -2708,6 +2714,7 @@
         <span class="n">grid</span><span class="o">.</span><span class="n">distort_grid</span><span class="p">()</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">tessellate</span><span class="p">()</span>
 
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
         <span class="n">dill</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
@@ -2753,7 +2760,7 @@
 
     <span class="k">if</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">user_params</span> <span class="o">!=</span> <span class="n">config</span><span class="o">.</span><span class="n">user_params</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: mismatch between the user_params in the binary grid file&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         and in AIMS_configure.py.  Will overwrite user_params.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         and in AIMS_configure.py. Will use user_params from binary grid file.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Binary grid file:  &quot;</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">user_params</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  AIMS_configure.py: &quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">user_params</span><span class="p">)</span>
 
@@ -3822,11 +3829,11 @@
             <span class="n">bics</span> <span class="o">=</span> <span class="p">[</span><span class="n">gm</span><span class="o">.</span><span class="n">bic</span><span class="p">(</span><span class="n">use_samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">gm</span> <span class="ow">in</span> <span class="n">gmms</span><span class="p">]</span>
 
             <span class="n">gmm_info</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">gm</span> <span class="ow">in</span> <span class="n">gmms</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">gm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gmms</span><span class="p">):</span>
                 <span class="n">gmm_info</span><span class="p">[</span><span class="n">gm</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;means&#39;</span><span class="p">:</span> <span class="n">gm</span><span class="o">.</span><span class="n">means_</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
                                              <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">covariances_</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
                                              <span class="s1">&#39;weigths&#39;</span><span class="p">:</span> <span class="n">gm</span><span class="o">.</span><span class="n">weights_</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-                                             <span class="s1">&#39;bic&#39;</span><span class="p">:</span> <span class="n">gm</span><span class="o">.</span><span class="n">bic</span><span class="p">(</span><span class="n">use_samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()}</span>
+                                             <span class="s1">&#39;bic&#39;</span><span class="p">:</span> <span class="n">bics</span><span class="p">[</span><span class="n">i</span><span class="p">]}</span>
             <span class="n">out</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;gaussian_mixtures&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmm_info</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">like</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
