@@ -564,7 +564,7 @@ class Model:
         specified in the ``mode_format`` variable in ``AIMS_configure.py``.
 
         :param filename: name of the file with the modes.
-          The file should contain a seven-line header followed by various
+          The file should contain a six-line header followed by various
           columns which contain l, n, frequency, and inertia for each pulsation
           mode.
 
