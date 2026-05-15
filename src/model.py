@@ -564,7 +564,7 @@ class Model:
         specified in the ``mode_format`` variable in ``AIMS_configure.py``.
 
         :param filename: name of the file with the modes.
-          The file should contain a seven-line header followed by various
+          The file should contain a six-line header followed by various
           columns which contain l, n, frequency, and inertia for each pulsation
           mode.
 
@@ -1007,7 +1007,7 @@ class Model:
         freq = self.modes['freq'].compress(ind)
         # Use numax in uHz to calculate sigma, then convert to dimless
         numax_dimless = self.numax / self.glb[ifreq_ref]
-        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref] / (2 * np.sqrt(2 * np.log(2)))
         weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
         coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
@@ -1030,7 +1030,7 @@ class Model:
         # Weight large sep by envelope
         freq = self.get_freq(config.surface_option, a).compress(ind)
         numax_dimless = self.numax / self.glb[ifreq_ref]
-        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref]
+        sigma_dimless = 0.66 * self.numax ** 0.88 / self.glb[ifreq_ref] / (2 * np.sqrt(2 * np.log(2)))
         weights = np.exp(-((freq - numax_dimless) / sigma_dimless)**2)
         coeff = np.polyfit(n, freq, deg=1, w=weights)
         return coeff[0]
@@ -1522,7 +1522,7 @@ class Track:
                  ((self.glb[imodel, iradius] / constants.solar_radius) ** 2 *
                   np.sqrt(self.glb[imodel, itemperature] / constants.solar_temperature)))
         numax_dimless = numax / self.glb[imodel, ifreq_ref]
-        sigma_dimless = 0.66 * numax ** 0.88 / self.glb[imodel, ifreq_ref] # Use numax in uHz, then convert to dimless
+        sigma_dimless = 0.66 * numax ** 0.88 / self.glb[imodel, ifreq_ref]  / (2 * np.sqrt(2 * np.log(2))) # Use numax in uHz, then convert to dimless
         weights = np.exp(-((freq - numax_dimless) / sigma_dimless) ** 2)
         coeff = np.polyfit(n, freq, deg=1, w=weights)
 
