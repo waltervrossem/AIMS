@@ -28,6 +28,7 @@ The following python packages are needed for AIMS:
 
   * `tqdm <https://pypi.org/project/tqdm/>`_
   * `lxml <https://lxml.de/>`_
+  * `wsssss <https://pypi.org/project/wsssss/>`_
 
 For convenience, a `requirements.txt` file has been included.  This allows
 the user to install the needed python packages via the command::
