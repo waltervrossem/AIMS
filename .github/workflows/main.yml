@@ -51,12 +51,13 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install -r etc/CI/requirements.txt
-    
-    - name: Compile AIMS
-      run: |
-        source venv/bin/activate
-        make --directory=src compile
+        pip install -e .[test]
+#        pip install -r etc/CI/requirements.txt
+#
+#    - name: Compile AIMS
+#      run: |
+#        source venv/bin/activate
+#        make --directory=src compile
     
     - name: Cache build artifacts
       uses: actions/cache@v4
@@ -90,7 +91,9 @@ jobs:
         python -V
         python -m venv venv
         source venv/bin/activate
-        pip install -r etc/CI/requirements.txt
+        pip install --upgrade pip
+        pip install -e .[docs]
+#        pip install -r etc/CI/requirements.txt
 
     - name: Restore build artifacts
       uses: actions/cache@v4

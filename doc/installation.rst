@@ -7,16 +7,16 @@ then compile it::
 
     python -m venv .venv
     source .venv/bin/activate
-    pip install -r src/requirements.txt
-    make --directory=src
+    pip install git@https://github.com/waltervrossem/AIMS
 
 As of version 1.2, a few strategic parts of the code have been rewritten in
 FORTRAN thus leading to a considerable speed up.  These FORTRAN subroutines
 are then integrated into the AIMS code thanks to the
 `f2py <https://numpy.org/doc/stable/f2py/>`_ project.  Accordingly, these
-FORTRAN subroutines need to be compiled before running AIMS.  A Makefile
-has been provided for convenience.  Hence, one simply needs to type the
-command::
+FORTRAN subroutines need to be compiled before running AIMS, which the new
+build backend `scikit-build-core <https://scikit-build-core.readthedocs.io/en/latest/>`_
+should take care of.  The old Makefile is still provided for convenience.  Hence, one
+simply needs to type the command::
 
     make
 
