@@ -7,7 +7,11 @@ then compile it::
 
     python -m venv .venv
     source .venv/bin/activate
-    pip install git@https://github.com/waltervrossem/AIMS
+    pip install AIMS@git+https://github.com/waltervrossem/AIMS
+
+To install the development version and environment use::
+
+    pip install AIMS@git+https://github.com/waltervrossem/AIMS@dev --group dev
 
 As of version 1.2, a few strategic parts of the code have been rewritten in
 FORTRAN thus leading to a considerable speed up.  These FORTRAN subroutines
