@@ -51,7 +51,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install -e .[test]
+        pip install -e --group test
 #        pip install -r etc/CI/requirements.txt
 #
 #    - name: Compile AIMS
@@ -92,7 +92,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install -e .[docs]
+        pip install -e . --group docs
 #        pip install -r etc/CI/requirements.txt
 
     - name: Restore build artifacts
