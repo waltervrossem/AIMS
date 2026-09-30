@@ -12,3 +12,4 @@ ninja
 h5py
 diptest
 scikit-learn
+wsssss

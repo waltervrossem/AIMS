@@ -57,6 +57,7 @@ import math
 import numpy as np
 import random
 import matplotlib
+from wsssss.load_data import GyreSummary
 
 if (config.backend is not None):
     matplotlib.use(config.backend)
@@ -579,23 +580,18 @@ class Model:
 
         freqlim = config.cutoff * self.cutoff
         exceed_freqlim = False
-        with open(filename) as freqfile:
-            for i in range(6):
-                freqfile.readline()
-            mode_temp = []
-            for line in freqfile:
-                line = line.strip()
-                columns = line.split()
-                n = int(columns[1])  # n_pg
-                # n = int(columns[2])  # n_p
-                freq = utilities.to_float(columns[4])
-                # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
-                if (freq > freqlim):
-                    exceed_freqlim = True
-                    continue
-                if (config.npositive and (n < 0)):  # remove g-modes if need be
-                    continue
-                mode_temp.append((n, int(columns[0]), freq, utilities.to_float(columns[7])))
+
+        gs = GyreSummary(filename)
+        mode_temp = []
+        for line in gs.get(['n_pg', 'l', 'Re(freq)', 'E_norm']):
+            n, l, freq, inertia = line
+            # remove frequencies above AIMS_configure.cutoff*nu_{cut-off}
+            if (freq > freqlim):
+                exceed_freqlim = True
+                continue
+            if (config.npositive and (n < 0)):  # remove g-modes if need be
+                continue
+            mode_temp.append((n, l, freq, inertia))
 
         self.modes = np.array(mode_temp, dtype=modetype)
 

@@ -1,0 +1,62 @@
+[build-system]
+requires = ["scikit-build-core", "numpy"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+wheel.packages = ["src/AIMS"]
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/AIMS.py"
+
+[project]
+name = "AIMS"
+dynamic = ["version"]
+authors = [
+  { name="Daniel Reese"}
+]
+description = "Asteroseismic Inference on a Massive Scale"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "lxml",
+    "scipy",
+    "corner",
+    "dill",
+    "emcee",
+    "ptemcee@git+https://github.com/waltervrossem/ptemcee@f6e91e7",
+    "tqdm",
+    "h5py",
+    "diptest",
+    "scikit-learn",
+    "wsssss"
+]
+
+[dependency-groups]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "sphinx-last-updated-by-git"
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "docstr-coverage",
+    "pylint",
+    "mypy"
+]
+dev = [
+    {include-group="docs"},
+    {include-group="test"}
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Astronomy",
+]
+license = [{file = "LICENSE"}]
