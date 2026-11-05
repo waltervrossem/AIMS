@@ -2,27 +2,19 @@ Installation
 ============
 
 To avoid issues with other python installations, it is recommended to use a virtual
-environment and instsall the required packages there, activate the environment, and
+environment and install the required packages there, activate the environment, and
 then compile it::
 
-    python -m venv .venv
+    python -m venv .venv --prompt AIMS
     source .venv/bin/activate
     pip install AIMS@git+https://github.com/waltervrossem/AIMS
+
+then to use first activate the python environment and then run ::
+
+    source .venv/bin/activate
+    AIMS observation_file
 
 To install the development version and environment use::
 
     pip install AIMS@git+https://github.com/waltervrossem/AIMS@dev --group dev
 
-As of version 1.2, a few strategic parts of the code have been rewritten in
-FORTRAN thus leading to a considerable speed up.  These FORTRAN subroutines
-are then integrated into the AIMS code thanks to the
-`f2py <https://numpy.org/doc/stable/f2py/>`_ project.  Accordingly, these
-FORTRAN subroutines need to be compiled before running AIMS, which the new
-build backend `scikit-build-core <https://scikit-build-core.readthedocs.io/en/latest/>`_
-should take care of.  The old Makefile is still provided for convenience.  Hence, one
-simply needs to type the command::
-
-    make
-
-The user may change the choice of FORTRAN compiler as well as the compilation
-options by editing the Makefile.

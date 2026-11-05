@@ -60,3 +60,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Astronomy",
 ]
 license = [{file = "LICENSE"}]
+
+[project.scripts]
+AIMS = "run:run"
