@@ -63,3 +63,4 @@ license = [{file = "LICENSE"}]
 
 [project.scripts]
 AIMS = "run:run"
+AIMS-get-config = "run:get_default_config"
