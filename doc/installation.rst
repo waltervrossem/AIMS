@@ -12,6 +12,7 @@ then compile it::
 then to use first activate the python environment and then run ::
 
     source .venv/bin/activate
+    AIMS-get-config  # Copies the default AIMS_configure.py to current directory, edit as needed.
     AIMS observation_file
 
 To install the development version and environment use::
